@@ -1,0 +1,9 @@
+[core]
+	editor = vim
+[color]
+	ui = true
+[merge]
+	tool = vimdiff
+[user]
+	email = lucas6246@gmail.com
+	name = Lucas David Traverso

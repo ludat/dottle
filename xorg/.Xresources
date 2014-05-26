@@ -1,0 +1,150 @@
+!Settings
+xscreensaver.Dialog.headingFont:        -*-dina-bold-r-*-*-12-*-*-*-*-*-*-*
+xscreensaver.Dialog.bodyFont:           -*-dina-medium-r-*-*-12-*-*-*-*-*-*-*
+xscreensaver.Dialog.labelFont:          -*-dina-medium-r-*-*-12-*-*-*-*-*-*-*
+xscreensaver.Dialog.unameFont:          -*-dina-medium-r-*-*-12-*-*-*-*-*-*-*
+xscreensaver.Dialog.buttonFont:         -*-dina-bold-r-*-*-12-*-*-*-*-*-*-*
+xscreensaver.Dialog.dateFont:           -*-dina-medium-r-*-*-12-*-*-*-*-*-*-*
+xscreensaver.passwd.passwdFont:         -*-dina-bold-r-*-*-12-*-*-*-*-*-*-*
+!general dialog box (affects main hostname, username, password text)
+!xscreensaver.Dialog.foreground:         #ffffff
+!xscreensaver.Dialog.background:         #111111
+!xscreensaver.Dialog.topShadowColor:     #111111
+!xscreensaver.Dialog.bottomShadowColor:  #111111
+!xscreensaver.Dialog.Button.foreground:  #666666
+!xscreensaver.Dialog.Button.background:  #ffffff
+!!username/password input box and date text colour
+!xscreensaver.Dialog.text.foreground:    #666666
+!xscreensaver.Dialog.text.background:    #ffffff
+!xscreensaver.Dialog.internalBorderWidth:24
+!xscreensaver.Dialog.borderWidth:        20
+!xscreensaver.Dialog.shadowThickness:    2
+!!timeout bar (background is actually determined by Dialog.text.background)
+!xscreensaver.passwd.thermometer.foreground:  #ff0000
+!xscreensaver.passwd.thermometer.background:  #000000
+!xscreensaver.passwd.thermometer.width:       8
+!!datestamp format--see the strftime(3) manual page for details
+!xscreensaver.dateFormat:    %I:%M%P %a %b %d, %Y
+
+
+! Solarized color scheme for the X Window System
+!
+! http://ethanschoonover.com/solarized
+
+
+! Common
+
+#define S_yellow        #b58900
+#define S_orange        #cb4b16
+#define S_red           #dc322f
+#define S_magenta       #d33682
+#define S_violet        #6c71c4
+#define S_blue          #268bd2
+#define S_cyan          #2aa198
+#define S_green         #859900
+
+
+! Dark
+
+#define S_base03        #002b36
+#define S_base02        #073642
+#define S_base01        #586e75
+#define S_base00        #657b83
+#define S_base0         #839496
+#define S_base1         #93a1a1
+#define S_base2         #eee8d5
+#define S_base3         #fdf6e3
+
+
+! Light
+
+! #define S_base03        #fdf6e3
+! #define S_base02        #eee8d5
+! #define S_base01        #93a1a1
+! #define S_base00        #839496
+! #define S_base0         #657b83
+! #define S_base1         #586e75
+! #define S_base2         #073642
+! #define S_base3         #002b36
+
+
+! To only apply colors to your terminal, for example, prefix
+! the color assignment statement with its name. Example:
+!
+! URxvt*background:            S_base03
+
+URxvt*background:              S_base03
+URxvt*foreground:              S_base0
+URxvt*fading:                  40
+URxvt*fadeColor:               S_base03
+URxvt*cursorColor:             S_base1
+URxvt*pointerColorBackground:  S_base01
+URxvt*pointerColorForeground:  S_base1
+
+URxvt*color0:                  S_base02
+URxvt*color1:                  S_red
+URxvt*color2:                  S_green
+URxvt*color3:                  S_yellow
+URxvt*color4:                  S_blue
+URxvt*color5:                  S_magenta
+URxvt*color6:                  S_cyan
+URxvt*color7:                  S_base2
+URxvt*color8:                  S_base03
+URxvt*color9:                  S_orange
+URxvt*color10:                 S_base01
+URxvt*color11:                 S_base00
+URxvt*color12:                 S_base0
+URxvt*color13:                 S_violet
+URxvt*color14:                 S_base1
+URxvt*color15:                 S_base3
+
+! Molokai theme
+!URxvt*background:               #101010
+!URxvt*foreground:               #d0d0d0
+!URxvt*cursorColor:              #d0d0d0
+!URxvt*color0:                   #101010
+!URxvt*color1:                   #960050
+!URxvt*color2:                   #66aa11
+!URxvt*color3:                   #c47f2c
+!URxvt*color4:                   #30309b
+!URxvt*color5:                   #7e40a5
+!URxvt*color6:                   #3579a8
+!URxvt*color7:                   #9999aa
+!URxvt*color8:                   #303030
+!URxvt*color9:                   #ff0090
+!URxvt*color10:                  #80ff00
+!URxvt*color11:                  #ffba68
+!URxvt*color12:                  #5f5fee
+!URxvt*color13:                  #bb88dd
+!URxvt*color14:                  #4eb4fa
+!URxvt*color15:                  #d0d0d0
+
+! with this set to true, when an app sends a bell to the terminal, awesome hilights the appropriate tag(s) ;)
+URxvt*urgentOnBell: true
+
+! Powerline font
+!URxvt*font: xft:Terminus:style=Regular:pixelsize=14,xft:Ubuntu Mono derivative Powerline:style=Regular:pixelsize=14
+URxvt*font: xft:Inconsolata:style=Medium:pixelsize=14,xft:Ubuntu Mono derivative Powerline:style=Regular:pixelsize=14
+!URxvt*font: xft:Monaco for Powerline:style=Regular:pixelsize=12,xtf:Ubuntu Mono derivative Powerline:style=Regular:pixelsize=12
+
+! these three lines enable clicking on links to open them ;)
+!! if you want to enable tab support, append ,tabbed to the next line
+!! then use shift+down arrow to create tabs and shift+{left,right} arrows to switch between them
+URxvt*perl-ext-common: default,matcher,-option-popup,-selection-popup,-realine
+! URxvt*matcher.button: 1
+! dont forget to change this to your favorite browser
+URxvt*urlLauncher: google-chrome-stable
+! URxvt*letterSpace: -1
+URxvt*scrollBar:false
+
+!how many lines you want it to save per session
+URxvt*saveLines:0
+
+
+! Xft settings
+
+Xft.dpi:        96
+Xft.antialias:  true
+Xft.rgba:       rgb
+Xft.hinting:    true
+Xft.hintstyle:  hintslight
