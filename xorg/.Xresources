@@ -134,10 +134,14 @@ URxvt*perl-ext-common: default,matcher,-option-popup,-selection-popup,-realine
 ! URxvt*matcher.button: 1
 ! dont forget to change this to your favorite browser
 URxvt*urlLauncher: google-chrome-stable
+
 ! URxvt*letterSpace: -1
 URxvt*scrollBar:false
 
-!how many lines you want it to save per session
+! Ranger preview images
+URxvt*depth:8
+
+! How many lines you want it to save per session
 URxvt*saveLines:0
 
 
