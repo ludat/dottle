@@ -1,0 +1,44 @@
+?1
+cd ./
+cd 
+terminal
+find k
+find d
+find ki
+find my
+log 
+edit_file 
+search 2014
+h3
+set editor=vim
+set show_hidden True
+rename PREMIOS 60011.jpeg
+rename PREMIOS.jpeg
+shell 
+find 
+search syste
+search system
+set preview_images true
+rm
+search vimrc
+search zshrc
+help
+open_with exif
+exif
+exif %d
+search agno
+open_with vlc
+search sufr
+search surfraw
+search subtit
+search .config
+
+search foo
+search xre
+search wicd
+remove
+delete 
+open_with vim
+open_with 
+search config
+search ranger
