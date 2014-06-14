@@ -70,54 +70,85 @@ xscreensaver.passwd.passwdFont:         -*-dina-bold-r-*-*-12-*-*-*-*-*-*-*
 
 ! To only apply colors to your terminal, for example, prefix
 ! the color assignment statement with its name. Example:
+
+!URxvt*background:              S_base03
+!URxvt*foreground:              S_base0
+!URxvt*fading:                  40
+!URxvt*fadeColor:               S_base03
+!URxvt*cursorColor:             S_base1
+!URxvt*pointerColorBackground:  S_base01
+!URxvt*pointerColorForeground:  S_base1
 !
-! URxvt*background:            S_base03
-
-URxvt*background:              S_base03
-URxvt*foreground:              S_base0
-URxvt*fading:                  40
-URxvt*fadeColor:               S_base03
-URxvt*cursorColor:             S_base1
-URxvt*pointerColorBackground:  S_base01
-URxvt*pointerColorForeground:  S_base1
-
-URxvt*color0:                  S_base02
-URxvt*color1:                  S_red
-URxvt*color2:                  S_green
-URxvt*color3:                  S_yellow
-URxvt*color4:                  S_blue
-URxvt*color5:                  S_magenta
-URxvt*color6:                  S_cyan
-URxvt*color7:                  S_base2
-URxvt*color8:                  S_base03
-URxvt*color9:                  S_orange
-URxvt*color10:                 S_base01
-URxvt*color11:                 S_base00
-URxvt*color12:                 S_base0
-URxvt*color13:                 S_violet
-URxvt*color14:                 S_base1
-URxvt*color15:                 S_base3
+!URxvt*color0:                  S_base02
+!URxvt*color1:                  S_red
+!URxvt*color2:                  S_green
+!URxvt*color3:                  S_yellow
+!URxvt*color4:                  S_blue
+!URxvt*color5:                  S_magenta
+!URxvt*color6:                  S_cyan
+!URxvt*color7:                  S_base2
+!URxvt*color8:                  S_base03
+!URxvt*color9:                  S_orange
+!URxvt*color10:                 S_base01
+!URxvt*color11:                 S_base00
+!URxvt*color12:                 S_base0
+!URxvt*color13:                 S_violet
+!URxvt*color14:                 S_base1
+!URxvt*color15:                 S_base3
 
 ! Molokai theme
-!URxvt*background:               #101010
-!URxvt*foreground:               #d0d0d0
-!URxvt*cursorColor:              #d0d0d0
-!URxvt*color0:                   #101010
-!URxvt*color1:                   #960050
-!URxvt*color2:                   #66aa11
-!URxvt*color3:                   #c47f2c
-!URxvt*color4:                   #30309b
-!URxvt*color5:                   #7e40a5
-!URxvt*color6:                   #3579a8
-!URxvt*color7:                   #9999aa
-!URxvt*color8:                   #303030
-!URxvt*color9:                   #ff0090
-!URxvt*color10:                  #80ff00
-!URxvt*color11:                  #ffba68
-!URxvt*color12:                  #5f5fee
-!URxvt*color13:                  #bb88dd
-!URxvt*color14:                  #4eb4fa
-!URxvt*color15:                  #d0d0d0
+URxvt*background:               #101010
+URxvt*foreground:               #d0d0d0
+URxvt*cursorColor:              #d0d0d0
+URxvt*color0:                   #101010
+URxvt*color1:                   #960050
+URxvt*color2:                   #66aa11
+URxvt*color3:                   #c47f2c
+URxvt*color4:                   #30309b
+URxvt*color5:                   #7e40a5
+URxvt*color6:                   #3579a8
+URxvt*color7:                   #9999aa
+URxvt*color8:                   #303030
+URxvt*color9:                   #ff0090
+URxvt*color10:                  #80ff00
+URxvt*color11:                  #ffba68
+URxvt*color12:                  #5f5fee
+URxvt*color13:                  #bb88dd
+URxvt*color14:                  #4eb4fa
+URxvt*color15:                  #d0d0d0
+
+!! Custom lala
+!! --- special colors ---
+!
+!URxvt*background: #000000
+!URxvt*foreground: #eeeeee
+!
+!! --- standard colors ---
+!
+!! black
+!URxvt*color0: #282828
+!URxvt*color8: #535353
+!! red
+!URxvt*color1: #d33339
+!URxvt*color9: #d33339
+!! green
+!URxvt*color2: #46d820
+!URxvt*color10: #46d820
+!! yellow
+!URxvt*color3: #fbff00
+!URxvt*color11: #fbff00
+!! blue
+!URxvt*color4: #2d4bc6
+!URxvt*color12: #2d4bc6
+!! magenta
+!URxvt*color5: #ba33c6
+!URxvt*color13: #ba33c6
+!! cyan
+!URxvt*color6: #e91616
+!URxvt*color14: #2dd8ad
+!! white
+!URxvt*color7: #eeeeee
+!URxvt*color15: #eeeeee
 
 ! with this set to true, when an app sends a bell to the terminal, awesome hilights the appropriate tag(s) ;)
 URxvt*urgentOnBell: true
