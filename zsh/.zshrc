@@ -98,3 +98,5 @@ export wlan='wlp3s0'
 stty -ixon
 
 eval "$(fasd --init auto)"
+
+[[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && exec startx
