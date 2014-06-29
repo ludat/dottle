@@ -91,6 +91,8 @@ export EDITOR='vim'
 
 export DEFAULT_USER='lucas'
 
+export wlan='wlp3s0'
+
 # [[ $TERM = "rxvt-unicode-256color" ]] && exec tmux
 
 stty -ixon
