@@ -26,6 +26,9 @@ synclient TouchpadOff=1
 xscreensaver -no-splash &
 # Start copyq daemon
 #copyq &
+# Start pulseaudio
+start-pulseaudio-x11
+
 # Start awesome
 exec awesome
 
