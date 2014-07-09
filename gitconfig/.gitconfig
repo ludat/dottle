@@ -7,3 +7,5 @@
 [user]
 	email = lucas6246@gmail.com
 	name = Lucas David Traverso
+[push]
+	default = simple
