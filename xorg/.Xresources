@@ -26,128 +26,47 @@ xscreensaver.passwd.passwdFont:         -*-dina-bold-r-*-*-12-*-*-*-*-*-*-*
 !!datestamp format--see the strftime(3) manual page for details
 !xscreensaver.dateFormat:    %I:%M%P %a %b %d, %Y
 
+*foreground: #D7D0C7
+*background: #151515
 
-! Solarized color scheme for the X Window System
-!
-! http://ethanschoonover.com/solarized
+! Black
+*color0:   #000000
+*color8:   #555753
 
+! Red
+*color1:   #cc0000
+*color9:   #ef2929
 
-! Common
+! Green
+*color2:   #4e9a06
+*color10:  #8ae234
 
-#define S_yellow        #b58900
-#define S_orange        #cb4b16
-#define S_red           #dc322f
-#define S_magenta       #d33682
-#define S_violet        #6c71c4
-#define S_blue          #268bd2
-#define S_cyan          #2aa198
-#define S_green         #859900
+! Yellow
+*color3:   #c4a000
+*color11:  #fce94f
 
+! Blue
+*color4:   #3465a4
+*color12:  #729fcf
 
-! Dark
+! Magenta
+*color5:   #75507b
+*color13:  #ad7fa8
 
-! #define S_base03        #002b36
-! #define S_base02        #073642
-! #define S_base01        #586e75
-! #define S_base00        #657b83
-! #define S_base0         #839496
-! #define S_base1         #93a1a1
-! #define S_base2         #eee8d5
-! #define S_base3         #fdf6e3
+! Cyan
+*color6:   #06989a
+*color14:  #34e2e2
 
-
-! Light
-
-#define S_base03        #fdf6e3
-#define S_base02        #eee8d5
-#define S_base01        #93a1a1
-#define S_base00        #839496
-#define S_base0         #657b83
-#define S_base1         #586e75
-#define S_base2         #073642
-#define S_base3         #002b36
-
-
-! To only apply colors to your terminal, for example, prefix
-! the color assignment statement with its name. Example:
-
-!URxvt*background:              S_base03
-!URxvt*foreground:              S_base0
-!URxvt*fading:                  40
-!URxvt*fadeColor:               S_base03
-!URxvt*cursorColor:             S_base1
-!URxvt*pointerColorBackground:  S_base01
-!URxvt*pointerColorForeground:  S_base1
-!
-!URxvt*color0:                  S_base02
-!URxvt*color1:                  S_red
-!URxvt*color2:                  S_green
-!URxvt*color3:                  S_yellow
-!URxvt*color4:                  S_blue
-!URxvt*color5:                  S_magenta
-!URxvt*color6:                  S_cyan
-!URxvt*color7:                  S_base2
-!URxvt*color8:                  S_base03
-!URxvt*color9:                  S_orange
-!URxvt*color10:                 S_base01
-!URxvt*color11:                 S_base00
-!URxvt*color12:                 S_base0
-!URxvt*color13:                 S_violet
-!URxvt*color14:                 S_base1
-!URxvt*color15:                 S_base3
-
-! Molokai theme
-! URxvt*background:               #101010
-! URxvt*foreground:               #d0d0d0
-! URxvt*cursorColor:              #d0d0d0
-! URxvt*color0:                   #101010
-! URxvt*color1:                   #960050
-! URxvt*color2:                   #66aa11
-! URxvt*color3:                   #c47f2c
-! URxvt*color4:                   #30309b
-! URxvt*color5:                   #7e40a5
-! URxvt*color6:                   #3579a8
-! URxvt*color7:                   #9999aa
-! URxvt*color8:                   #303030
-! URxvt*color9:                   #ff0090
-! URxvt*color10:                  #80ff00
-! URxvt*color11:                  #ffba68
-! URxvt*color12:                  #5f5fee
-! URxvt*color13:                  #bb88dd
-! URxvt*color14:                  #4eb4fa
-! URxvt*color15:                  #d0d0d0
-
-!baskerville-ivorylight
-
-Urxvt*background:  #FEF9EC
-Urxvt*foreground:  #6D727E
-Urxvt*colorBD:     #3E424D
-Urxvt*colorIT:     #3E424D
-Urxvt*colorUL:     #3E424D
-Urxvt*cursorColor: #007693
-Urxvt*color0:      #C5C1B4
-Urxvt*color8:      #A1A6B2
-Urxvt*color7:      #3E424D
-Urxvt*color15:     #282C36
-Urxvt*color1:      #E75C58
-Urxvt*color9:      #B22B31
-Urxvt*color3:      #A08A00
-Urxvt*color11:     #715F00
-Urxvt*color2:      #00A250
-Urxvt*color10:     #007427
-Urxvt*color6:      #00A4C1
-Urxvt*color14:     #007693
-Urxvt*color4:      #208FFB
-Urxvt*color12:     #0065CA
-Urxvt*color5:      #D160C4
-Urxvt*color13:     #A03196
+! White
+*color7:   #d3d7cf
+*color15:  #eeeeec
 
 ! with this set to true, when an app sends a bell to the terminal, awesome hilights the appropriate tag(s) ;)
 URxvt*urgentOnBell: true
 
 ! Powerline font
-!URxvt*font: xft:Terminus:style=Regular:pixelsize=14,xft:Ubuntu Mono derivative Powerline:style=Regular:pixelsize=14
-URxvt*font: xft:Inconsolata:style=Medium:pixelsize=14,xft:Ubuntu Mono derivative Powerline:style=Regular:pixelsize=14
+URxvt*font: xft:Terminus:style=Regular:pixelsize=14,xft:Ubuntu Mono derivative Powerline:style=Regular:pixelsize=14
+!URxvt*font: xft:Inconsolata:style=Medium:pixelsize=14,xft:Ubuntu Mono derivative Powerline:style=Regular:pixelsize=14
 !URxvt*font: xft:Monaco for Powerline:style=Regular:pixelsize=12,xtf:Ubuntu Mono derivative Powerline:style=Regular:pixelsize=12
 
 ! these three lines enable clicking on links to open them ;)
