@@ -24,8 +24,8 @@ synclient TouchpadOff=1
 # urxvtd -q -f -o
 # Start xscreensaver daemon
 xscreensaver -no-splash &
-# Start copyq daemon
-#copyq &
+# Enable numlock on startup
+numlockx &
 # Start pulseaudio
 start-pulseaudio-x11
 
