@@ -46,7 +46,7 @@ alias rangercd="ranger-cd"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git git-extras history-substring-search systemd lol tmux archlinux)
+plugins=(git git-extras history-substring-search systemd archlinux)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -76,6 +76,8 @@ export PATH="/usr/local/sbin:/usr/local/bin:/usr/bin:/opt/android-sdk/build-tool
 # the last visited one after ranger quits.
 # To undo the effect of this function, you can type "cd -" to return to the
 # original directory.
+
+alias la="ls -a"
 
 function ranger-cd {
     tempfile='/tmp/chosendir'
