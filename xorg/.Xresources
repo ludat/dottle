@@ -1,4 +1,4 @@
-!Settings
+! xscreensaver settings {{{
 xscreensaver.Dialog.headingFont:        -*-dina-bold-r-*-*-12-*-*-*-*-*-*-*
 xscreensaver.Dialog.bodyFont:           -*-dina-medium-r-*-*-12-*-*-*-*-*-*-*
 xscreensaver.Dialog.labelFont:          -*-dina-medium-r-*-*-12-*-*-*-*-*-*-*
@@ -25,7 +25,8 @@ xscreensaver.passwd.passwdFont:         -*-dina-bold-r-*-*-12-*-*-*-*-*-*-*
 !xscreensaver.passwd.thermometer.width:       8
 !!datestamp format--see the strftime(3) manual page for details
 !xscreensaver.dateFormat:    %I:%M%P %a %b %d, %Y
-
+! }}}
+! Current theme colors {{{
 *foreground: #D7D0C7
 *background: #151515
 
@@ -60,7 +61,9 @@ xscreensaver.passwd.passwdFont:         -*-dina-bold-r-*-*-12-*-*-*-*-*-*-*
 ! White
 *color7:   #d3d7cf
 *color15:  #eeeeec
+! }}}
 
+! URxvt settings {{{
 ! with this set to true, when an app sends a bell to the terminal, awesome hilights the appropriate tag(s) ;)
 URxvt*urgentOnBell: true
 
@@ -76,7 +79,8 @@ URxvt*perl-ext-common: default,matcher,-option-popup,-selection-popup,-realine
 ! URxvt*matcher.button: 1
 ! dont forget to change this to your favorite browser
 URxvt*urlLauncher: google-chrome-stable
-
+urxvt*internalBorder:       0
+urxvt*externalBorder:       0
 ! URxvt*letterSpace: -1
 URxvt*scrollBar:false
 
@@ -86,11 +90,16 @@ URxvt*depth:8
 ! How many lines you want it to save per session
 URxvt*saveLines:0
 
+urxvt*shading     : 35
+urxvt*transparent : true
 
-! Xft settings
+! }}}
+
+! Xft settings {{{
 
 Xft.dpi:        96
 Xft.antialias:  true
 Xft.rgba:       rgb
 Xft.hinting:    true
 Xft.hintstyle:  hintslight
+! }}}
