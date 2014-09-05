@@ -28,13 +28,25 @@ xscreensaver -no-splash &
 numlockx &
 # Start pulseaudio
 start-pulseaudio-x11
+# Start easystroke
+easystroke &
 
-# Start awesome
-exec awesome
+# # Start awesome
+# xdg_menu --format awesome --root-menu /etc/xdg/menus/arch-applications.menu > $HOME/.config/awesome/localdata/menus.lua
+# exec awesome
 
-# Start i3
-# exec i3
+# set the cursor
+xsetroot -cursor_name left_ptr
+# set German keyboard layout
+setxkbmap -layout es
+# set wallpaper
+feh --bg-fill $HOME/Images/Wallpapers/tinyGalaxy.jpg
+# start xcompmgr for transparency
+xcompmgr &
+# start xmonad
+exec xmonad
 
-# Start xmonad
-# exec xmonad
+# # Start dwm
+# exec dwm
+
 # ...or the Window Manager of your choice
