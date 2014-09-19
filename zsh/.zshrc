@@ -46,7 +46,7 @@ alias rangercd="ranger-cd"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git git-extras history-substring-search systemd archlinux)
+plugins=(git git-extras history-substring-search systemd archlinux zsh-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -102,9 +102,9 @@ stty -ixon
 eval "$(fasd --init auto)"
 
 # Check if there is a display and tty is number 1 and there is a TMUX variable
-if [ -z "$DISPLAY" ] && [ $XDG_VTNR -eq 1 ] && [ -z "$TMUX" ]; then
-    exec startx
-else
-    true
-fi
+# if [ -z "$DISPLAY" ] && [ $XDG_VTNR -eq 1 ] && [ -z "$TMUX" ]; then
+#     exec startx
+# else
+#     true
+# fi
 
