@@ -1,3 +1,6 @@
 [submodule "vim"]
 	path = vim
 	url = git@github.com:ludat/vimrc.git
+[submodule "zshrc"]
+	path = zshrc
+	url = git@github.com:ludat/zshrc.git
