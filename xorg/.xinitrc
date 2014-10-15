@@ -21,7 +21,7 @@ fi
 # Turn off Touchpad
 synclient TouchpadOff=1
 # Start urxvt daemon
-# urxvtd -q -f -o
+urxvtd -q -f -o
 # Start xscreensaver daemon
 xscreensaver -no-splash &
 # Enable numlock on startup
