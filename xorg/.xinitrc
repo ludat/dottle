@@ -15,9 +15,6 @@ if [ -f ~/.Xresources ]; then
     xrdb -merge ~/.Xresources
 fi
 
-# exec gnome-session
-# exec startkde
-# exec startxfce4
 # Turn off Touchpad
 synclient TouchpadOff=1
 # Start urxvt daemon
@@ -31,19 +28,14 @@ start-pulseaudio-x11
 # Start easystroke
 easystroke &
 
-# # Start awesome
-# xdg_menu --format awesome --root-menu /etc/xdg/menus/arch-applications.menu > $HOME/.config/awesome/localdata/menus.lua
-# exec awesome
-
-# set the cursor
+# Set the cursor
 xsetroot -cursor_name left_ptr
-# set German keyboard layout
+# Set Spanish keyboard layout
 setxkbmap -layout es
-# set wallpaper
-feh --bg-fill $HOME/Images/Wallpapers/tinyGalaxy.jpg
-# start xcompmgr for transparency
+# Set wallpaper
+feh --bg-fill $HOME/Images/Wallpapers/TinyGalaxy.jpg
 xcompmgr &
-# start xmonad
+# Start xmonad
 exec xmonad
 
 # # Start dwm
