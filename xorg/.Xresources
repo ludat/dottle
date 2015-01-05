@@ -68,7 +68,7 @@ xscreensaver.passwd.passwdFont:         -*-dina-bold-r-*-*-12-*-*-*-*-*-*-*
 URxvt*urgentOnBell: true
 
 ! Powerline font
-URxvt*font: xft:Terminus:style=Regular:pixelsize=14,xft:Ubuntu Mono derivative Powerline:style=Regular:pixelsize=14
+URxvt*font: xft:Terminess Powerline:style=Regular:size=10
 !URxvt*font: xft:Inconsolata:style=Medium:pixelsize=14,xft:Ubuntu Mono derivative Powerline:style=Regular:pixelsize=14
 !URxvt*font: xft:Monaco for Powerline:style=Regular:pixelsize=12,xtf:Ubuntu Mono derivative Powerline:style=Regular:pixelsize=12
 
