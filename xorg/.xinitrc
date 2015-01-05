@@ -16,7 +16,7 @@ if [ -f ~/.Xresources ]; then
 fi
 
 # Turn off Touchpad
-synclient TouchpadOff=1
+xinput --disable 'ETPS/2 Elantech Touchpad'
 # Start urxvt daemon
 urxvtd -q -f -o
 # Start xscreensaver daemon
