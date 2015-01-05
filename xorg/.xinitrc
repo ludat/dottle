@@ -34,11 +34,13 @@ xsetroot -cursor_name left_ptr
 setxkbmap -layout es
 # Set wallpaper
 feh --bg-fill $HOME/Images/Wallpapers/TinyGalaxy.jpg
+# Start notification server (dunst)
+dunst &
+# Start status bar engine
+${HOME}/.config/SB/SB.sh &
+# Start xcompmgr for transparency
 xcompmgr &
 # Start xmonad
 exec xmonad
-
-# # Start dwm
-# exec dwm
 
 # ...or the Window Manager of your choice
