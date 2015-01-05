@@ -78,7 +78,7 @@ URxvt*font: xft:Terminus:style=Regular:pixelsize=14,xft:Ubuntu Mono derivative P
 URxvt*perl-ext-common: default,matcher,-option-popup,-selection-popup,-realine
 ! URxvt*matcher.button: 1
 ! dont forget to change this to your favorite browser
-URxvt*urlLauncher: google-chrome-stable
+URxvt*urlLauncher: chromium
 urxvt*internalBorder:       0
 urxvt*externalBorder:       0
 ! URxvt*letterSpace: -1
