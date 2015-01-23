@@ -40,7 +40,11 @@ dunst &
 ${HOME}/.config/SB/SB.sh &
 # Start xcompmgr for transparency
 xcompmgr &
+
 # Start xmonad
+# Start dzen with its socket (doesn't work yet)
+#nc -k -l -U ${HOME}/.xmonad/log.soc | dzen2 -ta l -bg '#161616' -fn 'Terminus:size=8' -w 600 -e '' -dock &
+# Actually start xmonad
 exec xmonad
 
 # ...or the Window Manager of your choice
