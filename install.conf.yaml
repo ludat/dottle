@@ -10,8 +10,8 @@
         crete: true
         path: ranger/
     ~/.config/easystroke: easystroke/
-    ~/.Xresources: Xresources
-    ~/.xinitrc: xinitrc
-    ~/.zprofile: zprofile
+    ~/.Xresources: xorg/Xresources
+    ~/.xinitrc: xorg/xinitrc
+    ~/.zprofile: xorg/zprofile
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
