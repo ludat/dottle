@@ -4,3 +4,6 @@
 [submodule "zshrc"]
 	path = zshrc
 	url = git@github.com:ludat/zshrc.git
+[submodule "dotbot"]
+	path = dotbot
+	url = https://github.com/anishathalye/dotbot
