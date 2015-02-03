@@ -5,7 +5,7 @@
     ~/.vim: vim/vim/
     ~/.vimrc: vim/vimrc
     ~/.zsh: zshrc/zsh/
-    ~/.zshrc: zshrc/
+    ~/.zshrc: zshrc/zshrc
     ~/.config/ranger:
         crete: true
         path: ranger/
