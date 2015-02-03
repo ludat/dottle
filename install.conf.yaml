@@ -9,5 +9,6 @@
     ~/.config/ranger:
         crete: true
         path: ranger/
+    ~/.config/easystroke: easystroke/
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
