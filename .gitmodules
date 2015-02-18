@@ -1,9 +1,9 @@
 [submodule "vim"]
 	path = vim
-	url = https://github.com:ludat/vimrc
+	url = https://github.com/ludat/vimrc
 [submodule "zshrc"]
 	path = zshrc
-	url = https://github.com:ludat/zshrc
+	url = https://github.com/ludat/zshrc
 [submodule "dotbot"]
 	path = dotbot
 	url = https://github.com/anishathalye/dotbot
