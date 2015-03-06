@@ -37,7 +37,7 @@ feh --bg-fill $HOME/Images/Wallpapers/TinyGalaxy.jpg
 # Start notification server (dunst)
 dunst &
 # Start status bar engine
-${HOME}/.config/SB/SB.sh &
+${HOME}/.config/lueng/lueng.sh &
 # Start xcompmgr for transparency
 xcompmgr &
 
