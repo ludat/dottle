@@ -50,12 +50,11 @@ case $session in
     # Actually start xmonad
     exec xmonad
     ;;
-    gnome)
-    exec gnome-session
-    ;;
-    *)
-    exec $1
-    ;;
+    gnome) exec gnome-session ;;
+    kde) exec startkde ;;
+    mate) exec mate-session ;;
+    cinnamon) exec cinnamon-session ;;
+    *) exec $1 ;;
 esac
 
 # ...or the Window Manager of your choice
