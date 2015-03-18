@@ -36,7 +36,7 @@ case $session in
     # Set Spanish keyboard layout
     setxkbmap -layout es
     # Set wallpaper
-    feh --bg-fill $HOME/Images/Wallpapers/TinyGalaxy.jpg
+    feh --bg-fill $HOME/Pictures/Wallpapers/TinyGalaxy.jpg
     # Start notification server (dunst)
     dunst &
     # Start status bar engine
