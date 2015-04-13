@@ -9,3 +9,5 @@
 	name = Lucas David Traverso
 [push]
 	default = current
+[cola]
+	tabwidth = 4
