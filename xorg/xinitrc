@@ -48,8 +48,7 @@ case $session in
     # Start dzen with its socket (doesn't work yet)
     #nc -k -l -U ${HOME}/.xmonad/log.soc | dzen2 -ta l -bg '#161616' -fn 'Terminus:size=8' -w 600 -e '' -dock &
     # Actually start xmonad
-    exec xmonad
-    ;;
+    exec xmonad ;;
     gnome) exec gnome-session ;;
     kde) exec startkde ;;
     mate) exec mate-session ;;
