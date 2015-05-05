@@ -11,3 +11,4 @@
 	default = current
 [cola]
 	tabwidth = 4
+	fontdiff = Terminess Powerline,10,-1,5,50,0,0,0,0,0
