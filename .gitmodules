@@ -4,6 +4,3 @@
 [submodule "zshrc"]
 	path = zshrc
 	url = https://github.com/ludat/zshrc
-[submodule "dotbot"]
-	path = dotbot
-	url = https://github.com/anishathalye/dotbot
