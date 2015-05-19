@@ -54,12 +54,28 @@ Commands and args:
 EOF
 }
 
+escape () {
+    # printf "$(echo "$1" | sed 's/"/\\\\"/g')"
+    printf "$1" | sed 's/"/\\\\\\"/g'
+}
+
+expand_vars() {
+    warn "\"$(escape "$1")\""
+    eval printf '%s' "\"$(escape "$1")\""
+}
+
+install () {
+    while IFS='' read line; do
+        ok "$(expand_vars "${line}")\n"
+    done < "$CONFIG_FILE"
+}
+
 case "$1" in
     --help)
         show_help
         ;;
     install)
-        error "not implemented yet"
+        install
         ;;
     remove)
         error "not implemented yet"
