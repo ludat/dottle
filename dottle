@@ -1,0 +1,79 @@
+#!/bin/sh
+
+CONFIG_FILE="install.conf.yml"
+
+BASEDIR="$(cd "$(dirname "$0")" && pwd)"
+
+cd "${BASEDIR}"
+
+# Colors
+ESC_SEQ="\033["
+COL_RESET=$ESC_SEQ"0m"
+COL_BLACK=$ESC_SEQ"0;30;01m"
+COL_RED=$ESC_SEQ"0;31;01m"
+COL_GREEN=$ESC_SEQ"0;32;01m"
+COL_YELLOW=$ESC_SEQ"0;33;01m"
+COL_BLUE=$ESC_SEQ"0;34;01m"
+COL_MAGENTA=$ESC_SEQ"0;35;01m"
+COL_CYAN=$ESC_SEQ"0;36;01m"
+COL_WHITE=$ESC_SEQ"0;37;01m"
+
+ok () {
+    printf "$COL_GREEN[ok]$COL_RESET $1"
+}
+
+warn () {
+    printf "$COL_YELLOW[warning]$COL_RESET $1\n"
+}
+
+error () {
+    printf "$COL_RED[error]$COL_RESET $1\n"
+}
+
+# bot () {
+#     printf "\n$COL_GREEN\[._.]/$COL_RESET - "$1
+# }
+#
+# running () {
+#     printf "$COL_YELLOW -> $COL_RESET"$1": "
+# }
+#
+# action () {
+#     printf "\n$COL_YELLOW[action]:$COL_RESET\n -> $1..."
+# }
+
+show_help () {
+    cat << EOF
+Usage: ./dottle [OPTIONS] COMMAND [ARGS]
+
+Options:
+
+None for now
+
+Commands and args:
+
+None for now
+EOF
+}
+
+case "$1" in
+    --help)
+        show_help
+        ;;
+    install)
+        error "not implemented yet"
+        exit 1
+        ;;
+    remove)
+        error "not implemented yet"
+        exit 1
+        ;;
+    clean)
+        error "not implemented yet"
+        exit 1
+        ;;
+    '')
+        echo "empty fuck you"
+        exit 1
+        ;;
+esac

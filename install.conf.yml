@@ -1,17 +1,18 @@
-- clean: ['~']
-- link:
-    ~/.tmux.conf: tmux/tmux.conf
-    ~/.gitconfig: gitconfig
-    ~/.vim: vim/vim/
-    ~/.vimrc: vim/vimrc
-    ~/.zsh: zshrc/zsh/
-    ~/.zshrc: zshrc/zshrc
-    ~/.config/ranger:
-        crete: true
-        path: ranger/
-    ~/.config/easystroke: easystroke/
-    ~/.Xresources: xorg/Xresources
-    ~/.xinitrc: xorg/xinitrc
-    ~/.zprofile: xorg/zprofile
-- shell:
-    - [git submodule update --init --recursive, Installing submodules]
+# dottle config file
+# lines starting with a hash are (hopefully) ignored as empty lines
+
+if `true`
+link: create
+    - ~/.tmux.conf: tmux/tmux.conf
+    - ~/.gitconfig: gitconfig
+    - ~/.vim: vim/vim/
+    - ~/.vimrc: vim/vimrc
+    - ~/.zsh: zshrc/zsh/
+    - ~/.zshrc: zshrc/zshrc
+    - ~/.config/ranger: ranger/
+    - ~/.config/easystroke: easystroke/
+    - ~/.Xresources: xorg/Xresources
+    - ~/.xinitrc: xorg/xinitrc
+    - ~/.zprofile: xorg/zprofile
+shell:
+    - Installing submodules: git submodule update --init --recursive
