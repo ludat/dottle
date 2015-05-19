@@ -47,18 +47,17 @@ show_help () {
 Usage: ./dottle [OPTIONS] COMMAND [ARGS]
 
 Options:
-
-None for now
+- None for now
 
 Commands and args:
-
-None for now
+- None for now
 EOF
 }
 
 case "$1" in
     --help)
         show_help
+        exit 0
         ;;
     install)
         error "not implemented yet"
