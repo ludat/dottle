@@ -57,22 +57,17 @@ EOF
 case "$1" in
     --help)
         show_help
-        exit 0
         ;;
     install)
         error "not implemented yet"
-        exit 1
         ;;
     remove)
         error "not implemented yet"
-        exit 1
         ;;
     clean)
         error "not implemented yet"
-        exit 1
         ;;
     '')
         echo "empty fuck you"
-        exit 1
         ;;
 esac
