@@ -73,7 +73,8 @@ expand_vars () {
     # Expand env vars in a string
     # TODO maybe using single quotes may be a good idea
     # no it is not, it defeats the whole purpose of expand_vars
-    eval printf '%s' "\"$(escape "$1")\""
+    s=$( printf "$1" | sed -e 's:^~/:'$HOME'/:' )
+    eval printf '%s' "\"$(escape "$s")\""
 }
 
 get_level () {
