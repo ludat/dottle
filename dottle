@@ -31,7 +31,11 @@ warn () {
 }
 
 error () {
-    printf "${COL_RED}[error]${COL_RESET} $1\n"
+    printf "${COL_RED}[error]${COL_RESET} $1\n" 1>&2
+}
+
+debug () {
+    printf "$COL_YELLOW[running]$COL_RESET $1... "
 }
 
 running () {
@@ -224,6 +228,7 @@ install () {
                 error "Wrong command: ${line%%:*} not found"
             fi
         elif [ "$(get_level "$line")" -gt "0" ]; then
+            debug "executing FLAGS=${OPTIONS} $COMMAND ${line%%:*} ${line#*:}"
             FLAGS="${OPTIONS}" $COMMAND "${line%%:*}" "${line#*:}"
         fi
         # ok "$(expand_vars "${line}") \t\t $(get_level "${line}")"
