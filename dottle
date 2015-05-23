@@ -157,9 +157,10 @@ link () {
     #   force: create recursive directories and symlink no matter what
     #   ign_broken: don't care if link will be broke
     #   backup: if file already exists, back it up
+    #   relative: if set target of links will be relative and won't be altered in any way
 
-    DEST=$(realpath "$1")
-    SOURCE=$(realpath "$2")
+    DEST="${1}"
+    SOURCE="${BASEDIR}/${2}"
 
     if [ ! -e "$SOURCE" ]; then
         warn "The link will be broken but creating it anyway"
