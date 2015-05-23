@@ -19,28 +19,34 @@ COL_CYAN=$ESC_SEQ"0;36;01m"
 COL_WHITE=$ESC_SEQ"0;37;01m"
 
 ok () {
-    printf "$COL_GREEN[ok]$COL_RESET $1"
+    if [ ! -z "$1" ]; then
+        printf "${COL_GREEN}[ok]${COL_RESET} $1\n"
+    else
+        printf "${COL_GREEN}[ok]${COL_RESET}"
+    fi
 }
 
 warn () {
-    printf "$COL_YELLOW[warning]$COL_RESET $1\n"
+    printf "${COL_BLUE}[warning]${COL_RESET} $1\n"
 }
 
 error () {
-    printf "$COL_RED[error]$COL_RESET $1\n"
+    printf "${COL_RED}[error]${COL_RESET} $1\n"
 }
 
+running () {
+    printf "$COL_YELLOW[running]$COL_RESET $1... "
+}
+# {{{
 # bot () {
 #     printf "\n$COL_GREEN\[._.]/$COL_RESET - "$1
 # }
-#
-# running () {
-#     printf "$COL_YELLOW -> $COL_RESET"$1": "
-# }
-#
+
+
 # action () {
 #     printf "\n$COL_YELLOW[action]:$COL_RESET\n -> $1..."
 # }
+# }}}
 
 show_help () {
     cat << EOF
@@ -55,24 +61,187 @@ EOF
 }
 
 escape () {
-    # printf "$(echo "$1" | sed 's/"/\\\\"/g')"
+    # Escape a string mainly for expand_vars
     printf "$1" | sed 's/"/\\\\\\"/g'
 }
 
-expand_vars() {
-    warn "\"$(escape "$1")\""
+expand_vars () {
+    # Expand env vars in a string
+    # TODO maybe using single quotes may be a good idea
+    # no it is not, it defeats the whole purpose of expand_vars
     eval printf '%s' "\"$(escape "$1")\""
 }
 
+get_level () {
+    # Get indentation level
+    printf "$1" | sed -e 's/[^ ].*$//' -e 's/    /X/' -e 's/[^X]//' | wc -c
+}
+
+realpath () {
+    # prints absolute path of a relative or absolute path
+    # sadly POSIX doesn't have this function
+    if [ -e "$(dirname "$1")" ]; then
+        printf "$(cd $(dirname $1) && pwd)"/"$(basename $1)"
+    else
+        error "dirname doesn't exist"
+        return 1
+    fi
+}
+
+# source: http://stackoverflow.com/a/29835459
+rreadlink() { # Execute the function in a *subshell* to localize variables and the effect of `cd`.
+
+    target=$1 fname= targetDir=
+
+    # Try to make the execution environment as predictable as possible:
+    # All commands below are invoked via `command -p`, so we must make sure that `command`
+    # itself is not redefined as an alias or shell function.
+    # `command` is a *builtin* in bash, dash, ksh, zsh, and some platforms do not even have
+    # an external utility version of it (e.g, Ubuntu).
+    # `command` bypasses aliases and shell functions, and `-p` searches for external utilities
+    # in standard locations only, but note that this does *not* come into play if a *builtin*
+    # by the given name exists. zsh requires that option POSIX_BUILTINS be on to also find
+    # builtins with `command`.
+    { CDPATH=; \unalias command; \unset -f command; } >/dev/null 2>&1
+    [ -n "$ZSH_VERSION" ] && options[POSIX_BUILTINS]=on # make zsh find *builtins* with `command` too.
+
+    while :; do # Resolve potential symlinks until the ultimate target is found.
+        [ -L "$target" ] || [ -e "$target" ] || { printf '%s\n' "ERROR: '$target' does not exist." >&2; return 1; }
+        command -p cd "$(command -p dirname -- "$target")" # Change to target dir; necessary for correct resolution of target path.
+        fname=$(command -p basename -- "$target") # Extract filename.
+        if [ -L "$fname" ]; then
+            # Extract [next] target path, which may be defined
+            # *relative* to the symlink's own directory.
+            # Note: We parse `ls -l` output to find the symlink target
+            #       which is the only POSIX-compliant, albeit somewhat fragile, way,
+            target=$(command -p ls -l "$fname")
+            target=${target#* -> }
+            continue # Resolve [next] symlink target.
+        fi
+        break # Ultimate target reached.
+    done
+    targetDir=$(command -p pwd -P) # Get canonical dir. path
+    # Output the ultimate target's canonical path.
+    command -p printf '%s\n' "${targetDir%/}/$fname"
+}
+# rreadlink() {
+#     if [ -L "$1" ]; then
+#         local target
+#         target=$(ls -l "$1")
+#         printf "${target#* -> }"
+#     else
+#         error "ERROR: '$target' does not exist."
+#         return 1
+#     fi
+# }
+
+backup () {
+    if [ -f "$1" ]; then
+        local new_file
+        new_file=$(date "+%Y-%m-%d_%H-%M-%S")
+        warn "Backed up $1 to $new_file"
+        mv "$1" "${1}.${new_file}.backup"
+    else
+        return 1
+    fi
+}
+
+link () {
+    # Creates link from the first arg to second arg
+    # Possible configuration flags:
+    #   creates: if final directory doesn't exist create them recursively
+    #   force: create recursive directories and symlink no matter what
+    #   ign_broken: don't care if link will be broke
+    #   backup: if file already exists, back it up
+
+    SOURCE=$(realpath "$1")
+    DEST=$(realpath "$2")
+
+    if [ ! -e "$SOURCE" ]; then
+        warn "The link will be broken but creating it anyway"
+    fi
+    if [ ! -d "$(dirname "$DEST")" ]; then
+        # If basedir doesn't exists create it
+        mkdir -p "$(dirname "$DEST")"
+    fi
+
+    if [ -L "$DEST" ]; then
+        if printf "$(rreadlink "$DEST")" | grep "^$BASEDIR" > /dev/null; then
+            warn "File exists and it's on my adorable basedir"
+            rm "$DEST"
+            ln -s "$SOURCE" "$DEST"
+        else
+            error "Symlink exists but it's not mine quiting"
+            return 1
+        fi
+    elif [ -f "$DEST" ]; then
+        backup "$DEST"
+        ln -s "$SOURCE" "$DEST"
+    elif [ -d "$DEST" ]; then
+        error "Folder in target. I'm afraid"
+        return 1
+    elif [ ! -e "$DEST" ]; then
+        ln -s "$SOURCE" "$DEST"
+    fi
+}
+
+shell () {
+    # execute an external command
+    # Possible configuration flags:
+    #   stdout: if final directory doesn't exist create them recursively
+
+    ok "entered shell\n"
+    ok "FLAGS: ${FLAGS}"
+    running "$1"
+    $2
+    ok
+}
+
 install () {
+    COMMAND=''
+    OPTIONS=''
     while IFS='' read line; do
-        ok "$(expand_vars "${line}")\n"
+        # Replace tabs with four spaces
+        # FIXME maybe custom this spaces?
+        line=$(printf "$line" | sed "s/\t/    /")
+        # Remove comments from lines
+        line=$(printf "$line" | sed 's/#.*$//' | sed 's/^ *$//')
+        if [ -z "$line" ]; then
+            continue
+        fi
+        line=$(expand_vars "$line")
+        # if printf "$line" | grep '^[[:alpha:]]\+:.*$'
+        if [ "$(get_level "$line")" -eq "0" ]; then
+            if [ "${line%%:*}" = 'link' ]; then
+                COMMAND='link'
+                OPTIONS="${line#*:}"
+            elif [ "${line%%:*}" = 'shell' ]; then
+                COMMAND='shell'
+                warn "OPTIONS=${line#*:}"
+                OPTIONS=${line#*:}
+                warn "OPTIONS=\"${OPTIONS}\""
+            else
+                error "Wrong command: ${line%%:*} not found"
+            fi
+        elif [ "$(get_level "$line")" -gt "0" ]; then
+            FLAGS="${OPTIONS}" $COMMAND "${line%%:*}" "${line#*:}"
+        fi
+        # ok "$(expand_vars "${line}") \t\t $(get_level "${line}")"
     done < "$CONFIG_FILE"
+}
+
+check () {
+    if grep "\t" "$CONFIG_FILE" > /dev/null; then
+        warn "The config file contains tabs. They will be replaced with 4 spaces"
+    fi
 }
 
 case "$1" in
     --help)
         show_help
+        ;;
+    check)
+        check
         ;;
     install)
         install
