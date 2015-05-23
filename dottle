@@ -158,8 +158,8 @@ link () {
     #   ign_broken: don't care if link will be broke
     #   backup: if file already exists, back it up
 
-    SOURCE=$(realpath "$1")
-    DEST=$(realpath "$2")
+    DEST=$(realpath "$1")
+    SOURCE=$(realpath "$2")
 
     if [ ! -e "$SOURCE" ]; then
         warn "The link will be broken but creating it anyway"
