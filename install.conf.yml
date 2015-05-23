@@ -13,16 +13,16 @@
 # link will create symlinks (for now with absolute paths) to the dotfiles
 # folder where this script lives
 link: create
-    - ~/.tmux.conf: tmux/tmux.conf
-    - ~/.gitconfig: gitconfig
-    - ~/.vim: vim/vim/
-    - ~/.vimrc: vim/vimrc
-    - ~/.zsh: zshrc/zsh/
-    - ~/.zshrc: zshrc/zshrc
-    - ~/.config/ranger: ranger/
-    - ~/.config/easystroke: easystroke/
-    - ~/.Xresources: xorg/Xresources
-    - ~/.xinitrc: xorg/xinitrc
-    - ~/.zprofile: xorg/zprofile
+    ~/.tmux.conf: tmux/tmux.conf
+    ~/.gitconfig: gitconfig
+    ~/.vim: vim/vim/
+    ~/.vimrc: vim/vimrc
+    ~/.zsh: zshrc/zsh/
+    ~/.zshrc: zshrc/zshrc
+    ~/.config/ranger: ranger/
+    ~/.config/easystroke: easystroke/
+    ~/.Xresources: xorg/Xresources
+    ~/.xinitrc: xorg/xinitrc
+    ~/.zprofile: xorg/zprofile
 shell:
-    - Installing submodules: git submodule update --init --recursive
+    Installing submodules: git submodule update --init --recursive
