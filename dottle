@@ -231,7 +231,7 @@ install () {
             #Trim whitespaces
             FST_ARG=$( printf "${line%%:*}" | sed -e 's/^ *//' -e 's/ *$//')
             SND_ARG=$( printf "${line#*:}"  | sed -e 's/^ *//' -e 's/ *$//')
-            debug "executing FLAGS=\'${OPTIONS}\' \'$COMMAND\' "\'$FST_ARG\'" "\'$SND_ARG\'"
+            debug "executing FLAGS=\'${OPTIONS}\' \'$COMMAND\' \'$FST_ARG\' \'$SND_ARG\'"
             FLAGS="${OPTIONS}" $COMMAND "$FST_ARG" "$SND_ARG"
         fi
         # ok "$(expand_vars "${line}") \t\t $(get_level "${line}")"
