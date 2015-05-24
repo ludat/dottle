@@ -39,12 +39,12 @@ error () {
 
 debug () {
     if [ -n "$DEBUG" ]; then
-        printf "$COL_MAGENTA[debug]$COL_RESET $1... \n" 1>&2
+        printf "$COL_MAGENTA[debug]$COL_RESET $1\n" 1>&2
     fi
 }
 
 running () {
-    printf "$COL_YELLOW[running]$COL_RESET $1... "
+    printf "$COL_YELLOW[running]$COL_RESET $1"
 }
 # {{{
 # bot () {
