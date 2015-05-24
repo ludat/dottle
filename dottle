@@ -149,7 +149,7 @@ rreadlink() { # Execute the function in a *subshell* to localize variables and t
 # }
 
 backup () {
-    if [ -e "$1" ]; then
+    if [ -e "$1" ] && [ ! -L "$1" ]; then
         while true; do
             local new_file
             new_file="${1}.$(date "+%Y-%m-%d_%H-%M-%S").backup"
