@@ -288,6 +288,7 @@ shell () {
         RUN="${RUN}\n"
     elif [ "$(get_flag "$FLAGS" 'interactive')" = 'false' ]; then
         OK=" "
+        RUN="${RUN} "
         CMD="$CMD > /dev/null < /dev/null 2> /dev/null"
     else
         error "stdout not in \'$FLAGS\'"
@@ -309,8 +310,7 @@ shell () {
     # fi # }}}
     running "$RUN"
     debug "running: \'${CMD}\'"
-    eval $CMD
-    ok "$OK"
+    eval $CMD && ok "$OK" || error "$OK"
 }
 
 install () {
