@@ -369,7 +369,7 @@ case "$1" in
     clean)
         error "not implemented yet"
         ;;
-    '')
-        echo "empty fuck you"
+    *)
+        printf "Try 'install' or '--help'"
         ;;
 esac
