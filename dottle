@@ -181,21 +181,21 @@ link () {
 
     if [ -L "$DEST" ]; then
         if printf "$(rreadlink "$DEST")" | grep "^$BASEDIR" > /dev/null; then
-            warn "File \'${DEST}\' exists and it's on my adorable basedir"
+            debug "File \'${DEST}\' exists and it points to my BASEDIR. Replacing it"
             rm "$DEST"
-            ln -s "$SOURCE" "$DEST"
+            ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
         else
             error "\'${DEST}\' is a link but it's not mine. quiting"
             return 1
         fi
     elif [ -f "$DEST" ]; then
         backup "$DEST"
-        ln -s "$SOURCE" "$DEST"
+        ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
     elif [ -d "$DEST" ]; then
         error "Folder \'${DEST}\/' in target. I'm afraid"
         return 1
     elif [ ! -e "$DEST" ]; then
-        ln -s "$SOURCE" "$DEST"
+        ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
     fi
 }
 
