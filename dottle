@@ -1,7 +1,7 @@
 #!/bin/sh
 
-DEBUG=true
-SAFE=false
+# DEBUG=$(printf "${DEBUG}" | tr '[:upper:]' '[:lower:]')
+# SAFE=$(printf "${SAFE}" | tr '[:upper:]' '[:lower:]')
 
 CONFIG_FILE="install.conf.yml"
 
@@ -38,7 +38,7 @@ error () {
 }
 
 debug () {
-    if [ -n $DEBUG ]; then
+    if [ -n "$DEBUG" ]; then
         printf "$COL_MAGENTA[debug]$COL_RESET $1... \n" 1>&2
     fi
 }
@@ -77,11 +77,11 @@ escape () {
 expand_vars () {
     # Expand env vars in a string
     # if safe is set don't expand $VARS only the tilde
-    if [ -z $SAFE ]; then
+    if [ -n "$SAFE" ]; then
+        printf "$1" | sed -e 's:^~/:'$HOME'/:'
+    else
         s=$( printf "$1" | sed -e 's:^~/:'$HOME'/:' )
         eval printf '%s' "\"$(escape "$s")\""
-    else
-        printf "$1" | sed -e 's:^~/:'$HOME'/:'
     fi
 }
 
