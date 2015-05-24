@@ -1,5 +1,7 @@
 #!/bin/sh
 
+DEBUG=true
+
 CONFIG_FILE="install.conf.yml"
 
 BASEDIR="$(cd "$(dirname "$0")" && pwd)"
@@ -35,7 +37,9 @@ error () {
 }
 
 debug () {
-    printf "$COL_YELLOW[running]$COL_RESET $1... "
+    if [ -z $DEBUG ]; then
+        printf "$COL_MAGENTA[debug]$COL_RESET $1... \n"
+    fi
 }
 
 running () {
@@ -198,7 +202,7 @@ shell () {
 
     running "$1"
     $2
-    ok
+    ok " "
 }
 
 install () {
@@ -232,7 +236,6 @@ install () {
             debug "executing FLAGS=\'${OPTIONS}\' \'$COMMAND\' \'$FST_ARG\' \'$SND_ARG\'"
             FLAGS="${OPTIONS}" $COMMAND "$FST_ARG" "$SND_ARG"
         fi
-        # ok "$(expand_vars "${line}") \t\t $(get_level "${line}")"
     done < "$CONFIG_FILE"
 }
 
