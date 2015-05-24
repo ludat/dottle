@@ -26,3 +26,4 @@ link: create
     ~/.zprofile: xorg/zprofile
 shell:
     Installing submodules: git submodule update --init --recursive
+    Doomed to fail: false
