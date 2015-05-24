@@ -12,7 +12,7 @@
 #
 # link will create symlinks (for now with absolute paths) to the dotfiles
 # folder where this script lives
-link: create
+link: create force! ign_broken! backup relative!
     ~/.tmux.conf: tmux/tmux.conf
     ~/.gitconfig: gitconfig
     ~/.vim: vim/vim/
@@ -24,6 +24,6 @@ link: create
     ~/.Xresources: xorg/Xresources
     ~/.xinitrc: xorg/xinitrc
     ~/.zprofile: xorg/zprofile
-shell:
+shell: interactive!
     Installing submodules: git submodule update --init --recursive
     Doomed to fail: false
