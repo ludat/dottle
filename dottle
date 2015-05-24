@@ -88,7 +88,7 @@ realpath () {
     if [ -e "$(dirname "$1")" ]; then
         printf "$(cd $(dirname $1) && pwd)"/"$(basename $1)"
     else
-        error "dirname doesn't exist"
+        error "\'$(dirname "$1")\' doesn't exist"
         return 1
     fi
 }
@@ -143,9 +143,9 @@ rreadlink() { # Execute the function in a *subshell* to localize variables and t
 backup () {
     if [ -f "$1" ]; then
         local new_file
-        new_file=$(date "+%Y-%m-%d_%H-%M-%S")
-        warn "Backed up $1 to $new_file"
-        mv "$1" "${1}.${new_file}.backup"
+        new_file="${1}.$(date "+%Y-%m-%d_%H-%M-%S").backup"
+        mv "$1" $new_file
+        warn "Backed up \'$1\' to \'$new_file\'"
     else
         return 1
     fi
@@ -160,11 +160,11 @@ link () {
     #   backup: if file already exists, back it up
     #   relative: if set target of links will be relative and won't be altered in any way
 
-    DEST="${1}"
-    SOURCE="${BASEDIR}/${2}"
+    DEST="$(expand_vars ${1})"
+    SOURCE="$(expand_vars "${BASEDIR}/${2}")"
 
     if [ ! -e "$SOURCE" ]; then
-        warn "The link will be broken but creating it anyway"
+        warn "The \'${SOURCE}\' doesn't exists. Creating link anyway"
     fi
     if [ ! -d "$(dirname "$DEST")" ]; then
         # If basedir doesn't exists create it
@@ -173,18 +173,18 @@ link () {
 
     if [ -L "$DEST" ]; then
         if printf "$(rreadlink "$DEST")" | grep "^$BASEDIR" > /dev/null; then
-            warn "File exists and it's on my adorable basedir"
+            warn "File \'${DEST}\' exists and it's on my adorable basedir"
             rm "$DEST"
             ln -s "$SOURCE" "$DEST"
         else
-            error "Symlink exists but it's not mine quiting"
+            error "\'${DEST}\' is a link but it's not mine. quiting"
             return 1
         fi
     elif [ -f "$DEST" ]; then
         backup "$DEST"
         ln -s "$SOURCE" "$DEST"
     elif [ -d "$DEST" ]; then
-        error "Folder in target. I'm afraid"
+        error "Folder \'${DEST}\/' in target. I'm afraid"
         return 1
     elif [ ! -e "$DEST" ]; then
         ln -s "$SOURCE" "$DEST"
@@ -196,8 +196,6 @@ shell () {
     # Possible configuration flags:
     #   stdout: if final directory doesn't exist create them recursively
 
-    ok "entered shell\n"
-    ok "FLAGS: ${FLAGS}"
     running "$1"
     $2
     ok
@@ -223,9 +221,7 @@ install () {
                 OPTIONS="${line#*:}"
             elif [ "${line%%:*}" = 'shell' ]; then
                 COMMAND='shell'
-                warn "OPTIONS=${line#*:}"
                 OPTIONS=${line#*:}
-                warn "OPTIONS=\"${OPTIONS}\""
             else
                 error "Wrong command: ${line%%:*} not found"
             fi
