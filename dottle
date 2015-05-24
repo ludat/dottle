@@ -239,10 +239,10 @@ link () {
     # if DEST dir doesn't exists and create flag is set, create it {{{
     if [ ! -d "$(dirname "$DEST")" ]; then
         if [ "$(get_flag "$FLAGS" 'create')" = 'true' ]; then
+            mkdir -p "$(dirname "$DEST")"
+        elif [ "$(get_flag "$FLAGS" 'create')" = 'false' ]; then
             warn "\'$(dirname "${DEST}")\' doesn't exists. Quiting because create flag is not set"
             return 1
-        elif [ "$(get_flag "$FLAGS" 'create')" = 'false' ]; then
-            mkdir -p "$(dirname "$DEST")"
         else
             error "create not in \'$FLAGS\'"
         fi
