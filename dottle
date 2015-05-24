@@ -216,7 +216,7 @@ link () {
 
     # check if force flag is set {{{
     if [ "$(get_flag "$FLAGS" 'force')" = 'true' ]; then
-        warn "force flag is set to true. I will do my best to fulfil your wishes master"
+        debug "force flag is set to true. I will do my best to fulfil your wishes master"
         [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup $DEST
         rm -rf "$DEST"
         mkdir -p "$(dirname "$DEST")"
