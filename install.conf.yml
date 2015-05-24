@@ -1,0 +1,28 @@
+# dottle config file
+# lines starting with a hash are (hopefully) ignored as empty lines
+
+
+# A command starts in the highest indentations and can be if, link or shell
+# every command can take argments that are either flags like
+# link: create
+# or to disable the flag
+# link: !create
+# also can take keyword arguments
+# link: create=true which is the same as !create
+#
+# link will create symlinks (for now with absolute paths) to the dotfiles
+# folder where this script lives
+link: create
+    ~/.tmux.conf: tmux/tmux.conf
+    ~/.gitconfig: gitconfig
+    ~/.vim: vim/vim/
+    ~/.vimrc: vim/vimrc
+    ~/.zsh: zshrc/zsh/
+    ~/.zshrc: zshrc/zshrc
+    ~/.config/ranger: ranger/
+    ~/.config/easystroke: easystroke/
+    ~/.Xresources: xorg/Xresources
+    ~/.xinitrc: xorg/xinitrc
+    ~/.zprofile: xorg/zprofile
+shell:
+    Installing submodules: git submodule update --init --recursive

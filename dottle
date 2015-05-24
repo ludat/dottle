@@ -1,0 +1,375 @@
+#!/bin/sh
+
+# DEBUG=$(printf "${DEBUG}" | tr '[:upper:]' '[:lower:]')
+# SAFE=$(printf "${SAFE}" | tr '[:upper:]' '[:lower:]')
+
+CONFIG_FILE="install.conf.yml"
+
+BASEDIR="$(cd "$(dirname "$0")" && pwd)"
+
+cd "${BASEDIR}"
+
+# Colors
+ESC_SEQ="\033["
+COL_RESET=$ESC_SEQ"0m"
+COL_BLACK=$ESC_SEQ"0;30;01m"
+COL_RED=$ESC_SEQ"0;31;01m"
+COL_GREEN=$ESC_SEQ"0;32;01m"
+COL_YELLOW=$ESC_SEQ"0;33;01m"
+COL_BLUE=$ESC_SEQ"0;34;01m"
+COL_MAGENTA=$ESC_SEQ"0;35;01m"
+COL_CYAN=$ESC_SEQ"0;36;01m"
+COL_WHITE=$ESC_SEQ"0;37;01m"
+
+ok () {
+    if [ ! -z "$1" ]; then
+        printf "${COL_GREEN}[ok]${COL_RESET} $1\n"
+    else
+        printf "${COL_GREEN}[ok]${COL_RESET}"
+    fi
+}
+
+warn () {
+    printf "${COL_BLUE}[warning]${COL_RESET} $1\n"
+}
+
+error () {
+    printf "${COL_RED}[error]${COL_RESET} $1\n" 1>&2
+}
+
+debug () {
+    if [ -n "$DEBUG" ]; then
+        printf "$COL_MAGENTA[debug]$COL_RESET $1\n" 1>&2
+    fi
+}
+
+running () {
+    printf "$COL_YELLOW[running]$COL_RESET $1"
+}
+# {{{
+# bot () {
+#     printf "\n$COL_GREEN\[._.]/$COL_RESET - "$1
+# }
+
+
+# action () {
+#     printf "\n$COL_YELLOW[action]:$COL_RESET\n -> $1..."
+# }
+# }}}
+
+show_help () {
+    cat << EOF
+Usage: ./dottle [OPTIONS] COMMAND [ARGS]
+
+Options:
+- None for now
+
+Commands and args:
+- None for now
+EOF
+}
+
+escape () {
+    # Escape a string mainly for expand_vars
+    printf "$1" | sed 's/"/\\\\\\"/g'
+}
+
+expand_vars () {
+    # Expand env vars in a string
+    # if safe is set don't expand $VARS only the tilde
+    if [ -n "$SAFE" ]; then
+        printf "$1" | sed -e 's:^~/:'$HOME'/:'
+    else
+        s=$( printf "$1" | sed -e 's:^~/:'$HOME'/:' )
+        eval printf '%s' "\"$(escape "$s")\""
+    fi
+}
+
+get_level () {
+    # Get indentation level
+    printf "$1" | sed -e 's/[^ ].*$//' -e 's/    /X/' -e 's/[^X]//' | wc -c
+}
+
+realpath () {
+    # prints absolute path of a relative or absolute path
+    # sadly POSIX doesn't have this function
+    if [ -e "$(dirname "$1")" ]; then
+        printf "$(cd $(dirname $1) && pwd)"/"$(basename $1)"
+    else
+        error "\'$(dirname "$1")\' doesn't exist"
+        return 1
+    fi
+}
+
+# source: http://stackoverflow.com/a/29835459
+rreadlink() { # Execute the function in a *subshell* to localize variables and the effect of `cd`.
+
+    target=$1 fname= targetDir=
+
+    # Try to make the execution environment as predictable as possible:
+    # All commands below are invoked via `command -p`, so we must make sure that `command`
+    # itself is not redefined as an alias or shell function.
+    # `command` is a *builtin* in bash, dash, ksh, zsh, and some platforms do not even have
+    # an external utility version of it (e.g, Ubuntu).
+    # `command` bypasses aliases and shell functions, and `-p` searches for external utilities
+    # in standard locations only, but note that this does *not* come into play if a *builtin*
+    # by the given name exists. zsh requires that option POSIX_BUILTINS be on to also find
+    # builtins with `command`.
+    { CDPATH=; \unalias command; \unset -f command; } >/dev/null 2>&1
+    [ -n "$ZSH_VERSION" ] && options[POSIX_BUILTINS]=on # make zsh find *builtins* with `command` too.
+
+    while :; do # Resolve potential symlinks until the ultimate target is found.
+        [ -L "$target" ] || [ -e "$target" ] || { printf '%s\n' "ERROR: '$target' does not exist." >&2; return 1; }
+        command -p cd "$(command -p dirname -- "$target")" # Change to target dir; necessary for correct resolution of target path.
+        fname=$(command -p basename -- "$target") # Extract filename.
+        if [ -L "$fname" ]; then
+            # Extract [next] target path, which may be defined
+            # *relative* to the symlink's own directory.
+            # Note: We parse `ls -l` output to find the symlink target
+            #       which is the only POSIX-compliant, albeit somewhat fragile, way,
+            target=$(command -p ls -l "$fname")
+            target=${target#* -> }
+            continue # Resolve [next] symlink target.
+        fi
+        break # Ultimate target reached.
+    done
+    targetDir=$(command -p pwd -P) # Get canonical dir. path
+    # Output the ultimate target's canonical path.
+    command -p printf '%s\n' "${targetDir%/}/$fname"
+}
+# rreadlink() {
+#     if [ -L "$1" ]; then
+#         local target
+#         target=$(ls -l "$1")
+#         printf "${target#* -> }"
+#     else
+#         error "ERROR: '$target' does not exist."
+#         return 1
+#     fi
+# }
+
+backup () {
+    if [ -e "$1" ]; then
+        while true; do
+            local new_file
+            new_file="${1}.$(date "+%Y-%m-%d_%H-%M-%S").backup"
+            if [ ! -e "${new_file}" ]; then
+                mv "$1" "$new_file" || error "Failed to back up \'${1}\' to \'${new_file}\'" && return 1
+                warn "Backed up \'$1\' to \'$new_file\'"
+                return 0
+            fi
+        done
+    else
+        return 1
+    fi
+}
+
+get_flag () {
+    printf " ${1} " | grep " ${2} " > /dev/null && printf "true" && return 0
+    printf " ${1} " | grep " ${2}! " > /dev/null && printf "false" && return 0
+    return 1
+}
+
+link () {
+    # Creates link from the first arg to second arg
+    # Possible configuration flags:
+    #   create: if final directory doesn't exist create them recursively
+    #       default: create
+    if ! get_flag "$FLAGS" "create" > /dev/null; then
+        FLAGS="$FLAGS create"
+    fi
+    #   force: create recursive directories and symlink no matter what
+    #       default: force!
+    if ! get_flag "$FLAGS" "force" > /dev/null; then
+        FLAGS="$FLAGS force!"
+    fi
+    #   ign_broken: don't care if link will be broke
+    #       default: ign_broken
+    if ! get_flag "$FLAGS" "ign_broken" > /dev/null; then
+        FLAGS="$FLAGS ign_broken!"
+    fi
+    #   backup: if file already exists, back it up
+    #       default: backup
+    if ! get_flag "$FLAGS" "backup" > /dev/null; then
+        FLAGS="$FLAGS backup"
+    fi
+    #   relative: if set target of links will be relative and won't be altered in any way
+    #       default: relative!
+    if ! get_flag "$FLAGS" "relative" > /dev/null; then
+        FLAGS="$FLAGS relative!"
+    fi
+    #TODO make above more generic
+
+    debug "Flags for link: \'$FLAGS\'"
+
+    DEST="$(expand_vars ${1})"
+    debug ": \'$FLAGS\'"
+    # if relative flag set to false expand with BASEDIR else let it raw {{{
+    if [ "$(get_flag "$FLAGS" 'relative')" = 'true' ]; then
+        SOURCE="$(expand_vars "${2}")"
+    elif [ "$(get_flag "$FLAGS" 'relative')" = 'false' ]; then
+        SOURCE="$(expand_vars "${BASEDIR}/${2}")"
+    else
+        error "relative not in \'$FLAGS\'"
+        exit 1
+    fi # }}}
+
+    # if link will be broken and ign_broken flag is set exit{{{
+    if [ "$(get_flag "$FLAGS" 'relative')" = 'false' ]; then
+        if [ "$(get_flag "$FLAGS" 'ign_broken')" = 'false' ] && [ ! -e "$SOURCE" ]; then
+            warn "\'${SOURCE}\' doesn't exists. Quiting because ign_broken flag is set"
+            return 1
+        fi
+    elif [ "$(get_flag "$FLAGS" 'relative')" = 'true' ]; then
+        warn "If relative flag is set the ign_broken flag is ignored because I can't determinate if the final file exists"
+    else
+        error "relative not in \'$FLAGS\'"
+    fi # }}}
+
+    # check if force flag is set {{{
+    if [ "$(get_flag "$FLAGS" 'force')" = 'true' ]; then
+        warn "force flag is set to true. I will do my best to fulfil your wishes master"
+        [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup $DEST
+        rm -rf "$DEST"
+        mkdir -p "$(dirname "$DEST")"
+        ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
+        return 0
+    fi # }}}
+
+    # if DEST dir doesn't exists and create flag is set, create it {{{
+    if [ ! -d "$(dirname "$DEST")" ]; then
+        if [ "$(get_flag "$FLAGS" 'create')" = 'true' ]; then
+            warn "\'$(dirname "${DEST}")\' doesn't exists. Quiting because create flag is not set"
+            return 1
+        elif [ "$(get_flag "$FLAGS" 'create')" = 'false' ]; then
+            mkdir -p "$(dirname "$DEST")"
+        else
+            error "create not in \'$FLAGS\'"
+        fi
+    fi # }}}
+
+    if [ -L "$DEST" ]; then
+        if printf "$(rreadlink "$DEST")" | grep "^$BASEDIR" > /dev/null; then
+            debug "File \'${DEST}\' exists and it points to my BASEDIR. Replacing it"
+            rm "$DEST"
+            ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
+        else
+            error "\'${DEST}\' is a link but it's not mine. Quiting"
+            return 1
+        fi
+    elif [ -f "$DEST" ]; then
+        [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup $DEST
+        ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
+    elif [ -d "$DEST" ]; then
+        error "Folder \'${DEST}\/' in target. I'm afraid. If you set the force flag I'll rip it apart"
+        return 1
+    elif [ ! -e "$DEST" ]; then
+        ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
+    fi
+}
+
+shell () {
+    # execute an external command
+    # Possible configuration flags:
+    #   interactive: if set all stds will be redirected to this shell
+    #       default: stdout
+    if ! get_flag "$FLAGS" "interactive" > /dev/null; then
+        FLAGS="$FLAGS interactive!"
+    fi
+
+    # FIXME worst hack ever
+    RUN="$1"
+    OK=""
+    CMD="$(printf '%q %q %q %q %q %q %q %q %q %q %q %q %q %q %q %q %q %q %q %q %q %q' $2)"
+
+    # add >/dev/null to cmd if stdout flag is not set {{{
+    if [ "$(get_flag "$FLAGS" 'interactive')" = 'true' ]; then
+        OK="$RUN... ${COL_GREEN}DONE${COL_RESET}"
+        RUN="${RUN}\n"
+    elif [ "$(get_flag "$FLAGS" 'interactive')" = 'false' ]; then
+        OK=" "
+        CMD="$CMD > /dev/null < /dev/null 2> /dev/null"
+    else
+        error "stdout not in \'$FLAGS\'"
+        exit 1
+    fi # }}}
+    # # add </dev/null to cmd if stdin flag is not set {{{
+    # if [ "$(get_flag "$FLAGS" 'stdin')" = 'false' ]; then
+    #     CMD="$CMD < /dev/null"
+    # elif ! get_flag "$FLAGS" "stdin" > /dev/null; then
+    #     error "stdin not in \'$FLAGS\'"
+    #     exit 1
+    # fi # }}}
+    # # add 2>/dev/null to cmd if stdout flag is not set {{{
+    # if [ "$(get_flag "$FLAGS" 'stdout')" = 'false' ]; then
+    #     CMD="$CMD 2> /dev/null"
+    # elif ! get_flag "$FLAGS" "stdout" > /dev/null; then
+    #     error "stdout not in \'$FLAGS\'"
+    #     exit 1
+    # fi # }}}
+    running "$RUN"
+    debug "running: \'${CMD}\'"
+    eval $CMD
+    ok "$OK"
+}
+
+install () {
+    COMMAND=''
+    OPTIONS=''
+    while IFS='' read line; do
+        # Replace tabs with four spaces
+        # FIXME maybe custom this spaces?
+        line=$(printf "$line" | sed "s/\t/    /")
+        # Remove comments from lines
+        line=$(printf "$line" | sed 's/#.*$//' | sed 's/^ *$//')
+        if [ -z "$line" ]; then
+            continue
+        fi
+        line=$(expand_vars "$line")
+        # if printf "$line" | grep '^[[:alpha:]]\+:.*$'
+        if [ "$(get_level "$line")" -eq "0" ]; then
+            if [ "${line%%:*}" = 'link' ]; then
+                COMMAND='link'
+                OPTIONS="${line#*:}"
+            elif [ "${line%%:*}" = 'shell' ]; then
+                COMMAND='shell'
+                OPTIONS=${line#*:}
+            else
+                error "Wrong command: ${line%%:*} not found"
+            fi
+        elif [ "$(get_level "$line")" -gt "0" ]; then
+            #Trim whitespaces
+            FST_ARG=$( printf "${line%%:*}" | sed -e 's/^ *//' -e 's/ *$//')
+            SND_ARG=$( printf "${line#*:}"  | sed -e 's/^ *//' -e 's/ *$//')
+            debug "executing FLAGS=\'${OPTIONS}\' \'$COMMAND\' \'$FST_ARG\' \'$SND_ARG\'"
+            FLAGS="${OPTIONS}" $COMMAND "$FST_ARG" "$SND_ARG"
+        fi
+    done < "$CONFIG_FILE"
+}
+
+check () {
+    if grep "\t" "$CONFIG_FILE" > /dev/null; then
+        warn "The config file contains tabs. They will be replaced with 4 spaces"
+    fi
+}
+
+case "$1" in
+    --help)
+        show_help
+        ;;
+    check)
+        check
+        ;;
+    install)
+        install
+        ;;
+    remove)
+        error "not implemented yet"
+        ;;
+    clean)
+        error "not implemented yet"
+        ;;
+    *)
+        printf "Try 'install' or '--help'"
+        ;;
+esac
