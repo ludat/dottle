@@ -25,8 +25,8 @@ dottle needs an `install.conf.yml` which tells explicitly what files to symlink 
 
 ## Tested enviroments
 
-OS    | Distro    | Version              | coreutils            | shell
--     | -         | -                    | -                    | -
+OS | Distro | Version | coreutils | shell
+---|--------|---------|-----------|------
 Linux | ArchLinux | 20150524             | GNU coreutils 8.23   | bash 4.3.33
 Linux | Ubuntu    | 4.10 (Warty Warthog) | GNU coreutils 5.0.91 | bash 2.05b.0
 
