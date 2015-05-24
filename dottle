@@ -214,6 +214,16 @@ link () {
         exit 1
     fi # }}}
 
+    # check if force flag is set {{{
+    if [ "$(get_flag "$FLAGS" 'force')" = 'true' ]; then
+        warn "force flag is set to true. I will do my best to fulfil your wishes master"
+        [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup $DEST
+        rm -rf "$DEST"
+        mkdir -p "$(dirname "$DEST")"
+        ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
+        return 0
+    fi # }}}
+
     # if link will be broken and ign_broken flag is set exit{{{
     if [ "$(get_flag "$FLAGS" 'relative')" = 'false' ]; then
         if [ "$(get_flag "$FLAGS" 'ign_broken')" = 'false' ] && [ ! -e "$SOURCE" ]; then
@@ -224,16 +234,6 @@ link () {
         warn "If relative flag is set the ign_broken flag is ignored because I can't determinate if the final file exists"
     else
         error "relative not in \'$FLAGS\'"
-    fi # }}}
-
-    # check if force flag is set {{{
-    if [ "$(get_flag "$FLAGS" 'force')" = 'true' ]; then
-        warn "force flag is set to true. I will do my best to fulfil your wishes master"
-        [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup $DEST
-        rm -rf "$DEST"
-        mkdir -p "$(dirname "$DEST")"
-        ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
-        return 0
     fi # }}}
 
     # if DEST dir doesn't exists and create flag is set, create it {{{
