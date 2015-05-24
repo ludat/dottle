@@ -164,25 +164,89 @@ backup () {
     fi
 }
 
+get_flag () {
+    printf " ${1} " | grep " ${2} " > /dev/null && printf "true" && return 0
+    printf " ${1} " | grep " ${2}! " > /dev/null && printf "false" && return 0
+    return 1
+}
+
 link () {
     # Creates link from the first arg to second arg
     # Possible configuration flags:
-    #   creates: if final directory doesn't exist create them recursively
+    #   create: if final directory doesn't exist create them recursively
+    #       default: create
+    if ! get_flag "$FLAGS" "create" > /dev/null; then
+        FLAGS="$FLAGS create"
+    fi
     #   force: create recursive directories and symlink no matter what
+    #       default: force!
+    if ! get_flag "$FLAGS" "force" > /dev/null; then
+        FLAGS="$FLAGS force!"
+    fi
     #   ign_broken: don't care if link will be broke
+    #       default: ign_broken
+    if ! get_flag "$FLAGS" "ign_broken" > /dev/null; then
+        FLAGS="$FLAGS ign_broken!"
+    fi
     #   backup: if file already exists, back it up
+    #       default: backup
+    if ! get_flag "$FLAGS" "backup" > /dev/null; then
+        FLAGS="$FLAGS backup"
+    fi
     #   relative: if set target of links will be relative and won't be altered in any way
+    #       default: relative!
+    if ! get_flag "$FLAGS" "relative" > /dev/null; then
+        FLAGS="$FLAGS relative!"
+    fi
+    #TODO make above more generic
+
+    debug "Flags for link: \'$FLAGS\'"
 
     DEST="$(expand_vars ${1})"
-    SOURCE="$(expand_vars "${BASEDIR}/${2}")"
+    debug ": \'$FLAGS\'"
+    # if relative flag set to false expand with BASEDIR else let it raw {{{
+    if [ "$(get_flag "$FLAGS" 'relative')" = 'true' ]; then
+        SOURCE="$(expand_vars "${2}")"
+    elif [ "$(get_flag "$FLAGS" 'relative')" = 'false' ]; then
+        SOURCE="$(expand_vars "${BASEDIR}/${2}")"
+    else
+        error "relative not in \'$FLAGS\'"
+        exit 1
+    fi # }}}
 
-    if [ ! -e "$SOURCE" ]; then
-        warn "The \'${SOURCE}\' doesn't exists. Creating link anyway"
-    fi
-    if [ ! -d "$(dirname "$DEST")" ]; then
-        # If basedir doesn't exists create it
+    # if link will be broken and ign_broken flag is set exit{{{
+    if [ "$(get_flag "$FLAGS" 'relative')" = 'false' ]; then
+        if [ "$(get_flag "$FLAGS" 'ign_broken')" = 'false' ] && [ ! -e "$SOURCE" ]; then
+            warn "\'${SOURCE}\' doesn't exists. Quiting because ign_broken flag is set"
+            return 1
+        fi
+    elif [ "$(get_flag "$FLAGS" 'relative')" = 'true' ]; then
+        warn "If relative flag is set the ign_broken flag is ignored because I can't determinate if the final file exists"
+    else
+        error "relative not in \'$FLAGS\'"
+    fi # }}}
+
+    # check if force flag is set {{{
+    if [ "$(get_flag "$FLAGS" 'force')" = 'true' ]; then
+        warn "force flag is set to true. I will do my best to fulfil your wishes master"
+        [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup $DEST
+        rm -rf "$DEST"
         mkdir -p "$(dirname "$DEST")"
-    fi
+        ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
+        return 0
+    fi # }}}
+
+    # if DEST dir doesn't exists and create flag is set, create it {{{
+    if [ ! -d "$(dirname "$DEST")" ]; then
+        if [ "$(get_flag "$FLAGS" 'create')" = 'true' ]; then
+            warn "\'$(dirname "${DEST}")\' doesn't exists. Quiting because create flag is not set"
+            return 1
+        elif [ "$(get_flag "$FLAGS" 'create')" = 'false' ]; then
+            mkdir -p "$(dirname "$DEST")"
+        else
+            error "create not in \'$FLAGS\'"
+        fi
+    fi # }}}
 
     if [ -L "$DEST" ]; then
         if printf "$(rreadlink "$DEST")" | grep "^$BASEDIR" > /dev/null; then
@@ -190,14 +254,14 @@ link () {
             rm "$DEST"
             ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
         else
-            error "\'${DEST}\' is a link but it's not mine. quiting"
+            error "\'${DEST}\' is a link but it's not mine. Quiting"
             return 1
         fi
     elif [ -f "$DEST" ]; then
-        backup "$DEST"
+        [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup $DEST
         ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
     elif [ -d "$DEST" ]; then
-        error "Folder \'${DEST}\/' in target. I'm afraid"
+        error "Folder \'${DEST}\/' in target. I'm afraid. If you set the force flag I'll rip it apart"
         return 1
     elif [ ! -e "$DEST" ]; then
         ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
