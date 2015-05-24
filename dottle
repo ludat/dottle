@@ -271,11 +271,46 @@ link () {
 shell () {
     # execute an external command
     # Possible configuration flags:
-    #   stdout: if final directory doesn't exist create them recursively
+    #   interactive: if set all stds will be redirected to this shell
+    #       default: stdout
+    if ! get_flag "$FLAGS" "interactive" > /dev/null; then
+        FLAGS="$FLAGS interactive!"
+    fi
 
-    running "$1"
-    $2
-    ok " "
+    # FIXME worst hack ever
+    RUN="$1"
+    OK=""
+    CMD="$(printf '%q %q %q %q %q %q %q %q %q %q %q %q %q %q %q %q %q %q %q %q %q %q' $2)"
+
+    # add >/dev/null to cmd if stdout flag is not set {{{
+    if [ "$(get_flag "$FLAGS" 'interactive')" = 'true' ]; then
+        OK="$RUN... ${COL_GREEN}DONE${COL_RESET}"
+        RUN="${RUN}\n"
+    elif [ "$(get_flag "$FLAGS" 'interactive')" = 'false' ]; then
+        OK=" "
+        CMD="$CMD > /dev/null < /dev/null 2> /dev/null"
+    else
+        error "stdout not in \'$FLAGS\'"
+        exit 1
+    fi # }}}
+    # # add </dev/null to cmd if stdin flag is not set {{{
+    # if [ "$(get_flag "$FLAGS" 'stdin')" = 'false' ]; then
+    #     CMD="$CMD < /dev/null"
+    # elif ! get_flag "$FLAGS" "stdin" > /dev/null; then
+    #     error "stdin not in \'$FLAGS\'"
+    #     exit 1
+    # fi # }}}
+    # # add 2>/dev/null to cmd if stdout flag is not set {{{
+    # if [ "$(get_flag "$FLAGS" 'stdout')" = 'false' ]; then
+    #     CMD="$CMD 2> /dev/null"
+    # elif ! get_flag "$FLAGS" "stdout" > /dev/null; then
+    #     error "stdout not in \'$FLAGS\'"
+    #     exit 1
+    # fi # }}}
+    running "$RUN"
+    debug "running: \'${CMD}\'"
+    eval $CMD
+    ok "$OK"
 }
 
 install () {
