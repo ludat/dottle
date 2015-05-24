@@ -149,11 +149,16 @@ rreadlink() { # Execute the function in a *subshell* to localize variables and t
 # }
 
 backup () {
-    if [ -f "$1" ]; then
-        local new_file
-        new_file="${1}.$(date "+%Y-%m-%d_%H-%M-%S").backup"
-        mv "$1" $new_file
-        warn "Backed up \'$1\' to \'$new_file\'"
+    if [ -e "$1" ]; then
+        while true; do
+            local new_file
+            new_file="${1}.$(date "+%Y-%m-%d_%H-%M-%S").backup"
+            if [ ! -e "${new_file}" ]; then
+                mv "$1" "$new_file" || error "Failed to back up \'${1}\' to \'${new_file}\'" && return 1
+                warn "Backed up \'$1\' to \'$new_file\'"
+                return 0
+            fi
+        done
     else
         return 1
     fi
