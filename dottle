@@ -203,7 +203,7 @@ link () {
     debug "Flags for link: \'$FLAGS\'"
 
     DEST="$(expand_vars ${1})"
-    debug ": \'$FLAGS\'"
+    debug "DEST: \'$DEST\'"
     # if relative flag set to false expand with BASEDIR else let it raw {{{
     if [ "$(get_flag "$FLAGS" 'relative')" = 'true' ]; then
         SOURCE="$(expand_vars "${2}")"
@@ -213,6 +213,7 @@ link () {
         error "relative not in \'$FLAGS\'"
         exit 1
     fi # }}}
+    debug "SOURCE: \'$SOURCE\'"
 
     # check if force flag is set {{{
     if [ "$(get_flag "$FLAGS" 'force')" = 'true' ]; then
