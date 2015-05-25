@@ -23,28 +23,28 @@ COL_WHITE=$ESC_SEQ"0;37;01m"
 
 ok () {
     if [ ! -z "$1" ]; then
-        printf "${COL_GREEN}[ok]${COL_RESET} $1\n"
+        printf "${COL_GREEN}[ok]${COL_RESET} %s\n" "$1"
     else
         printf "${COL_GREEN}[ok]${COL_RESET}"
     fi
 }
 
 warn () {
-    printf "${COL_BLUE}[warning]${COL_RESET} $1\n"
+    printf "${COL_BLUE}[warning]${COL_RESET} %s\n" "$1"
 }
 
 error () {
-    printf "${COL_RED}[error]${COL_RESET} $1\n" 1>&2
+    printf "${COL_RED}[error]${COL_RESET} %s\n" "$1" 1>&2
 }
 
 debug () {
     if [ -n "$DEBUG" ]; then
-        printf "$COL_MAGENTA[debug]$COL_RESET $1\n" 1>&2
+        printf "$COL_MAGENTA[debug]$COL_RESET %s\n" "$1" 1>&2
     fi
 }
 
 running () {
-    printf "$COL_YELLOW[running]$COL_RESET $1"
+    printf "$COL_YELLOW[running]$COL_RESET %s" "$1"
 }
 # {{{
 # bot () {
@@ -71,30 +71,30 @@ EOF
 
 escape () {
     # Escape a string mainly for expand_vars
-    printf "$1" | sed 's/"/\\\\\\"/g'
+    printf '%s' "$1" | sed 's/"/\\\\\\"/g'
 }
 
 expand_vars () {
     # Expand env vars in a string
     # if safe is set don't expand $VARS only the tilde
     if [ -n "$SAFE" ]; then
-        printf "$1" | sed -e 's:^~/:'$HOME'/:'
+        printf '%s' "$1" | sed -e 's:^~/:'$HOME'/:'
     else
-        s=$( printf "$1" | sed -e 's:^~/:'$HOME'/:' )
+        s=$( printf '%s' "$1" | sed -e 's:^~/:'$HOME'/:' )
         eval printf '%s' "\"$(escape "$s")\""
     fi
 }
 
 get_level () {
     # Get indentation level
-    printf "$1" | sed -e 's/[^ ].*$//' -e 's/    /X/' -e 's/[^X]//' | wc -c
+    printf '%s' "$1" | sed -e 's/[^ ].*$//' -e 's/    /X/' -e 's/[^X]//' | wc -c
 }
 
 realpath () {
     # prints absolute path of a relative or absolute path
     # sadly POSIX doesn't have this function
     if [ -e "$(dirname "$1")" ]; then
-        printf "$(cd $(dirname $1) && pwd)"/"$(basename $1)"
+        printf '%s' "$(cd $(dirname $1) && pwd)"/"$(basename $1)"
     else
         error "\'$(dirname "$1")\' doesn't exist"
         return 1
@@ -165,8 +165,8 @@ backup () {
 }
 
 get_flag () {
-    printf " ${1} " | grep " ${2} " > /dev/null && printf "true" && return 0
-    printf " ${1} " | grep " ${2}! " > /dev/null && printf "false" && return 0
+    printf '%s' " ${1} " | grep " ${2} " > /dev/null && printf '%s' "true" && return 0
+    printf '%s' " ${1} " | grep " ${2}! " > /dev/null && printf '%s' "false" && return 0
     return 1
 }
 
@@ -249,7 +249,7 @@ link () {
     fi # }}}
 
     if [ -L "$DEST" ]; then
-        if printf "$(rreadlink "$DEST")" | grep "^$BASEDIR" > /dev/null; then
+        if printf '%s' "$(rreadlink "$DEST")" | grep "^$BASEDIR" > /dev/null; then
             debug "File \'${DEST}\' exists and it points to my BASEDIR. Replacing it"
             rm "$DEST"
             ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
@@ -277,10 +277,9 @@ shell () {
         FLAGS="$FLAGS interactive!"
     fi
 
-    # FIXME worst hack ever
     RUN="$1"
     OK=""
-    CMD="$(printf '%q %q %q %q %q %q %q %q %q %q %q %q %q %q %q %q %q %q %q %q %q %q' $2)"
+    CMD="${2}"
 
     # add >/dev/null to cmd if stdout flag is not set {{{
     if [ "$(get_flag "$FLAGS" 'interactive')" = 'true' ]; then
@@ -319,9 +318,9 @@ install () {
     while IFS='' read line; do
         # Replace tabs with four spaces
         # FIXME maybe custom this spaces?
-        line=$(printf "$line" | sed "s/\t/    /")
+        line=$(printf '%s' "$line" | sed "s/\t/    /")
         # Remove comments from lines
-        line=$(printf "$line" | sed 's/#.*$//' | sed 's/^ *$//')
+        line=$(printf '%s' "$line" | sed 's/#.*$//' | sed 's/^ *$//')
         if [ -z "$line" ]; then
             continue
         fi
@@ -339,8 +338,8 @@ install () {
             fi
         elif [ "$(get_level "$line")" -gt "0" ]; then
             #Trim whitespaces
-            FST_ARG=$( printf "${line%%:*}" | sed -e 's/^ *//' -e 's/ *$//')
-            SND_ARG=$( printf "${line#*:}"  | sed -e 's/^ *//' -e 's/ *$//')
+            FST_ARG=$( printf '%s' "${line%%:*}" | sed -e 's/^ *//' -e 's/ *$//')
+            SND_ARG=$( printf '%s' "${line#*:}"  | sed -e 's/^ *//' -e 's/ *$//')
             debug "executing FLAGS=\'${OPTIONS}\' \'$COMMAND\' \'$FST_ARG\' \'$SND_ARG\'"
             FLAGS="${OPTIONS}" $COMMAND "$FST_ARG" "$SND_ARG"
         fi
