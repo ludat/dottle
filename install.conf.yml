@@ -21,6 +21,7 @@ link: create force! ign_broken! backup relative!
     ~/.vimrc: vim/vimrc
     ~/.zsh: zshrc/zsh/
     ~/.zshrc: zshrc/zshrc
+    ~/.bashrc: bashrc/bashrc
     ~/.config/ranger: ranger/
     ~/.config/easystroke: easystroke/
     ~/.Xresources: xorg/Xresources
