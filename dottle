@@ -370,6 +370,6 @@ case "$1" in
         error "not implemented yet"
         ;;
     *)
-        printf "Try 'install' or '--help'"
+        printf '%s' "Try 'install' or '--help'\n"
         ;;
 esac
