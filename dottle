@@ -9,7 +9,7 @@ BASEDIR="$(cd "$(dirname "$0")" && pwd)"
 
 cd "${BASEDIR}"
 
-# Colors
+# Colors {{{
 ESC_SEQ="\033["
 COL_RESET=$ESC_SEQ"0m"
 COL_BLACK=$ESC_SEQ"0;30;01m"
@@ -20,7 +20,9 @@ COL_BLUE=$ESC_SEQ"0;34;01m"
 COL_MAGENTA=$ESC_SEQ"0;35;01m"
 COL_CYAN=$ESC_SEQ"0;36;01m"
 COL_WHITE=$ESC_SEQ"0;37;01m"
+# }}}
 
+# {{{ Helper debug functions
 ok () {
     if [ ! -z "$1" ]; then
         printf "${COL_GREEN}[ok]${COL_RESET} %s\n" "$1"
@@ -46,18 +48,17 @@ debug () {
 running () {
     printf "$COL_YELLOW[running]$COL_RESET %s" "$1"
 }
-# {{{
+
 # bot () {
 #     printf "\n$COL_GREEN\[._.]/$COL_RESET - "$1
 # }
-
-
+#
+#
 # action () {
 #     printf "\n$COL_YELLOW[action]:$COL_RESET\n -> $1..."
-# }
-# }}}
+# } # }}}
 
-show_help () {
+show_help () { # {{{
     cat << EOF
 Usage: ./dottle [OPTIONS] COMMAND [ARGS]
 
@@ -67,14 +68,14 @@ Options:
 Commands and args:
 - None for now
 EOF
-}
+} # }}}
 
-escape () {
+escape () { # {{{
     # Escape a string mainly for expand_vars
     printf '%s' "$1" | sed 's/"/\\\\\\"/g'
-}
+} # }}}
 
-expand_vars () {
+expand_vars () { # {{{
     # Expand env vars in a string
     # if safe is set don't expand $VARS only the tilde
     if [ -n "$SAFE" ]; then
@@ -83,14 +84,14 @@ expand_vars () {
         s=$( printf '%s' "$1" | sed -e 's:^~/:'$HOME'/:' )
         eval printf '%s' "\"$(escape "$s")\""
     fi
-}
+} # }}}
 
-get_level () {
+get_level () { # {{{
     # Get indentation level
     printf '%s' "$1" | sed -e 's/[^ ].*$//' -e 's/    /X/' -e 's/[^X]//' | wc -c
-}
+} # }}}
 
-realpath () {
+realpath () { # {{{
     # prints absolute path of a relative or absolute path
     # sadly POSIX doesn't have this function
     if [ -e "$(dirname "$1")" ]; then
@@ -99,10 +100,11 @@ realpath () {
         error "\'$(dirname "$1")\' doesn't exist"
         return 1
     fi
-}
+} # }}}
 
-# source: http://stackoverflow.com/a/29835459
-rreadlink() { # Execute the function in a *subshell* to localize variables and the effect of `cd`.
+rreadlink() { # {{{
+    # source: http://stackoverflow.com/a/29835459
+    # Execute the function in a *subshell* to localize variables and the effect of `cd`.
 
     target=$1 fname= targetDir=
 
@@ -136,19 +138,9 @@ rreadlink() { # Execute the function in a *subshell* to localize variables and t
     targetDir=$(command -p pwd -P) # Get canonical dir. path
     # Output the ultimate target's canonical path.
     command -p printf '%s\n' "${targetDir%/}/$fname"
-}
-# rreadlink() {
-#     if [ -L "$1" ]; then
-#         local target
-#         target=$(ls -l "$1")
-#         printf "${target#* -> }"
-#     else
-#         error "ERROR: '$target' does not exist."
-#         return 1
-#     fi
-# }
+} # }}}
 
-backup () {
+backup () { # {{{
     if [ -e "$1" ] && [ ! -L "$1" ]; then
         while true; do
             local new_file
@@ -162,15 +154,15 @@ backup () {
     else
         return 1
     fi
-}
+} # }}}
 
-get_flag () {
+get_flag () { # {{{
     printf '%s' " ${1} " | grep " ${2} " > /dev/null && printf '%s' "true" && return 0
     printf '%s' " ${1} " | grep " ${2}! " > /dev/null && printf '%s' "false" && return 0
     return 1
-}
+} # }}}
 
-link () {
+link () { # {{{
     # Creates link from the first arg to second arg
     # Possible configuration flags:
     #   create: if final directory doesn't exist create them recursively
@@ -267,9 +259,9 @@ link () {
     elif [ ! -e "$DEST" ]; then
         ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
     fi
-}
+} # }}}
 
-shell () {
+shell () { # {{{
     # execute an external command
     # Possible configuration flags:
     #   interactive: if set all stds will be redirected to this shell
@@ -308,13 +300,14 @@ shell () {
     #     error "stdout not in \'$FLAGS\'"
     #     exit 1
     # fi # }}}
+
     running "$RUN"
     printf "\n"
     debug "running: '${CMD}'"
     eval $CMD && ok "$OK" || error "$OK"
-}
+} # }}}
 
-install () {
+install () { # {{{
     COMMAND=''
     OPTIONS=''
     while IFS='' read line; do
@@ -346,14 +339,15 @@ install () {
             FLAGS="${OPTIONS}" $COMMAND "$FST_ARG" "$SND_ARG"
         fi
     done < "$CONFIG_FILE"
-}
+} # }}}
 
-check () {
+check () { # {{{
     if grep "\t" "$CONFIG_FILE" > /dev/null; then
         warn "The config file contains tabs. They will be replaced with 4 spaces"
     fi
-}
+} # }}}
 
+# main loop {{{
 case "$1" in
     --help)
         show_help
@@ -371,6 +365,6 @@ case "$1" in
         error "not implemented yet"
         ;;
     *)
-        printf '%s' "Try 'install' or '--help'\n"
+        printf "%s\n" "Try 'install' or '--help'"
         ;;
-esac
+esac # }}}
