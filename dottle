@@ -284,8 +284,8 @@ shell () {
 
     # add >/dev/null to cmd if stdout flag is not set {{{
     if [ "$(get_flag "$FLAGS" 'interactive')" = 'true' ]; then
-        OK="$RUN... ${COL_GREEN}DONE${COL_RESET}"
-        RUN="${RUN}\n"
+        OK="$RUN..."
+        RUN="${RUN}"
     elif [ "$(get_flag "$FLAGS" 'interactive')" = 'false' ]; then
         OK=" "
         RUN="${RUN} "
@@ -309,7 +309,8 @@ shell () {
     #     exit 1
     # fi # }}}
     running "$RUN"
-    debug "running: \'${CMD}\'"
+    printf "\n"
+    debug "running: '${CMD}'"
     eval $CMD && ok "$OK" || error "$OK"
 }
 
