@@ -262,8 +262,7 @@ shell () { # {{{
 
     # add >/dev/null to cmd if stdout flag is not set {{{
     if [ "$(get_flag "$FLAGS" 'interactive')" = 'true' ]; then
-        OK="$RUN..."
-        RUN="${RUN}"
+        OK="$RUN"
     elif [ "$(get_flag "$FLAGS" 'interactive')" = 'false' ]; then
         OK=" "
         RUN="${RUN} "
@@ -272,24 +271,9 @@ shell () { # {{{
         error "stdout not in \'$FLAGS\'"
         exit 1
     fi # }}}
-    # # add </dev/null to cmd if stdin flag is not set {{{
-    # if [ "$(get_flag "$FLAGS" 'stdin')" = 'false' ]; then
-    #     CMD="$CMD < /dev/null"
-    # elif ! get_flag "$FLAGS" "stdin" > /dev/null; then
-    #     error "stdin not in \'$FLAGS\'"
-    #     exit 1
-    # fi # }}}
-    # # add 2>/dev/null to cmd if stdout flag is not set {{{
-    # if [ "$(get_flag "$FLAGS" 'stdout')" = 'false' ]; then
-    #     CMD="$CMD 2> /dev/null"
-    # elif ! get_flag "$FLAGS" "stdout" > /dev/null; then
-    #     error "stdout not in \'$FLAGS\'"
-    #     exit 1
-    # fi # }}}
 
     running "$RUN"
-    printf "\n"
-    debug "running: '${CMD}'"
+    [ "$(get_flag "$FLAGS" 'interactive')" = 'true' ] && printf "\n"
     eval $CMD && ok "$OK" || error "$OK"
 } # }}}
 
