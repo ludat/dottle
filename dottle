@@ -117,27 +117,24 @@ rreadlink() { # {{{
     # in standard locations only, but note that this does *not* come into play if a *builtin*
     # by the given name exists. zsh requires that option POSIX_BUILTINS be on to also find
     # builtins with `command`.
-    { CDPATH=; \unalias command; \unset -f command; } >/dev/null 2>&1
-    [ -n "$ZSH_VERSION" ] && options[POSIX_BUILTINS]=on # make zsh find *builtins* with `command` too.
-
-    while :; do # Resolve potential symlinks until the ultimate target is found.
-        [ -L "$target" ] || [ -e "$target" ] || { printf '%s\n' "ERROR: '$target' does not exist." >&2; return 1; }
-        command -p cd "$(command -p dirname -- "$target")" # Change to target dir; necessary for correct resolution of target path.
-        fname=$(command -p basename -- "$target") # Extract filename.
+    while true; do # Resolve potential symlinks until the ultimate target is found.
+        [ -L "$target" ] || [ -e "$target" ] || return 1
+        cd "$(dirname -- "$target")" # Change to target dir; necessary for correct resolution of target path.
+        fname=$(basename -- "$target") # Extract filename.
         if [ -L "$fname" ]; then
             # Extract [next] target path, which may be defined
             # *relative* to the symlink's own directory.
             # Note: We parse `ls -l` output to find the symlink target
             #       which is the only POSIX-compliant, albeit somewhat fragile, way,
-            target=$(command -p ls -l "$fname")
+            target=$(ls -l "$fname")
             target=${target#* -> }
             continue # Resolve [next] symlink target.
         fi
         break # Ultimate target reached.
     done
-    targetDir=$(command -p pwd -P) # Get canonical dir. path
+    targetDir=$(pwd -P) # Get canonical dir. path
     # Output the ultimate target's canonical path.
-    command -p printf '%s\n' "${targetDir%/}/$fname"
+    printf '%s' "${targetDir}/$fname"
 } # }}}
 
 backup () { # {{{
