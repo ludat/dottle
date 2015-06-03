@@ -105,18 +105,7 @@ realpath () { # {{{
 rreadlink() { # {{{
     # source: http://stackoverflow.com/a/29835459
     # Execute the function in a *subshell* to localize variables and the effect of `cd`.
-
     target=$1 fname= targetDir=
-
-    # Try to make the execution environment as predictable as possible:
-    # All commands below are invoked via `command -p`, so we must make sure that `command`
-    # itself is not redefined as an alias or shell function.
-    # `command` is a *builtin* in bash, dash, ksh, zsh, and some platforms do not even have
-    # an external utility version of it (e.g, Ubuntu).
-    # `command` bypasses aliases and shell functions, and `-p` searches for external utilities
-    # in standard locations only, but note that this does *not* come into play if a *builtin*
-    # by the given name exists. zsh requires that option POSIX_BUILTINS be on to also find
-    # builtins with `command`.
     while true; do # Resolve potential symlinks until the ultimate target is found.
         [ -L "$target" ] || [ -e "$target" ] || return 1
         cd "$(dirname -- "$target")" # Change to target dir; necessary for correct resolution of target path.
