@@ -30,7 +30,7 @@ dottle needs an `install.conf.yml` which tells explicitly what files to symlink 
 OS | Distro | Version | coreutils | shell
 ---|--------|---------|-----------|------
 Linux | Ubuntu    | 4.10 (Warty Warthog) | GNU coreutils 5.0.91 | bash 2.05b.0
-Linux | Ubuntu    | 14.04                | GNU coreutils 8.21   | bash 4.3.11
+Linux | Ubuntu    | 14.04 (Trusty Tahr)  | GNU coreutils 8.21   | bash 4.3.11
 Linux | CentOS    | 6.6                  | GNU coreutils 8.4    | bash 4.1.2
 Linux | ArchLinux | 20150524             | GNU coreutils 8.23   | bash 4.3.33
 
