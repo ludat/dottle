@@ -299,9 +299,10 @@ install () { # {{{
                 COMMAND='shell'
                 OPTIONS=${line#*:}
             else
-                error "Wrong command: ${line%%:*} not found"
+                COMMAND='error'
+                error "'${line%%:*}' command is not one of valid commands"
             fi
-        elif [ "$(get_level "$line")" -gt "0" ]; then
+        elif [ "$(get_level "$line")" -gt "0" ] && [ "$COMMAND" != "error" ]; then
             #Trim whitespaces
             FST_ARG=$( printf '%s' "${line%%:*}" | sed -e 's/^ *//' -e 's/ *$//')
             SND_ARG=$( printf '%s' "${line#*:}"  | sed -e 's/^ *//' -e 's/ *$//')
