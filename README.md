@@ -57,7 +57,7 @@ This will call the `link` command with the `force=false` and the `create=true`, 
 
 ### Commands Available and options
 
-#### link
+#### **link**
 
 Creates a symlink in ARG1 pointing to BASEDIR/ARG2
 
@@ -71,15 +71,15 @@ Creates a symlink in ARG1 pointing to BASEDIR/ARG2
     * `create`: (default true) if true dottle will create recursively the directories for `ARG1`
     * `force`: (default false) dottle will do its best to create the symlink
 
-#### shell
+#### **shell**
 
 Executes ARG2
 
 * command: shell
-* ARG1: Verbose description of command for humans
-* ARG2: command that will be executed
-* OPTIONS:
-    * interactive: (default false) if false all output and input will be silenced. If true it should work but eval handles stdin and stdout weirdly (not to be trusted)
+* `ARG1`: Verbose description of command for humans
+* `ARG2`: command that will be executed
+* `OPTIONS`:
+    * `interactive`: (default false) if false all output and input will be silenced. If true it should work but eval handles stdin and stdout weirdly (not to be trusted)
 
 Note that this:
 
