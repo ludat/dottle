@@ -97,7 +97,7 @@ realpath () { # {{{
     if [ -e "$(dirname "$1")" ]; then
         printf '%s' "$(cd $(dirname $1) && pwd)"/"$(basename $1)"
     else
-        error "\'$(dirname "$1")\' doesn't exist"
+        error "'$(dirname "$1")' doesn't exist"
         return 1
     fi
 } # }}}
@@ -132,8 +132,8 @@ backup () { # {{{
             local new_file
             new_file="${1}.$(date "+%Y-%m-%d_%H-%M-%S").backup"
             if [ ! -e "${new_file}" ]; then
-                mv "$1" "$new_file" || error "Failed to back up \'${1}\' to \'${new_file}\'" && return 1
-                warn "Backed up \'$1\' to \'$new_file\'"
+                mv "$1" "$new_file" || error "Failed to back up '${1}' to '${new_file}'" && return 1
+                warn "Backed up '$1' to '$new_file'"
                 return 0
             fi
         done
@@ -178,20 +178,20 @@ link () { # {{{
     fi
     #TODO make above more generic
 
-    debug "Flags for link: \'$FLAGS\'"
+    debug "Flags for link: '$FLAGS'"
 
     DEST="$(expand_vars ${1})"
-    debug "DEST: \'$DEST\'"
+    debug "DEST: '$DEST'"
     # if relative flag set to false expand with BASEDIR else let it raw {{{
     if [ "$(get_flag "$FLAGS" 'relative')" = 'true' ]; then
         SOURCE="$(expand_vars "${2}")"
     elif [ "$(get_flag "$FLAGS" 'relative')" = 'false' ]; then
         SOURCE="$(expand_vars "${BASEDIR}/${2}")"
     else
-        error "relative not in \'$FLAGS\'"
+        error "relative not in '$FLAGS'"
         exit 1
     fi # }}}
-    debug "SOURCE: \'$SOURCE\'"
+    debug "SOURCE: '$SOURCE'"
 
     # check if force flag is set {{{
     if [ "$(get_flag "$FLAGS" 'force')" = 'true' ]; then
@@ -206,13 +206,13 @@ link () { # {{{
     # if link will be broken and ign_broken flag is set exit{{{
     if [ "$(get_flag "$FLAGS" 'relative')" = 'false' ]; then
         if [ "$(get_flag "$FLAGS" 'ign_broken')" = 'false' ] && [ ! -e "$SOURCE" ]; then
-            warn "\'${SOURCE}\' doesn't exists. Quiting because ign_broken flag is set"
+            warn "'${SOURCE}' doesn't exists. Quiting because ign_broken flag is set"
             return 1
         fi
     elif [ "$(get_flag "$FLAGS" 'relative')" = 'true' ]; then
         warn "If relative flag is set the ign_broken flag is ignored because I can't determinate if the final file exists"
     else
-        error "relative not in \'$FLAGS\'"
+        error "relative not in '$FLAGS'"
     fi # }}}
 
     # if DEST dir doesn't exists and create flag is set, create it {{{
@@ -220,27 +220,27 @@ link () { # {{{
         if [ "$(get_flag "$FLAGS" 'create')" = 'true' ]; then
             mkdir -p "$(dirname "$DEST")"
         elif [ "$(get_flag "$FLAGS" 'create')" = 'false' ]; then
-            warn "\'$(dirname "${DEST}")\' doesn't exists. Quiting because create flag is not set"
+            warn "'$(dirname "${DEST}")' doesn't exists. Quiting because create flag is not set"
             return 1
         else
-            error "create not in \'$FLAGS\'"
+            error "create not in '$FLAGS'"
         fi
     fi # }}}
 
     if [ -L "$DEST" ]; then
         if printf '%s' "$(rreadlink "$DEST")" | grep "^$BASEDIR" > /dev/null; then
-            debug "File \'${DEST}\' exists and it points to my BASEDIR. Replacing it"
+            debug "File '${DEST}' exists and it points to my BASEDIR. Replacing it"
             rm "$DEST"
             ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
         else
-            error "\'${DEST}\' is a link but it's not mine. Quiting"
+            error "'${DEST}' is a link but it's not mine. Quiting"
             return 1
         fi
     elif [ -f "$DEST" ]; then
         [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup $DEST
         ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
     elif [ -d "$DEST" ]; then
-        error "Folder \'${DEST}\/' in target. I'm afraid. If you set the force flag I'll rip it apart"
+        error "Folder '${DEST}/' in target. I'm afraid. If you set the force flag I'll rip it apart"
         return 1
     elif [ ! -e "$DEST" ]; then
         ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
@@ -268,7 +268,7 @@ shell () { # {{{
         RUN="${RUN} "
         CMD="$CMD > /dev/null < /dev/null 2> /dev/null"
     else
-        error "stdout not in \'$FLAGS\'"
+        error "stdout not in '$FLAGS'"
         exit 1
     fi # }}}
 
@@ -305,7 +305,7 @@ install () { # {{{
             #Trim whitespaces
             FST_ARG=$( printf '%s' "${line%%:*}" | sed -e 's/^ *//' -e 's/ *$//')
             SND_ARG=$( printf '%s' "${line#*:}"  | sed -e 's/^ *//' -e 's/ *$//')
-            debug "executing FLAGS=\'${OPTIONS}\' \'$COMMAND\' \'$FST_ARG\' \'$SND_ARG\'"
+            debug "executing FLAGS='${OPTIONS}' '$COMMAND' '$FST_ARG' '$SND_ARG'"
             FLAGS="${OPTIONS}" $COMMAND "$FST_ARG" "$SND_ARG"
         fi
     done < "$CONFIG_FILE"
