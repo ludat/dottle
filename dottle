@@ -265,6 +265,12 @@ shell () { # {{{
     [ "$(get_flag "$FLAGS" 'interactive')" = 'true' ] && printf "\n"
     eval $CMD && ok "$OK" || error "$OK"
 } # }}}
+test () { # {{{
+    ok "Test command"
+    ok "Flags: '$FLAGS'"
+    ok "Arg1:  '$1'"
+    ok "Arg2:  '$2'"
+} # }}}
 install () { # {{{
     COMMAND=''
     OPTIONS=''
@@ -285,6 +291,9 @@ install () { # {{{
                 OPTIONS="${line#*:}"
             elif [ "${line%%:*}" = 'shell' ]; then
                 COMMAND='shell'
+                OPTIONS=${line#*:}
+            elif [ "${line%%:*}" = 'test' ]; then
+                COMMAND='test'
                 OPTIONS=${line#*:}
             else
                 COMMAND='error'
