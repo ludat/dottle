@@ -236,7 +236,7 @@ shell () { # {{{
     # execute an external command
     # Possible configuration flags:
     #   interactive: if set all stds will be redirected to this shell
-    #       default: stdout
+    #       default: interactive!
     FLAGS=$(default_flag "$FLAGS" "interactive" "!")
 
     RUN="$1"
