@@ -9,7 +9,7 @@ BASEDIR="$(cd "$(dirname "$0")" && pwd)"
 
 cd "${BASEDIR}"
 
-# Colors {{{
+# Declaration of color variables {{{
 ESC_SEQ="\033["
 COL_RESET=$ESC_SEQ"0m"
 COL_BLACK=$ESC_SEQ"0;30;01m"
@@ -21,7 +21,7 @@ COL_MAGENTA=$ESC_SEQ"0;35;01m"
 COL_CYAN=$ESC_SEQ"0;36;01m"
 COL_WHITE=$ESC_SEQ"0;37;01m"
 # }}}
-# {{{ Helper debug functions
+# Special print funcions (`ok`, `warn`, `error`, `debug`) {{{
 ok () {
     if [ ! -z "$1" ]; then
         printf "${COL_GREEN}[ok]${COL_RESET} %s\n" "$1"
