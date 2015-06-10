@@ -3,7 +3,7 @@
 # DEBUG=$(printf "${DEBUG}" | tr '[:upper:]' '[:lower:]')
 # SAFE=$(printf "${SAFE}" | tr '[:upper:]' '[:lower:]')
 
-CONFIG_FILE="install.conf.yml"
+CONFIG_FILE="${CONFIG_FILE:-install.conf.yml}"
 
 BASEDIR="$(cd "$(dirname "$0")" && pwd)"
 
