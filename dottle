@@ -138,35 +138,31 @@ get_flag () { # {{{
     printf '%s' " ${1} " | grep " ${2}! " > /dev/null && printf '%s' "false" && return 0
     return 1
 } # }}}
+default_flag () { # {{{
+    if ! get_flag "$1" "$2"> /dev/null; then
+        printf "${1} ${2}${3}"
+    else
+        printf "${1}"
+    fi
+} # }}}
 link () { # {{{
     # Creates link from the first arg to second arg
     # Possible configuration flags:
     #   create: if final directory doesn't exist create them recursively
     #       default: create
-    if ! get_flag "$FLAGS" "create" > /dev/null; then
-        FLAGS="$FLAGS create"
-    fi
+    FLAGS=$(default_flag "$FLAGS" "create" "")
     #   force: create recursive directories and symlink no matter what
     #       default: force!
-    if ! get_flag "$FLAGS" "force" > /dev/null; then
-        FLAGS="$FLAGS force!"
-    fi
+    FLAGS=$(default_flag "$FLAGS" "force" "!")
     #   ign_broken: don't care if link will be broke
     #       default: ign_broken
-    if ! get_flag "$FLAGS" "ign_broken" > /dev/null; then
-        FLAGS="$FLAGS ign_broken!"
-    fi
+    FLAGS=$(default_flag "$FLAGS" "ign_broken" "!")
     #   backup: if file already exists, back it up
     #       default: backup
-    if ! get_flag "$FLAGS" "backup" > /dev/null; then
-        FLAGS="$FLAGS backup"
-    fi
+    FLAGS=$(default_flag "$FLAGS" "backup" "")
     #   relative: if set target of links will be relative and won't be altered in any way
     #       default: relative!
-    if ! get_flag "$FLAGS" "relative" > /dev/null; then
-        FLAGS="$FLAGS relative!"
-    fi
-    #TODO make above more generic
+    FLAGS=$(default_flag "$FLAGS" "relative" "!")
 
     debug "Flags for link: '$FLAGS'"
 
@@ -241,9 +237,7 @@ shell () { # {{{
     # Possible configuration flags:
     #   interactive: if set all stds will be redirected to this shell
     #       default: stdout
-    if ! get_flag "$FLAGS" "interactive" > /dev/null; then
-        FLAGS="$FLAGS interactive!"
-    fi
+    FLAGS=$(default_flag "$FLAGS" "interactive" "!")
 
     RUN="$1"
     OK=""
@@ -266,6 +260,7 @@ shell () { # {{{
     eval $CMD && ok "$OK" || error "$OK"
 } # }}}
 test () { # {{{
+    FLAGS=$(default_flag "$FLAGS" "test" "")
     ok "Test command"
     ok "Flags: '$FLAGS'"
     ok "Arg1:  '$1'"
