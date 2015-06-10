@@ -21,7 +21,6 @@ COL_MAGENTA=$ESC_SEQ"0;35;01m"
 COL_CYAN=$ESC_SEQ"0;36;01m"
 COL_WHITE=$ESC_SEQ"0;37;01m"
 # }}}
-
 # {{{ Helper debug functions
 ok () {
     if [ ! -z "$1" ]; then
@@ -57,7 +56,6 @@ running () {
 # action () {
 #     printf "\n$COL_YELLOW[action]:$COL_RESET\n -> $1..."
 # } # }}}
-
 show_help () { # {{{
     cat << EOF
 Usage: ./dottle [OPTIONS] COMMAND [ARGS]
@@ -69,12 +67,10 @@ Commands and args:
 - None for now
 EOF
 } # }}}
-
 escape () { # {{{
     # Escape a string mainly for expand_vars
     printf '%s' "$1" | sed 's/"/\\\\\\"/g'
 } # }}}
-
 expand_vars () { # {{{
     # Expand env vars in a string
     # if safe is set don't expand $VARS only the tilde
@@ -85,12 +81,10 @@ expand_vars () { # {{{
         eval printf '%s' "\"$(escape "$s")\""
     fi
 } # }}}
-
 get_level () { # {{{
     # Get indentation level
     printf '%s' "$1" | sed -e 's/[^ ].*$//' -e 's/    /X/' -e 's/[^X]//' | wc -c
 } # }}}
-
 realpath () { # {{{
     # prints absolute path of a relative or absolute path
     # sadly POSIX doesn't have this function
@@ -101,7 +95,6 @@ realpath () { # {{{
         return 1
     fi
 } # }}}
-
 rreadlink() { # {{{
     # source: http://stackoverflow.com/a/29835459
     # Execute the function in a *subshell* to localize variables and the effect of `cd`.
@@ -125,7 +118,6 @@ rreadlink() { # {{{
     # Output the ultimate target's canonical path.
     printf '%s' "${targetDir}/$fname"
 } # }}}
-
 backup () { # {{{
     if [ -e "$1" ] && [ ! -L "$1" ]; then
         while true; do
@@ -141,13 +133,11 @@ backup () { # {{{
         return 1
     fi
 } # }}}
-
 get_flag () { # {{{
     printf '%s' " ${1} " | grep " ${2} " > /dev/null && printf '%s' "true" && return 0
     printf '%s' " ${1} " | grep " ${2}! " > /dev/null && printf '%s' "false" && return 0
     return 1
 } # }}}
-
 link () { # {{{
     # Creates link from the first arg to second arg
     # Possible configuration flags:
@@ -246,7 +236,6 @@ link () { # {{{
         ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
     fi
 } # }}}
-
 shell () { # {{{
     # execute an external command
     # Possible configuration flags:
@@ -276,7 +265,6 @@ shell () { # {{{
     [ "$(get_flag "$FLAGS" 'interactive')" = 'true' ] && printf "\n"
     eval $CMD && ok "$OK" || error "$OK"
 } # }}}
-
 install () { # {{{
     COMMAND=''
     OPTIONS=''
@@ -311,13 +299,11 @@ install () { # {{{
         fi
     done < "$CONFIG_FILE"
 } # }}}
-
 check () { # {{{
     if grep "\t" "$CONFIG_FILE" > /dev/null; then
         warn "The config file contains tabs. They will be replaced with 4 spaces"
     fi
 } # }}}
-
 # main loop {{{
 case "$1" in
     --help)
