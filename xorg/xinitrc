@@ -15,6 +15,9 @@ if [ -f ~/.Xresources ]; then
     xrdb -merge ~/.Xresources
 fi
 
+# Map caps lock to ctrl
+setxkbmap -option ctrl:nocaps
+
 session=${1:-xmonad}
 case $session in
     xmonad)
