@@ -69,7 +69,7 @@ EOF
 } # }}}
 escape () { # {{{
     # Escape a string mainly for expand_vars
-    printf '%s' "$1" | sed 's/"/\\\\\\"/g'
+    printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' -e 's/\$/\\$/g'
 } # }}}
 expand_vars () { # {{{
     # Expand env vars in a string
@@ -77,8 +77,8 @@ expand_vars () { # {{{
     if [ -n "$SAFE" ]; then
         printf '%s' "$1" | sed -e 's:^~/:'$HOME'/:'
     else
-        s=$( printf '%s' "$1" | sed -e 's:^~/:'$HOME'/:' )
-        eval printf '%s' "\"$(escape "$s")\""
+        # s=$( printf '%s' "$1" | sed -e 's:^~/:'$HOME'/:' )
+        eval printf '%s' "\"$(escape "$1")\""
     fi
 } # }}}
 get_level () { # {{{
