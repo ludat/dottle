@@ -21,37 +21,37 @@ setxkbmap -option ctrl:nocaps
 session=${1:-xmonad}
 case $session in
     xmonad)
-    # Turn off Touchpad
-    xinput --disable 'ETPS/2 Elantech Touchpad'
-    # Start urxvt daemon
-    urxvtd -q -f -o
-    # Start xscreensaver daemon
-    xscreensaver -no-splash &
-    # Enable numlock on startup
-    numlockx &
-    # Start pulseaudio
-    start-pulseaudio-x11
-    # Start easystroke
-    easystroke &
+        # Turn off Touchpad
+        xinput --disable 'ETPS/2 Elantech Touchpad'
+        # Start urxvt daemon
+        urxvtd -q -f -o
+        # Start xscreensaver daemon
+        xscreensaver -no-splash &
+        # Enable numlock on startup
+        numlockx &
+        # Start pulseaudio
+        start-pulseaudio-x11
+        # Start easystroke
+        easystroke &
 
-    # Set the cursor
-    xsetroot -cursor_name left_ptr
-    # Set Spanish keyboard layout
-    setxkbmap -layout es
-    # Set wallpaper
-    feh --bg-fill $HOME/Pictures/Wallpapers/TinyGalaxy.jpg
-    # Start notification server (dunst)
-    dunst &
-    # Start status bar engine
-    ${HOME}/.config/lueng/lueng.sh &
-    # Start xcompmgr for transparency
-    xcompmgr &
+        # Set the cursor
+        xsetroot -cursor_name left_ptr
+        # Set Spanish keyboard layout
+        setxkbmap -layout es
+        # Set wallpaper
+        feh --bg-fill $HOME/Pictures/Wallpapers/TinyGalaxy.jpg
+        # Start notification server (dunst)
+        dunst &
+        # Start status bar engine
+        ${HOME}/.config/lueng/lueng.sh &
+        # Start xcompmgr for transparency
+        xcompmgr &
 
-    # Start xmonad
-    # Start dzen with its socket (doesn't work yet)
-    #nc -k -l -U ${HOME}/.xmonad/log.soc | dzen2 -ta l -bg '#161616' -fn 'Terminus:size=8' -w 600 -e '' -dock &
-    # Actually start xmonad
-    exec xmonad ;;
+        # Start xmonad
+        # Start dzen with its socket (doesn't work yet)
+        #nc -k -l -U ${HOME}/.xmonad/log.soc | dzen2 -ta l -bg '#161616' -fn 'Terminus:size=8' -w 600 -e '' -dock &
+        # Actually start xmonad
+        exec xmonad ;;
     gnome) exec gnome-session ;;
     kde) exec startkde ;;
     mate) exec mate-session ;;
