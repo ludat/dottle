@@ -259,9 +259,9 @@ shell () { # {{{
     [ "$(get_flag "$FLAGS" 'interactive')" = 'true' ] && printf "\n"
     eval $CMD && ok "$OK" || error "$OK"
 } # }}}
-test () { # {{{
+debug_cmd () { # {{{
     FLAGS=$(default_flag "$FLAGS" "test" "")
-    ok "Test command"
+    ok "debug command"
     ok "Flags: '$FLAGS'"
     ok "Arg1:  '$1'"
     ok "Arg2:  '$2'"
@@ -287,8 +287,8 @@ install () { # {{{
             elif [ "${line%%:*}" = 'shell' ]; then
                 COMMAND='shell'
                 OPTIONS=${line#*:}
-            elif [ "${line%%:*}" = 'test' ]; then
-                COMMAND='test'
+            elif [ "${line%%:*}" = 'debug_cmd' ]; then
+                COMMAND='debug_cmd'
                 OPTIONS=${line#*:}
             else
                 COMMAND='error'
