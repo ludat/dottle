@@ -260,7 +260,10 @@ shell () { # {{{
     eval $CMD && ok "$OK" || error "$OK"
 } # }}}
 debug_cmd () { # {{{
-    FLAGS=$(default_flag "$FLAGS" "test" "")
+    FLAGS=$(default_flag "$FLAGS" "true" "")
+    FLAGS=$(default_flag "$FLAGS" "false" "!")
+    FLAGS=$(default_flag "$FLAGS" "first" "=first")
+    FLAGS=$(default_flag "$FLAGS" "second" "=second")
     ok "debug command"
     ok "Flags: '$FLAGS'"
     ok "Arg1:  '$1'"
