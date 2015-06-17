@@ -24,28 +24,28 @@ COL_WHITE=$ESC_SEQ"0;37;01m"
 # Special print funcions (`ok`, `warn`, `error`, `debug`) {{{
 ok () {
     if [ ! -z "$1" ]; then
-        printf "${COL_GREEN}[ok]${COL_RESET} %s\n" "$1"
+        printf "${COL_GREEN}[ok]${COL_RESET} %b\n" "$1"
     else
         printf "${COL_GREEN}[ok]${COL_RESET}"
     fi
 }
 
 warn () {
-    printf "${COL_BLUE}[warning]${COL_RESET} %s\n" "$1"
+    printf "${COL_BLUE}[warning]${COL_RESET} %b\n" "$1"
 }
 
 error () {
-    printf "${COL_RED}[error]${COL_RESET} %s\n" "$1" 1>&2
+    printf "${COL_RED}[error]${COL_RESET} %b\n" "$1" 1>&2
 }
 
 debug () {
     if [ -n "$DEBUG" ]; then
-        printf "$COL_MAGENTA[debug]$COL_RESET %s\n" "$1" 1>&2
+        printf "$COL_MAGENTA[debug]$COL_RESET %b\n" "$1" 1>&2
     fi
 }
 
 running () {
-    printf "$COL_YELLOW[running]$COL_RESET %s" "$1"
+    printf "$COL_YELLOW[running]$COL_RESET %b" "$1"
 }
 
 # bot () {
@@ -248,7 +248,8 @@ shell () { # {{{
 
     # add >/dev/null to cmd if stdout flag is not set {{{
     if [ "$(get_flag "$FLAGS" 'interactive')" = 'true' ]; then
-        OK="$RUN"
+        OK="     ${RUN}"
+        RUN="${RUN}\n"
     elif [ "$(get_flag "$FLAGS" 'interactive')" = 'false' ]; then
         OK=" "
         RUN="${RUN} "
@@ -259,7 +260,6 @@ shell () { # {{{
     fi # }}}
 
     running "$RUN"
-    [ "$(get_flag "$FLAGS" 'interactive')" = 'true' ] && printf "\n"
     eval $CMD && ok "$OK" || error "$OK"
 } # }}}
 debug_cmd () { # {{{
