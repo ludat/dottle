@@ -273,8 +273,10 @@ debug_cmd () { # {{{
     FLAGS=$(default_flag "$FLAGS" "second" "=second")
     ok "debug command"
     ok "Flags: '$FLAGS'"
-    ok "Arg1:  '$1'"
-    ok "Arg2:  '$2'"
+    ARG1="$(expand_vars ${1})"
+    ok "Arg1:  '$ARG1'"
+    ARG2="$(expand_vars ${2})"
+    ok "Arg2:  '$ARG2'"
 } # }}}
 install () { # {{{
     COMMAND=''
