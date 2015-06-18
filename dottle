@@ -125,7 +125,6 @@ rreadlink() { # {{{
 backup () { # {{{
     if [ -e "$1" ] && [ ! -L "$1" ]; then
         while true; do
-            local new_file
             new_file="${1}.$(date "+%Y-%m-%d_%H-%M-%S").backup"
             if [ ! -e "${new_file}" ]; then
                 mv "$1" "$new_file" || error "Failed to back up '${1}' to '${new_file}'" && return 1
