@@ -1,7 +1,6 @@
 #!/bin/sh
 
 # DEBUG=$(printf "${DEBUG}" | tr '[:upper:]' '[:lower:]')
-# SAFE=$(printf "${SAFE}" | tr '[:upper:]' '[:lower:]')
 
 CONFIG_FILE="${CONFIG_FILE:-install.conf.yml}"
 
@@ -79,11 +78,7 @@ escape () { # {{{
 expand_vars () { # {{{
     # Expand env vars in a string
     # if safe is set don't expand $VARS only the tilde
-    if [ -n "$SAFE" ]; then
-        printf '%s' "$1" | sed -e 's:^~/:'$HOME'/:'
-    else
-        eval printf '%s' "\"$(escape "$1")\""
-    fi
+    eval printf '%s' "\"$(escape "$1")\""
 } # }}}
 get_level () { # {{{
     # Get indentation level
