@@ -151,6 +151,106 @@ default_flag () { # {{{
         printf "${1}"
     fi
 } # }}}
+get_git () { # {{{
+    # Get git repo into a directory
+    # Possible configuration flags:
+    #   branch: branch name of the repo
+    #       default: branch=master
+    FLAGS=$(default_flag "$FLAGS" "branch" "=master")
+    #   remote: branch name of the repo
+    #       default: remote=origin
+    FLAGS=$(default_flag "$FLAGS" "remote" "=origin")
+    #   backup: if the file already exists back it up otherwise just remove it
+    #       default: backup!
+    FLAGS=$(default_flag "$FLAGS" "backup" "!")
+    #   update: if set and path already exists and is a git repo just pull from origin
+    #       default: update
+    FLAGS=$(default_flag "$FLAGS" "update" "")
+    #   verify_ssl: if set check if cret is valid (usefull for self signed certs)
+    #       default: verify_ssl
+    FLAGS=$(default_flag "$FLAGS" "verify_ssl" "")
+    #   recursive: when cloning a repo use flag --recursive
+    #       default: recursive
+    FLAGS=$(default_flag "$FLAGS" "recursive" "")
+    #   tar_magic: if git is not installed use tar and curl to get remote files (hacky as fuck)
+    #       default: tar_magic!
+    FLAGS=$(default_flag "$FLAGS" "tar_magic" "!")
+    #   force: try to get repo no matter what
+    #       default: force!
+    FLAGS=$(default_flag "$FLAGS" "force" "!")
+
+    debug "FLAGS: '${FLAGS}'"
+    DEST="$(expand_vars "${1}")"
+    debug "DEST: '${DEST}'"
+    REPO="$(expand_vars "${2}")"
+    debug "REPO: '${REPO}'"
+    BRANCH="$(get_flag "$FLAGS" 'branch')"
+    debug "BRANCH: '${BRANCH}'"
+    REMOTE="$(get_flag "$FLAGS" 'remote')"
+    debug "REMOTE: '${REMOTE}'"
+    if [ "$(get_flag "$FLAGS" 'recursive')" = 'true' ]; then
+        RECURSIVE="--recursive"
+    else
+        RECURSIVE=""
+    fi
+    debug "RECURSIVE: '${RECURSIVE}'"
+    if [ "$(get_flag "$FLAGS" 'verify_ssl')" = 'true' ]; then
+        VERIFY_SSL="true"
+    else
+        VERIFY_SSL="false"
+    fi
+    debug "VERIFY_SSL: '${VERIFY_SSL}'"
+
+    # force flag is set {{{
+    if [ "$(get_flag "$FLAGS" 'force')" = 'true' ]; then
+        if ! command -v git > /dev/null; then
+            error "git is not installed"
+            return 1
+        fi
+        debug "force flag is set to true. I will do my best to fulfil your wishes master"
+        [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup $DEST
+        rm -rf "$DEST"
+        mkdir -p "$DEST"
+        git --config "http.sslVerify=$VERIFY_SSL" clone "$RECURSIVE" --branch "$BRANCH" "$REPO" "$DEST" || \
+            (error "Couldn't clone '$REPO' into '$DEST'"; return 1)
+    fi # }}}
+    # if git is not installed fail {{{
+    if ! command -v git > /dev/null && [ "$(get_flag "$FLAGS" 'tar_magic')" = 'false' ]; then
+        error "git is not installed and tar_magic flag is not set"
+        return 1
+    fi # }}}
+
+    if [ -d "${DEST}/.git" ] && [ "$(get_flag "$FLAGS" 'update')" = 'true' ]; then
+        (
+        cd "$DEST" || \
+            (error "Couldn't \`cd\` into '$DEST'"; return 1)
+        git config http.sslVerify "$VERIFY_SSL" || \
+            (error "Couldn't set config"; return 1)
+        debug "git 'checkout' '$BRANCH'"
+        git checkout "$BRANCH" || \
+            (error "Couldn't checkout '$BRANCH'"; return 1)
+        debug "git 'pull' '$REMOTE' '$BRANCH'"
+        git pull "$REMOTE" "$BRANCH" || \
+            (error "Couldn't pull '$BRANCH' branch from '$REMOTE'"; return 1)
+        if [ "$(get_flag "$FLAGS" 'recursive')" = 'true' ]; then
+            debug "git submodule update --init --recursive"
+            git submodule update --init --recursive || \
+                (error "Couldn't update submodules"; return 1)
+        fi
+        ) && ok "Pulled successfully"
+    else
+        [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup $DEST
+        rm -rf "$DEST"
+        mkdir -p "$DEST"
+        if command -v git > /dev/null; then
+            debug "git clone --config 'http.sslVerify=$VERIFY_SSL' '$RECURSIVE' --branch '$BRANCH' '$REPO' '$DEST'"
+            git clone --config "http.sslVerify=$VERIFY_SSL" "$RECURSIVE" --branch "$BRANCH" "$REPO" "$DEST" || \
+                (error "git clone command failed"; return 1)
+        else
+            error "tar_magic is not implemented yet"
+        fi
+    fi
+} # }}}
 link () { # {{{
     # Creates link from the first arg to second arg
     # Possible configuration flags:
@@ -296,6 +396,9 @@ install () { # {{{
                 OPTIONS="${line#*:}"
             elif [ "${line%%:*}" = 'shell' ]; then
                 COMMAND='shell'
+                OPTIONS=${line#*:}
+            elif [ "${line%%:*}" = 'get_git' ]; then
+                COMMAND='get_git'
                 OPTIONS=${line#*:}
             elif [ "${line%%:*}" = 'debug_cmd' ]; then
                 COMMAND='debug_cmd'
