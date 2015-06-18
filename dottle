@@ -343,7 +343,22 @@ shell () { # {{{
     #   interactive: if set all stds will be redirected to this shell
     #       default: interactive!
     FLAGS=$(default_flag "$FLAGS" "interactive" "!")
+    #   stdin: sets the stdin of cmd
+    #       default: stdin=
+    FLAGS=$(default_flag "$FLAGS" "stdin" "=")
+    #   stdout: sets the stdout of cmd
+    #       default: stdout=
+    FLAGS=$(default_flag "$FLAGS" "stdout" "=")
+    #   stderr: sets the stderr of cmd
+    #       default: stderr=
+    FLAGS=$(default_flag "$FLAGS" "stderr" "=")
 
+    STDIN="$(get_flag "$FLAGS" 'stdin')"
+    debug "STDIN: $STDIN"
+    STDOUT="$(get_flag "$FLAGS" 'stdout')"
+    debug "STDOUT: $STDOUT"
+    STDERR="$(get_flag "$FLAGS" 'stderr')"
+    debug "STDERR: $STDERR"
     RUN="$1"
     OK=""
     CMD="${2}"
@@ -352,14 +367,20 @@ shell () { # {{{
     if [ "$(get_flag "$FLAGS" 'interactive')" = 'true' ]; then
         OK="     ${RUN}"
         RUN="${RUN}\n"
+        CMD="$CMD > ${STDOUT:-/dev/stdout}"
+        CMD="$CMD < ${STDIN:-/dev/tty}"
+        CMD="$CMD 2> ${STDERR:-/dev/stderr}"
     elif [ "$(get_flag "$FLAGS" 'interactive')" = 'false' ]; then
         OK=" "
         RUN="${RUN} "
-        CMD="$CMD > /dev/null < /dev/null 2> /dev/null"
+        CMD="$CMD > ${STDOUT:-/dev/null}"
+        CMD="$CMD < ${STDIN:-/dev/null}"
+        CMD="$CMD 2> ${STDERR:-/dev/null}"
     else
         error "interactive not in '$FLAGS'"
         exit 1
     fi # }}}
+    debug "COMMAND: $CMD"
 
     running "$RUN"
     eval $CMD && ok "$OK" || error "$OK"
