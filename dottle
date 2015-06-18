@@ -258,7 +258,7 @@ shell () { # {{{
         RUN="${RUN} "
         CMD="$CMD > /dev/null < /dev/null 2> /dev/null"
     else
-        error "stdout not in '$FLAGS'"
+        error "interactive not in '$FLAGS'"
         exit 1
     fi # }}}
 
