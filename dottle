@@ -34,7 +34,11 @@ warn () {
 }
 
 error () {
-    printf "${COL_RED}[error]${COL_RESET} %b\n" "$1" 1>&2
+    if [ ! -z "$1" ]; then
+        printf "${COL_RED}[error]${COL_RESET} %b\n" "$1" 1>&2
+    else
+        printf "${COL_RED}[error]${COL_RESET}" 1>&2
+    fi
 }
 
 debug () {
