@@ -11,6 +11,6 @@
 	default = current
 [cola]
 	tabwidth = 4
-	fontdiff = Terminess Powerline,10,-1,5,50,0,0,0,0,0
+	fontdiff = Terminess Powerline,12,-1,5,50,0,0,0,0,0
 [credential]
 	helper = cache --timeout=3600
