@@ -56,7 +56,7 @@ xscreensaver.passwd.passwdFont:         -*-dina-bold-r-*-*-12-*-*-*-*-*-*-*
 ! }}}
 ! URxvt settings {{{
 URxvt*urgentOnBell    : true
-URxvt*font            : xft:Terminess Powerline:style=Regular:size=10
+URxvt*font            : xft:Terminess Powerline:style=Regular:size=14
 URxvt*perl-ext-common : default,matcher,-option-popup,-selection-popup,-realine
 URxvt*urlLauncher     : chromium
 urxvt*internalBorder  : 0
