@@ -16,6 +16,7 @@ shell: interactive
     Installing submodules: git submodule update --init --recursive
 link: create force! ign_broken! backup relative!
     ~/.tmux.conf: tmux/tmux.conf
+    ~/.tmux: tmux/tmux
     ~/.gitconfig: gitconfig
     ~/.vim: vim/vim/
     ~/.vimrc: vim/vimrc
