@@ -5,5 +5,5 @@
 	path = zshrc
 	url = https://github.com/ludat/zshrc
 [submodule "tmux/tmux/tpm"]
-	path = tmux/tmux/tpm
+	path = tmux/tmux/plugins/tpm
 	url = https://github.com/tmux-plugins/tpm.git
