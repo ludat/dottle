@@ -14,3 +14,10 @@
 	fontdiff = Terminess Powerline,12,-1,5,50,0,0,0,0,0
 [credential]
 	helper = cache --timeout=3600
+[alias]
+	co = checkout
+	c = commit -v
+	st = status
+	exec = "!exec "
+[diff]
+	tool = meld
