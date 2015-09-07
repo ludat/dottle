@@ -271,7 +271,7 @@ link () { # {{{
 
     debug "Flags for link: '$FLAGS'"
 
-    DEST="$(expand_vars ${1})"
+    DEST="$(expand_vars "${1}")"
     debug "DEST: '$DEST'"
     # if relative flag set to false expand with BASEDIR else let it raw {{{
     if [ "$(get_flag "$FLAGS" 'relative')" = 'true' ]; then
