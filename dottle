@@ -383,7 +383,7 @@ shell () { # {{{
     debug "COMMAND: $CMD"
 
     running "$RUN"
-    eval $CMD && ok "$OK" || error "$OK"
+    ( eval $CMD ) && ok "$OK" || error "$OK"
 } # }}}
 debug_cmd () { # {{{
     FLAGS=$(default_flag "$FLAGS" "true" "")
