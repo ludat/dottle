@@ -12,21 +12,29 @@
 #
 # link will create symlinks (for now with absolute paths) to the dotfiles
 # folder where this script lives
+
+get_git:
+    dotfiles: git@gitlab.com:ludat/dotfiles.git
+    vimrc: git@github.com:ludat/vimrc.git
+    zshrc: git@github.com:ludat/zshrc.git
+
 shell: interactive
     Installing submodules: git submodule update --init --recursive
+
 link: create force! ign_broken! backup relative!
-    ~/.tmux.conf: tmux/tmux.conf
-    ~/.tmux: tmux/tmux
-    ~/.gitconfig: gitconfig
-    ~/.vim: vim/vim/
-    ~/.vimrc: vim/vimrc
+    ~/.vim: vimrc/vim/
+    ~/.vimrc: vimrc/vimrc
     ~/.zsh: zshrc/zsh/
     ~/.zshrc: zshrc/zshrc
-    ~/.bashrc: bashrc/bashrc
-    ~/.config/ranger: ranger/
-    ~/.config/easystroke: easystroke/
-    ~/.Xresources: xorg/Xresources
-    ~/.xinitrc: xorg/xinitrc
-    ~/.zprofile: xorg/zprofile
+    ~/.tmux.conf: dotfiles/tmux/tmux.conf
+    ~/.tmux: dotfiles/tmux/tmux
+    ~/.gitconfig: dotfiles/gitconfig
+    ~/.bashrc: dotfiles/bashrc/bashrc
+    ~/.config/ranger: dotfiles/ranger/
+    ~/.config/easystroke: dotfiles/easystroke/
+    ~/.Xresources: dotfiles/xorg/Xresources
+    ~/.xinitrc: dotfiles/xorg/xinitrc
+    ~/.zprofile: dotfiles/xorg/zprofile
+
 shell: interactive!
     Doomed to fail: false
