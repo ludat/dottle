@@ -1,14 +1,10 @@
 #!/bin/sh
 
-# DEBUG=$(printf "${DEBUG}" | tr '[:upper:]' '[:lower:]')
-
 CONFIG_FILE="${CONFIG_FILE:-install.conf.yml}"
-
 BASEDIR="$(cd "$(dirname "$0")" && pwd)"
-
 cd "${BASEDIR}"
 
-# Declaration of color variables {{{
+# color variables
 ESC_SEQ="\033["
 COL_RESET=$ESC_SEQ"0m"
 COL_BLACK=$ESC_SEQ"0;30;01m"
@@ -19,8 +15,8 @@ COL_BLUE=$ESC_SEQ"0;34;01m"
 COL_MAGENTA=$ESC_SEQ"0;35;01m"
 COL_CYAN=$ESC_SEQ"0;36;01m"
 COL_WHITE=$ESC_SEQ"0;37;01m"
-# }}}
-# Special print funcions (`ok`, `warn`, `error`, `debug`) {{{
+
+# Special print funcions
 ok () {
     if [ ! -z "$1" ]; then
         printf "${COL_GREEN}[ok]${COL_RESET} %b\n" "$1"
@@ -51,15 +47,7 @@ running () {
     printf "$COL_YELLOW[running]$COL_RESET %b" "$1"
 }
 
-# bot () {
-#     printf "\n$COL_GREEN\[._.]/$COL_RESET - "$1
-# }
-#
-#
-# action () {
-#     printf "\n$COL_YELLOW[action]:$COL_RESET\n -> $1..."
-# } # }}}
-show_help () { # {{{
+show_help () {
     cat << EOF
 Usage: ./dottle [OPTIONS] COMMAND [ARGS]
 
@@ -69,8 +57,9 @@ Options:
 Commands and args:
 - None for now
 EOF
-} # }}}
-escape () { # {{{
+}
+
+escape () {
     # Escape a string mainly for expand_vars
     debug "EXPAND: '$1'"
     printf '%s' "$1" | sed \
@@ -78,17 +67,20 @@ escape () { # {{{
                         -e 's/\\\([^\$]\)/\\\\&/g' \
                         -e 's/"/\\"/g' \
                         -e 's/\\\$/\\\$/g'
-} # }}}
-expand_vars () { # {{{
+}
+
+expand_vars () {
     # Expand env vars in a string
     # if safe is set don't expand $VARS only the tilde
     eval printf '%s' "\"$(escape "$1")\""
-} # }}}
-get_level () { # {{{
+}
+
+get_level () {
     # Get indentation level
     printf '%s' "$1" | sed -e 's/[^ ].*$//' -e 's/    /X/' -e 's/[^X]//' | wc -c
-} # }}}
-realpath () { # {{{
+}
+
+realpath () {
     # prints absolute path of a relative or absolute path
     # sadly POSIX doesn't have this function
     if [ -e "$(dirname "$1")" ]; then
@@ -97,8 +89,9 @@ realpath () { # {{{
         error "'$(dirname "$1")' doesn't exist"
         return 1
     fi
-} # }}}
-rreadlink() { # {{{
+}
+
+rreadlink() {
     # source: http://stackoverflow.com/a/29835459
     # Execute the function in a *subshell* to localize variables and the effect of `cd`.
     target=$1 fname= targetDir=
@@ -120,8 +113,9 @@ rreadlink() { # {{{
     targetDir=$(pwd -P) # Get canonical dir. path
     # Output the ultimate target's canonical path.
     printf '%s' "${targetDir}/$fname"
-} # }}}
-backup () { # {{{
+}
+
+backup () {
     if [ -e "$1" ] && [ ! -L "$1" ]; then
         while true; do
             new_file="${1}.$(date "+%Y-%m-%d_%H-%M-%S").backup"
@@ -134,23 +128,26 @@ backup () { # {{{
     else
         return 1
     fi
-} # }}}
-get_flag () { # {{{
+}
+
+get_flag () {
     printf '%s' " ${1} " | grep " ${2} " > /dev/null && printf '%s' "true" && return 0
     printf '%s' " ${1} " | grep " ${2}! " > /dev/null && printf '%s' "false" && return 0
     if printf '%s' " ${1} " | grep " ${2}=" > /dev/null; then
         printf '%s' " ${1} " | sed 's/.* '${2}'=\([^ ]*\) .*/\1/' && return 0
     fi
     return 1
-} # }}}
-default_flag () { # {{{
+}
+
+default_flag () {
     if ! get_flag "$1" "$2"> /dev/null; then
         printf "${1} ${2}${3}"
     else
         printf "${1}"
     fi
-} # }}}
-get_git () { # {{{
+}
+
+get_git () {
     # Get git repo into a directory
     # Possible configuration flags:
     #   branch: branch name of the repo
@@ -200,7 +197,7 @@ get_git () { # {{{
     fi
     debug "VERIFY_SSL: '${VERIFY_SSL}'"
 
-    # force flag is set {{{
+    # force flag is set
     if [ "$(get_flag "$FLAGS" 'force')" = 'true' ]; then
         if ! command -v git > /dev/null; then
             error "git is not installed"
@@ -212,12 +209,12 @@ get_git () { # {{{
         mkdir -p "$DEST"
         git --config "http.sslVerify=$VERIFY_SSL" clone "$RECURSIVE" --branch "$BRANCH" "$REPO" "$DEST" || \
             (error "Couldn't clone '$REPO' into '$DEST'"; return 1)
-    fi # }}}
-    # if git is not installed fail {{{
+    fi
+    # if git is not installed fail
     if ! command -v git > /dev/null && [ "$(get_flag "$FLAGS" 'tar_magic')" = 'false' ]; then
         error "git is not installed and tar_magic flag is not set"
         return 1
-    fi # }}}
+    fi
 
     if [ -d "${DEST}/.git" ] && [ "$(get_flag "$FLAGS" 'update')" = 'true' ]; then
         (
@@ -249,8 +246,9 @@ get_git () { # {{{
             error "tar_magic is not implemented yet"
         fi
     fi
-} # }}}
-link () { # {{{
+}
+
+link () {
     # Creates link from the first arg to second arg
     # Possible configuration flags:
     #   create: if final directory doesn't exist create them recursively
@@ -273,7 +271,7 @@ link () { # {{{
 
     DEST="$(expand_vars "${1}")"
     debug "DEST: '$DEST'"
-    # if relative flag set to false expand with BASEDIR else let it raw {{{
+    # if relative flag set to false expand with BASEDIR else let it raw
     if [ "$(get_flag "$FLAGS" 'relative')" = 'true' ]; then
         SOURCE="$(expand_vars "${2}")"
     elif [ "$(get_flag "$FLAGS" 'relative')" = 'false' ]; then
@@ -281,10 +279,11 @@ link () { # {{{
     else
         error "relative not in '$FLAGS'"
         exit 1
-    fi # }}}
+    fi
+
     debug "SOURCE: '$SOURCE'"
 
-    # check if force flag is set {{{
+    # check if force flag is set
     if [ "$(get_flag "$FLAGS" 'force')" = 'true' ]; then
         debug "force flag is set to true. I will do my best to fulfil your wishes master"
         [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup $DEST
@@ -292,9 +291,9 @@ link () { # {{{
         mkdir -p "$(dirname "$DEST")"
         ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
         return 0
-    fi # }}}
+    fi
 
-    # if link will be broken and ign_broken flag is set exit{{{
+    # if link will be broken and ign_broken flag is set exit
     if [ "$(get_flag "$FLAGS" 'relative')" = 'false' ]; then
         if [ "$(get_flag "$FLAGS" 'ign_broken')" = 'false' ] && [ ! -e "$SOURCE" ]; then
             warn "'${SOURCE}' doesn't exists. Quiting because ign_broken flag is set"
@@ -304,9 +303,9 @@ link () { # {{{
         warn "If relative flag is set the ign_broken flag is ignored because I can't determinate if the final file exists"
     else
         error "relative not in '$FLAGS'"
-    fi # }}}
+    fi
 
-    # if DEST dir doesn't exists and create flag is set, create it {{{
+    # if DEST dir doesn't exists and create flag is set, create it
     if [ ! -d "$(dirname "$DEST")" ]; then
         if [ "$(get_flag "$FLAGS" 'create')" = 'true' ]; then
             mkdir -p "$(dirname "$DEST")"
@@ -316,7 +315,7 @@ link () { # {{{
         else
             error "create not in '$FLAGS'"
         fi
-    fi # }}}
+    fi
 
     if [ -L "$DEST" ]; then
         if printf '%s' "$(rreadlink "$DEST")" | grep "^$BASEDIR" > /dev/null; then
@@ -336,8 +335,9 @@ link () { # {{{
     elif [ ! -e "$DEST" ]; then
         ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
     fi
-} # }}}
-shell () { # {{{
+}
+
+shell () {
     # execute an external command
     # Possible configuration flags:
     #   interactive: if set all stds will be redirected to this shell
@@ -363,7 +363,7 @@ shell () { # {{{
     OK=""
     CMD="${2}"
 
-    # add >/dev/null to cmd if stdout flag is not set {{{
+    # add >/dev/null to cmd if stdout flag is not set
     if [ "$(get_flag "$FLAGS" 'interactive')" = 'true' ]; then
         OK="     ${RUN}"
         RUN="${RUN}\n"
@@ -379,13 +379,14 @@ shell () { # {{{
     else
         error "interactive not in '$FLAGS'"
         exit 1
-    fi # }}}
+    fi
     debug "COMMAND: $CMD"
 
     running "$RUN"
     ( eval $CMD ) && ok "$OK" || error "$OK"
-} # }}}
-debug_cmd () { # {{{
+}
+
+debug_cmd () {
     FLAGS=$(default_flag "$FLAGS" "true" "")
     FLAGS=$(default_flag "$FLAGS" "false" "!")
     FLAGS=$(default_flag "$FLAGS" "first" "=first")
@@ -396,8 +397,9 @@ debug_cmd () { # {{{
     ok "Arg1:  '$ARG1'"
     ARG2="$(expand_vars ${2})"
     ok "Arg2:  '$ARG2'"
-} # }}}
-install () { # {{{
+}
+
+install () {
     COMMAND=''
     OPTIONS=''
     while IFS='' read -r line; do
@@ -435,13 +437,15 @@ install () { # {{{
             FLAGS="${OPTIONS}" $COMMAND "$FST_ARG" "$SND_ARG"
         fi
     done < "$CONFIG_FILE"
-} # }}}
-check () { # {{{
+}
+
+check () {
     if grep "\t" "$CONFIG_FILE" > /dev/null; then
         warn "The config file contains tabs. They will be replaced with 4 spaces"
     fi
-} # }}}
-# main loop {{{
+}
+
+# main
 case "$1" in
     --help)
         show_help
@@ -461,4 +465,4 @@ case "$1" in
     *)
         printf "%s\n" "Try 'install' or '--help'"
         ;;
-esac # }}}
+esac
