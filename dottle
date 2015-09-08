@@ -5,46 +5,50 @@ BASEDIR="$(cd "$(dirname "$0")" && pwd)"
 cd "${BASEDIR}"
 
 # color variables
-ESC_SEQ="\033["
-COL_RESET=$ESC_SEQ"0m"
-COL_BLACK=$ESC_SEQ"0;30;01m"
-COL_RED=$ESC_SEQ"0;31;01m"
-COL_GREEN=$ESC_SEQ"0;32;01m"
-COL_YELLOW=$ESC_SEQ"0;33;01m"
-COL_BLUE=$ESC_SEQ"0;34;01m"
-COL_MAGENTA=$ESC_SEQ"0;35;01m"
-COL_CYAN=$ESC_SEQ"0;36;01m"
-COL_WHITE=$ESC_SEQ"0;37;01m"
+ESC="\033["
+RESET=$ESC"0m"
+RED=$ESC"0;31;01m"
+GREEN=$ESC"0;32;01m"
+YELLOW=$ESC"0;33;01m"
+BLUE=$ESC"0;34;01m"
+MAGENTA=$ESC"0;35;01m"
 
-# Special print funcions
-ok () {
-    if [ ! -z "$1" ]; then
-        printf "${COL_GREEN}[ok]${COL_RESET} %b\n" "$1"
-    else
-        printf "${COL_GREEN}[ok]${COL_RESET}"
-    fi
-}
-
-warn () {
-    printf "${COL_BLUE}[warning]${COL_RESET} %b\n" "$1"
-}
-
-error () {
-    if [ ! -z "$1" ]; then
-        printf "${COL_RED}[error]${COL_RESET} %b\n" "$1" 1>&2
-    else
-        printf "${COL_RED}[error]${COL_RESET}" 1>&2
-    fi
-}
-
-debug () {
-    if [ -n "$DEBUG" ]; then
-        printf "$COL_MAGENTA[debug]$COL_RESET %b\n" "$1" 1>&2
-    fi
-}
-
-running () {
-    printf "$COL_YELLOW[running]$COL_RESET %b" "$1"
+# print funcion
+output () {
+    # load params
+    level=${1}
+    message=${2}
+    case $level in
+        ok)
+            if [ ! -z "$message" ] ; then
+                printf "${GREEN}[ok]${RESET} %b\n" "$message"
+            else
+                printf "${GREEN}[ok]${RESET}"
+            fi
+            ;;
+        warn)
+            printf "${BLUE}[warning]${RESET} %b\n" "$message"
+            ;;
+        error)
+            if [ ! -z "$message" ] ; then
+                printf "${RED}[error]${RESET} %b\n" "$message" 1>&2
+            else
+                printf "${RED}[error]${RESET}" 1>&2
+            fi
+            ;;
+        debug)    
+            if [ -n "$DEBUG" ]; then
+                printf "${MAGENTA}[debug]${RESET} %b\n" "$message" 1>&2
+            fi
+            ;;
+        running)    
+            printf "${YELLOW}[running]${RESET} %b" "$message"
+            ;;
+        *)
+            printf "${RED}[error]${RESET} %b" "Error: wrong output level passed"
+            exit 1
+            ;;
+    esac
 }
 
 show_help () {
@@ -61,7 +65,7 @@ EOF
 
 escape () {
     # Escape a string mainly for expand_vars
-    debug "EXPAND: '$1'"
+    output debug "EXPAND: '$1'"
     printf '%s' "$1" | sed \
                         -e 's:^~/:'$HOME'/:' \
                         -e 's/\\\([^\$]\)/\\\\&/g' \
@@ -86,7 +90,7 @@ realpath () {
     if [ -e "$(dirname "$1")" ]; then
         printf '%s' "$(cd $(dirname $1) && pwd)"/"$(basename $1)"
     else
-        error "'$(dirname "$1")' doesn't exist"
+        output "'$(dirname "$1")' doesn't exist" error
         return 1
     fi
 }
@@ -120,8 +124,8 @@ backup () {
         while true; do
             new_file="${1}.$(date "+%Y-%m-%d_%H-%M-%S").backup"
             if [ ! -e "${new_file}" ]; then
-                mv "$1" "$new_file" || error "Failed to back up '${1}' to '${new_file}'" && return 1
-                warn "Backed up '$1' to '$new_file'"
+                mv "$1" "$new_file" || output error "Failed to back up '${1}' to '${new_file}'" && return 1
+                output warn "Backed up '$1' to '$new_file'"
                 return 0
             fi
         done
@@ -175,75 +179,75 @@ get_git () {
     #       default: force!
     FLAGS=$(default_flag "$FLAGS" "force" "!")
 
-    debug "FLAGS: '${FLAGS}'"
+    output debug "FLAGS: '${FLAGS}'"
     DEST="$(expand_vars "${1}")"
-    debug "DEST: '${DEST}'"
+    output debug "DEST: '${DEST}'"
     REPO="$(expand_vars "${2}")"
-    debug "REPO: '${REPO}'"
+    output debug "REPO: '${REPO}'"
     BRANCH="$(get_flag "$FLAGS" 'branch')"
-    debug "BRANCH: '${BRANCH}'"
+    output debug "BRANCH: '${BRANCH}'"
     REMOTE="$(get_flag "$FLAGS" 'remote')"
-    debug "REMOTE: '${REMOTE}'"
+    output debug "REMOTE: '${REMOTE}'"
     if [ "$(get_flag "$FLAGS" 'recursive')" = 'true' ]; then
         RECURSIVE="--recursive"
     else
         RECURSIVE=""
     fi
-    debug "RECURSIVE: '${RECURSIVE}'"
+    output debug "RECURSIVE: '${RECURSIVE}'"
     if [ "$(get_flag "$FLAGS" 'verify_ssl')" = 'true' ]; then
         VERIFY_SSL="true"
     else
         VERIFY_SSL="false"
     fi
-    debug "VERIFY_SSL: '${VERIFY_SSL}'"
+    output debug "VERIFY_SSL: '${VERIFY_SSL}'"
 
     # force flag is set
     if [ "$(get_flag "$FLAGS" 'force')" = 'true' ]; then
         if ! command -v git > /dev/null; then
-            error "git is not installed"
+            output error "git is not installed"
             return 1
         fi
-        debug "force flag is set to true. I will do my best to fulfil your wishes master"
+        output debug "force flag is set to true. I will do my best to fulfil your wishes master"
         [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup $DEST
         rm -rf "$DEST"
         mkdir -p "$DEST"
         git --config "http.sslVerify=$VERIFY_SSL" clone "$RECURSIVE" --branch "$BRANCH" "$REPO" "$DEST" || \
-            (error "Couldn't clone '$REPO' into '$DEST'"; return 1)
+            (output error "Couldn't clone '$REPO' into '$DEST'"; return 1)
     fi
     # if git is not installed fail
     if ! command -v git > /dev/null && [ "$(get_flag "$FLAGS" 'tar_magic')" = 'false' ]; then
-        error "git is not installed and tar_magic flag is not set"
+        output error "git is not installed and tar_magic flag is not set"
         return 1
     fi
 
     if [ -d "${DEST}/.git" ] && [ "$(get_flag "$FLAGS" 'update')" = 'true' ]; then
         (
         cd "$DEST" || \
-            (error "Couldn't \`cd\` into '$DEST'"; return 1)
+            (output error "Couldn't \`cd\` into '$DEST'"; return 1)
         git config http.sslVerify "$VERIFY_SSL" || \
-            (error "Couldn't set config"; return 1)
-        debug "git 'checkout' '$BRANCH'"
+            (output error "Couldn't set config"; return 1)
+        output debug "git 'checkout' '$BRANCH'"
         git checkout "$BRANCH" || \
-            (error "Couldn't checkout '$BRANCH'"; return 1)
-        debug "git 'pull' '$REMOTE' '$BRANCH'"
+            (output error "Couldn't checkout '$BRANCH'"; return 1)
+        output debug "git 'pull' '$REMOTE' '$BRANCH'"
         git pull "$REMOTE" "$BRANCH" || \
-            (error "Couldn't pull '$BRANCH' branch from '$REMOTE'"; return 1)
+            (output error "Couldn't pull '$BRANCH' branch from '$REMOTE'"; return 1)
         if [ "$(get_flag "$FLAGS" 'recursive')" = 'true' ]; then
-            debug "git submodule update --init --recursive"
+            output debug "git submodule update --init --recursive"
             git submodule update --init --recursive || \
-                (error "Couldn't update submodules"; return 1)
+                (output error "Couldn't update submodules"; return 1)
         fi
-        ) && ok "Pulled successfully"
+        ) && output ok "Pulled successfully"
     else
         [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup $DEST
         rm -rf "$DEST"
         mkdir -p "$DEST"
         if command -v git > /dev/null; then
-            debug "git clone --config 'http.sslVerify=$VERIFY_SSL' '$RECURSIVE' --branch '$BRANCH' '$REPO' '$DEST'"
+            output debug "git clone --config 'http.sslVerify=$VERIFY_SSL' '$RECURSIVE' --branch '$BRANCH' '$REPO' '$DEST'"
             git clone --config "http.sslVerify=$VERIFY_SSL" "$RECURSIVE" --branch "$BRANCH" "$REPO" "$DEST" || \
-                (error "git clone command failed"; return 1)
+                (output error "git clone command failed"; return 1)
         else
-            error "tar_magic is not implemented yet"
+            output error "tar_magic is not implemented yet"
         fi
     fi
 }
@@ -267,42 +271,42 @@ link () {
     #       default: relative!
     FLAGS=$(default_flag "$FLAGS" "relative" "!")
 
-    debug "Flags for link: '$FLAGS'"
+    output debug "Flags for link: '$FLAGS'"
 
     DEST="$(expand_vars "${1}")"
-    debug "DEST: '$DEST'"
+    output debug "DEST: '$DEST'"
     # if relative flag set to false expand with BASEDIR else let it raw
     if [ "$(get_flag "$FLAGS" 'relative')" = 'true' ]; then
         SOURCE="$(expand_vars "${2}")"
     elif [ "$(get_flag "$FLAGS" 'relative')" = 'false' ]; then
         SOURCE="$(expand_vars "${BASEDIR}/${2}")"
     else
-        error "relative not in '$FLAGS'"
+        output error "relative not in '$FLAGS'"
         exit 1
     fi
 
-    debug "SOURCE: '$SOURCE'"
+    output debug "SOURCE: '$SOURCE'"
 
     # check if force flag is set
     if [ "$(get_flag "$FLAGS" 'force')" = 'true' ]; then
-        debug "force flag is set to true. I will do my best to fulfil your wishes master"
+        output debug "force flag is set to true. I will do my best to fulfil your wishes master"
         [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup $DEST
         rm -rf "$DEST"
         mkdir -p "$(dirname "$DEST")"
-        ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
+        ln -s "$SOURCE" "$DEST" && output ok "${DEST} -> ${SOURCE}" || output error "${DEST} -> ${SOURCE}"
         return 0
     fi
 
     # if link will be broken and ign_broken flag is set exit
     if [ "$(get_flag "$FLAGS" 'relative')" = 'false' ]; then
         if [ "$(get_flag "$FLAGS" 'ign_broken')" = 'false' ] && [ ! -e "$SOURCE" ]; then
-            warn "'${SOURCE}' doesn't exists. Quiting because ign_broken flag is set"
+            output warn "'${SOURCE}' doesn't exists. Quiting because ign_broken flag is set"
             return 1
         fi
     elif [ "$(get_flag "$FLAGS" 'relative')" = 'true' ]; then
-        warn "If relative flag is set the ign_broken flag is ignored because I can't determinate if the final file exists"
+        output warn "If relative flag is set the ign_broken flag is ignored because I can't determinate if the final file exists"
     else
-        error "relative not in '$FLAGS'"
+        output error "relative not in '$FLAGS'"
     fi
 
     # if DEST dir doesn't exists and create flag is set, create it
@@ -310,30 +314,30 @@ link () {
         if [ "$(get_flag "$FLAGS" 'create')" = 'true' ]; then
             mkdir -p "$(dirname "$DEST")"
         elif [ "$(get_flag "$FLAGS" 'create')" = 'false' ]; then
-            warn "'$(dirname "${DEST}")' doesn't exists. Quiting because create flag is not set"
+            output warn "'$(dirname "${DEST}")' doesn't exists. Quiting because create flag is not set"
             return 1
         else
-            error "create not in '$FLAGS'"
+            output error "create not in '$FLAGS'"
         fi
     fi
 
     if [ -L "$DEST" ]; then
         if printf '%s' "$(rreadlink "$DEST")" | grep "^$BASEDIR" > /dev/null; then
-            debug "File '${DEST}' exists and it points to my BASEDIR. Replacing it"
+            output debug "File '${DEST}' exists and it points to my BASEDIR. Replacing it"
             rm "$DEST"
-            ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
+            ln -s "$SOURCE" "$DEST" && output ok "${DEST} -> ${SOURCE}" || output error "${DEST} -> ${SOURCE}"
         else
-            error "'${DEST}' is a link but it's not mine. Quiting"
+            output error "'${DEST}' is a link but it's not mine. Quiting"
             return 1
         fi
     elif [ -f "$DEST" ]; then
         [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup $DEST
-        ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
+        ln -s "$SOURCE" "$DEST" && output ok "${DEST} -> ${SOURCE}" || output error "${DEST} -> ${SOURCE}"
     elif [ -d "$DEST" ]; then
-        error "Folder '${DEST}/' in target. I'm afraid. If you set the force flag I'll rip it apart"
+        output error "Folder '${DEST}/' in target. I'm afraid. If you set the force flag I'll rip it apart"
         return 1
     elif [ ! -e "$DEST" ]; then
-        ln -s "$SOURCE" "$DEST" && ok "${DEST} -> ${SOURCE}" || error "${DEST} -> ${SOURCE}"
+        ln -s "$SOURCE" "$DEST" && output ok "${DEST} -> ${SOURCE}" || output error "${DEST} -> ${SOURCE}"
     fi
 }
 
@@ -354,11 +358,11 @@ shell () {
     FLAGS=$(default_flag "$FLAGS" "stderr" "=")
 
     STDIN="$(get_flag "$FLAGS" 'stdin')"
-    debug "STDIN: $STDIN"
+    output debug "STDIN: $STDIN"
     STDOUT="$(get_flag "$FLAGS" 'stdout')"
-    debug "STDOUT: $STDOUT"
+    output debug "STDOUT: $STDOUT"
     STDERR="$(get_flag "$FLAGS" 'stderr')"
-    debug "STDERR: $STDERR"
+    output debug "STDERR: $STDERR"
     RUN="$1"
     OK=""
     CMD="${2}"
@@ -377,13 +381,13 @@ shell () {
         CMD="$CMD < ${STDIN:-/dev/null}"
         CMD="$CMD 2> ${STDERR:-/dev/null}"
     else
-        error "interactive not in '$FLAGS'"
+        output error "interactive not in '$FLAGS'"
         exit 1
     fi
-    debug "COMMAND: $CMD"
+    output debug "COMMAND: $CMD"
 
-    running "$RUN"
-    ( eval $CMD ) && ok "$OK" || error "$OK"
+    output running "$RUN"
+    ( eval $CMD ) && output ok "$OK" || output error "$OK"
 }
 
 debug_cmd () {
@@ -391,12 +395,12 @@ debug_cmd () {
     FLAGS=$(default_flag "$FLAGS" "false" "!")
     FLAGS=$(default_flag "$FLAGS" "first" "=first")
     FLAGS=$(default_flag "$FLAGS" "second" "=second")
-    ok "debug command"
-    ok "Flags: '$FLAGS'"
+    output ok "debug command"
+    output ok "Flags: '$FLAGS'"
     ARG1="$(expand_vars ${1})"
-    ok "Arg1:  '$ARG1'"
+    output ok "Arg1:  '$ARG1'"
     ARG2="$(expand_vars ${2})"
-    ok "Arg2:  '$ARG2'"
+    output ok "Arg2:  '$ARG2'"
 }
 
 install () {
@@ -427,13 +431,13 @@ install () {
                 OPTIONS=${line#*:}
             else
                 COMMAND='error'
-                error "'${line%%:*}' command is not one of valid commands"
+                output error "'${line%%:*}' command is not one of valid commands"
             fi
         elif [ "$(get_level "$line")" -gt "0" ] && [ "$COMMAND" != "error" ]; then
             #Trim whitespaces
             FST_ARG=$( printf '%s' "${line%%:*}" | sed -e 's/^ *//' -e 's/ *$//')
             SND_ARG=$( printf '%s' "${line#*:}"  | sed -e 's/^ *//' -e 's/ *$//')
-            debug "executing FLAGS='${OPTIONS}' '$COMMAND' '$FST_ARG' '$SND_ARG'"
+            output debug "executing FLAGS='${OPTIONS}' '$COMMAND' '$FST_ARG' '$SND_ARG'"
             FLAGS="${OPTIONS}" $COMMAND "$FST_ARG" "$SND_ARG"
         fi
     done < "$CONFIG_FILE"
@@ -441,7 +445,7 @@ install () {
 
 check () {
     if grep "\t" "$CONFIG_FILE" > /dev/null; then
-        warn "The config file contains tabs. They will be replaced with 4 spaces"
+        output warn "The config file contains tabs. They will be replaced with 4 spaces"
     fi
 }
 
@@ -457,10 +461,10 @@ case "$1" in
         install
         ;;
     remove)
-        error "not implemented yet"
+        output error "not implemented yet"
         ;;
     clean)
-        error "not implemented yet"
+        output error "not implemented yet"
         ;;
     *)
         printf "%s\n" "Try 'install' or '--help'"
