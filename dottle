@@ -63,8 +63,8 @@ Commands and args:
 EOF
 }
 
+# escape a string mainly for expand_vars
 escape () {
-    # Escape a string mainly for expand_vars
     output debug "EXPAND: '$1'"
     printf '%s' "$1" | sed \
                         -e 's:^~/:'$HOME'/:' \
@@ -73,31 +73,14 @@ escape () {
                         -e 's/\\\$/\\\$/g'
 }
 
+# expand env vars in a string
 expand_vars () {
-    # Expand env vars in a string
     # if safe is set don't expand $VARS only the tilde
     eval printf '%s' "\"$(escape "$1")\""
 }
 
-get_level () {
-    # Get indentation level
-    printf '%s' "$1" | sed -e 's/[^ ].*$//' -e 's/    /X/' -e 's/[^X]//' | wc -c
-}
-
-realpath () {
-    # prints absolute path of a relative or absolute path
-    # sadly POSIX doesn't have this function
-    if [ -e "$(dirname "$1")" ]; then
-        printf '%s' "$(cd $(dirname $1) && pwd)"/"$(basename $1)"
-    else
-        output "'$(dirname "$1")' doesn't exist" error
-        return 1
-    fi
-}
-
+# execute the function in a *subshell* to localize variables and the effect of `cd`.
 rreadlink() {
-    # source: http://stackoverflow.com/a/29835459
-    # Execute the function in a *subshell* to localize variables and the effect of `cd`.
     target=$1 fname= targetDir=
     while true; do # Resolve potential symlinks until the ultimate target is found.
         [ -L "$target" ] || [ -e "$target" ] || return 1
@@ -403,6 +386,12 @@ debug_cmd () {
     output ok "Arg2:  '$ARG2'"
 }
 
+# get config file line indentation level
+get_level () {
+    printf '%s' "$1" | sed -e 's/[^ ].*$//' -e 's/    /X/' -e 's/[^X]//' | wc -c
+}
+
+# parse config file and call proper function to handle a command
 install () {
     COMMAND=''
     OPTIONS=''
@@ -415,7 +404,6 @@ install () {
         if [ -z "$line" ]; then
             continue
         fi
-        # if printf "$line" | grep '^[[:alpha:]]\+:.*$'
         if [ "$(get_level "$line")" -eq "0" ]; then
             if [ "${line%%:*}" = 'link' ]; then
                 COMMAND='link'
@@ -434,7 +422,7 @@ install () {
                 output error "'${line%%:*}' command is not one of valid commands"
             fi
         elif [ "$(get_level "$line")" -gt "0" ] && [ "$COMMAND" != "error" ]; then
-            #Trim whitespaces
+            # Trim whitespaces
             FST_ARG=$( printf '%s' "${line%%:*}" | sed -e 's/^ *//' -e 's/ *$//')
             SND_ARG=$( printf '%s' "${line#*:}"  | sed -e 's/^ *//' -e 's/ *$//')
             output debug "executing FLAGS='${OPTIONS}' '$COMMAND' '$FST_ARG' '$SND_ARG'"
@@ -443,6 +431,7 @@ install () {
     done < "$CONFIG_FILE"
 }
 
+# check if config file contains tabulators
 check () {
     if grep "\t" "$CONFIG_FILE" > /dev/null; then
         output warn "The config file contains tabs. They will be replaced with 4 spaces"
