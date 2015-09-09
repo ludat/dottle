@@ -195,7 +195,7 @@ get_git () {
             return 1
         fi
         output debug "force flag is set to true. I will do my best to fulfil your wishes master"
-        [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup $DEST
+        [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup "$DEST"
         rm -rf "$DEST"
         mkdir -p "$DEST"
         git --config "http.sslVerify=$VERIFY_SSL" clone "$RECURSIVE" --branch "$BRANCH" "$REPO" "$DEST" || \
@@ -226,7 +226,7 @@ get_git () {
         fi
         ) && output ok "Pulled successfully"
     else
-        [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup $DEST
+        [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup "$DEST"
         rm -rf "$DEST"
         mkdir -p "$DEST"
         if command -v git > /dev/null; then
@@ -277,7 +277,7 @@ link () {
     # check if force flag is set
     if [ "$(get_flag "$FLAGS" 'force')" = 'true' ]; then
         output debug "force flag is set to true. I will do my best to fulfil your wishes master"
-        [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup $DEST
+        [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup "$DEST"
         rm -rf "$DEST"
         mkdir -p "$(dirname "$DEST")"
         ln -s "$SOURCE" "$DEST" && output ok "${DEST} -> ${SOURCE}" || output error "${DEST} -> ${SOURCE}"
@@ -318,7 +318,7 @@ link () {
             return 1
         fi
     elif [ -f "$DEST" ]; then
-        [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup $DEST
+        [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup "$DEST"
         ln -s "$SOURCE" "$DEST" && output ok "${DEST} -> ${SOURCE}" || output error "${DEST} -> ${SOURCE}"
     elif [ -d "$DEST" ]; then
         output error "Folder '${DEST}/' in target. I'm afraid. If you set the force flag I'll rip it apart"
