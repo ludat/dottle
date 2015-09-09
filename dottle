@@ -45,8 +45,8 @@ output () {
             printf "${YELLOW}[running]${RESET} %b" "$message"
             ;;
         *)
-            printf "${RED}[error]${RESET} %b" "Error: wrong output level passed"
-            exit 1
+            printf "${RED}[error]${RESET} %b\n" "wrong output level passed" 1>&2
+            printf "${YELLOW}[no level]${RESET} %b\n" "$message"
             ;;
     esac
 }
