@@ -44,9 +44,12 @@ output () {
         running)
             printf "${YELLOW}[running]${RESET} %b" "$message"
             ;;
+        internal_error)
+            printf "${RED}[internal error]${RESET} %b\n" "$message" 1>&2
+            printf "    Please file an issue at https://github.com/ludat/dottle/issues\n" 1>&2
+            ;;
         *)
-            printf "${RED}[error]${RESET} %b\n" "wrong output level passed" 1>&2
-            printf "${YELLOW}[no level]${RESET} %b\n" "$message"
+            output internal_error "bad output level ('$level'),\n    original message: $message"
             ;;
     esac
 }
@@ -268,7 +271,7 @@ link () {
     elif [ "$(get_flag "$FLAGS" 'relative')" = 'false' ]; then
         SOURCE="$(expand_vars "${BASEDIR}/${2}")"
     else
-        output error "relative not in '$FLAGS'"
+        output internal_error "relative not in '$FLAGS'"
         exit 1
     fi
 
@@ -293,7 +296,7 @@ link () {
     elif [ "$(get_flag "$FLAGS" 'relative')" = 'true' ]; then
         output warn "If relative flag is set the ign_broken flag is ignored because I can't determinate if the final file exists"
     else
-        output error "relative not in '$FLAGS'"
+        output internal_error "relative not in '$FLAGS'"
     fi
 
     # if DEST dir doesn't exists and create flag is set, create it
@@ -304,7 +307,7 @@ link () {
             output warn "'$(dirname "${DEST}")' doesn't exists. Quiting because create flag is not set"
             return 1
         else
-            output error "create not in '$FLAGS'"
+            output internal_error "create not in '$FLAGS'"
         fi
     fi
 
@@ -368,7 +371,7 @@ shell () {
         CMD="$CMD < ${STDIN:-/dev/null}"
         CMD="$CMD 2> ${STDERR:-/dev/null}"
     else
-        output error "interactive not in '$FLAGS'"
+        output internal_error "interactive not in '$FLAGS'"
         exit 1
     fi
     output debug "COMMAND: $CMD"
