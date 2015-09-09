@@ -287,7 +287,7 @@ link () {
     # if link will be broken and ign_broken flag is set exit
     if [ "$(get_flag "$FLAGS" 'relative')" = 'false' ]; then
         if [ "$(get_flag "$FLAGS" 'ign_broken')" = 'false' ] && [ ! -e "$SOURCE" ]; then
-            output warn "'${SOURCE}' doesn't exists. Quiting because ign_broken flag is set"
+            output warn "'${SOURCE}' doesn't exists. Quiting because ign_broken flag is not set"
             return 1
         fi
     elif [ "$(get_flag "$FLAGS" 'relative')" = 'true' ]; then
