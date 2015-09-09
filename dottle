@@ -210,18 +210,24 @@ get_git () {
         return 1
     fi
 
-    if [ -d "${DEST}/.git" ] && [ "$(get_flag "$FLAGS" 'update')" = 'true' ]; then
+    if [ -d "${DEST}/.git" ] && \
+            [ "$(get_flag "$FLAGS" 'update')" = 'true' ] && \
+            (cd "$DEST"; [ "$(git config --get "remote.${REMOTE}.url")" = "${REPO}" ]); then
         (
         cd "$DEST" || \
             (output error "Couldn't \`cd\` into '$DEST'"; return 1)
+
         git config http.sslVerify "$VERIFY_SSL" || \
             (output error "Couldn't set config"; return 1)
+
         output debug "git 'checkout' '$BRANCH'"
         git checkout "$BRANCH" || \
             (output error "Couldn't checkout '$BRANCH'"; return 1)
+
         output debug "git 'pull' '$REMOTE' '$BRANCH'"
         git pull "$REMOTE" "$BRANCH" || \
             (output error "Couldn't pull '$BRANCH' branch from '$REMOTE'"; return 1)
+
         if [ "$(get_flag "$FLAGS" 'recursive')" = 'true' ]; then
             output debug "git submodule update --init --recursive"
             git submodule update --init --recursive || \
