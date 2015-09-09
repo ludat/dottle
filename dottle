@@ -36,12 +36,12 @@ output () {
                 printf "${RED}[error]${RESET}" 1>&2
             fi
             ;;
-        debug)    
+        debug)
             if [ -n "$DEBUG" ]; then
                 printf "${MAGENTA}[debug]${RESET} %b\n" "$message" 1>&2
             fi
             ;;
-        running)    
+        running)
             printf "${YELLOW}[running]${RESET} %b" "$message"
             ;;
         *)
