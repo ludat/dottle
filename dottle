@@ -107,9 +107,13 @@ backup () {
         while true; do
             new_file="${1}.$(date "+%Y-%m-%d_%H-%M-%S").backup"
             if [ ! -e "${new_file}" ]; then
-                mv "$1" "$new_file" || output error "Failed to back up '${1}' to '${new_file}'" && return 1
-                output warn "Backed up '$1' to '$new_file'"
-                return 0
+                if mv "$1" "$new_file"; then
+                    output debug "Backed up '$1' to '$new_file'"
+                    return 0
+                else
+                    output error "Failed to back up '${1}' to '${new_file}'"
+                    return 1
+                fi
             fi
         done
     else
