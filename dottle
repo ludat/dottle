@@ -444,20 +444,10 @@ install () {
     done < "$CONFIG_FILE"
 }
 
-# check if config file contains tabulators
-check () {
-    if grep "\t" "$CONFIG_FILE" > /dev/null; then
-        output warn "The config file contains tabs. They will be replaced with 4 spaces"
-    fi
-}
-
 # main
 case "$1" in
     --help)
         show_help
-        ;;
-    check)
-        check
         ;;
     install)
         install
