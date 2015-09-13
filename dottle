@@ -2,6 +2,7 @@
 
 CONFIG_FILE="${CONFIG_FILE:-install.conf.yml}"
 BASEDIR="$(cd "$(dirname "$0")" && pwd)"
+DOTTLE_STORAGE_PATH="${DOTTLE_STORAGE_PATH:-dottle-storage}"
 cd "${BASEDIR}"
 
 # color variables
@@ -170,7 +171,7 @@ get_git () {
     FLAGS=$(default_flag "$FLAGS" "force" "!")
 
     output debug "FLAGS: '${FLAGS}'"
-    DEST="$(expand_vars "${1}")"
+    DEST="$(expand_vars "${DOTTLE_STORAGE_PATH}/${1}")"
     output debug "DEST: '${DEST}'"
     REPO="$(expand_vars "${2}")"
     output debug "REPO: '${REPO}'"
@@ -266,6 +267,9 @@ link () {
     #   relative: if set target of links will be relative and won't be altered in any way
     #       default: relative!
     FLAGS=$(default_flag "$FLAGS" "relative" "!")
+    #   in_storage: if set target of links get added the storage path
+    #       default: in_storage
+    FLAGS=$(default_flag "$FLAGS" "in_storage" "")
 
     output debug "Flags for link: '$FLAGS'"
 
@@ -275,7 +279,14 @@ link () {
     if [ "$(get_flag "$FLAGS" 'relative')" = 'true' ]; then
         SOURCE="$(expand_vars "${2}")"
     elif [ "$(get_flag "$FLAGS" 'relative')" = 'false' ]; then
-        SOURCE="$(expand_vars "${BASEDIR}/${2}")"
+        if [ "$(get_flag "$FLAGS" 'in_storage')" = 'true' ]; then
+            SOURCE="$(expand_vars "${BASEDIR}/${DOTTLE_STORAGE_PATH}/${2}")"
+        elif [ "$(get_flag "$FLAGS" 'in_storage')" = 'false' ]; then
+            SOURCE="$(expand_vars "${BASEDIR}/${2}")"
+        else
+            output internal_error "in_storage not in '$FLAGS'"
+            return 1
+        fi
     else
         output internal_error "relative not in '$FLAGS'"
         exit 1
@@ -318,7 +329,7 @@ link () {
     fi
 
     if [ -L "$DEST" ]; then
-        if printf '%s' "$(rreadlink "$DEST")" | grep "^$BASEDIR" > /dev/null; then
+        if printf '%s' "$(rreadlink "$DEST")" | grep "^${BASEDIR}/${DOTTLE_STORAGE_PATH}" > /dev/null; then
             output debug "File '${DEST}' exists and it points to my BASEDIR. Replacing it"
             rm "$DEST"
             ln -s "$SOURCE" "$DEST" && output ok "${DEST} -> ${SOURCE}" || output error "${DEST} -> ${SOURCE}"
@@ -406,6 +417,13 @@ get_level () {
 
 # parse config file and call proper function to handle a command
 install () {
+    if [ ! -e "$DOTTLE_STORAGE_PATH" ]; then
+        mkdir -p "$DOTTLE_STORAGE_PATH"
+    fi
+    if [ ! -d "$DOTTLE_STORAGE_PATH" ]; then
+        output error "The dottle storage directory couldn't be created"
+        exit 1
+    fi
     COMMAND=''
     OPTIONS=''
     while IFS='' read -r line; do
