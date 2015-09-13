@@ -1,6 +1,5 @@
 #!/bin/sh
 
-CONFIG_FILE="${CONFIG_FILE:-install.conf.yml}"
 BASEDIR="$(cd "$(dirname "$0")" && pwd)"
 cd "${BASEDIR}"
 
@@ -457,9 +456,11 @@ case "$1" in
         show_help
         ;;
     check)
+        CONFIG_FILE="${2:-install.conf.yml}"
         check
         ;;
     install)
+        CONFIG_FILE="${2:-install.conf.yml}"
         install
         ;;
     remove)
