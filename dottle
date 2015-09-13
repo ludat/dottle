@@ -77,7 +77,6 @@ escape () {
 
 # expand env vars in a string
 expand_vars () {
-    # if safe is set don't expand $VARS only the tilde
     eval printf '%s' "\"$(escape "$1")\""
 }
 
