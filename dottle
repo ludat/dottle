@@ -276,7 +276,7 @@ link () {
         SOURCE="$(expand_vars "${BASEDIR}/${2}")"
     else
         output internal_error "relative not in '$FLAGS'"
-        exit 1
+        return 1
     fi
 
     output debug "SOURCE: '$SOURCE'"
@@ -376,7 +376,7 @@ shell () {
         CMD="$CMD 2> ${STDERR:-/dev/null}"
     else
         output internal_error "interactive not in '$FLAGS'"
-        exit 1
+        return 1
     fi
     output debug "COMMAND: $CMD"
 
