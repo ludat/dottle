@@ -18,9 +18,6 @@ get_git:
     vimrc: git@github.com:ludat/vimrc.git
     zshrc: git@github.com:ludat/zshrc.git
 
-shell: interactive
-    Installing submodules: git submodule update --init --recursive
-
 link: create force! ign_broken! backup relative!
     ~/.vim: vimrc/vim/
     ~/.vimrc: vimrc/vimrc
