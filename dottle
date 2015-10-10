@@ -442,8 +442,9 @@ install () {
 
 # check if config file contains tabulators
 check () {
-    if grep "\t" "$CONFIG_FILE" > /dev/null; then
-        output warn "The config file contains tabs. They will be replaced with 4 spaces"
+    if grep $'\t' "$CONFIG_FILE"; then
+        output error "The config file contains tabs. They will be replaced with 4 spaces"
+        return 1
     fi
 }
 
@@ -454,11 +455,17 @@ case "$1" in
         ;;
     check)
         CONFIG_FILE="${2:-install.conf.yml}"
-        check
+        if check; then
+            output ok "The file doesn't contain any errors"
+        else
+            output error "The file has some serious errors"
+        fi
         ;;
     install)
         CONFIG_FILE="${2:-install.conf.yml}"
-        install
+        if check; then
+            install
+        fi
         ;;
     remove)
         output error "not implemented yet"
