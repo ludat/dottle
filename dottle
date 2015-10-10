@@ -399,7 +399,7 @@ debug_cmd () {
 
 # get config file line indentation level
 get_level () {
-    printf '%s' "$1" | sed -e 's/[^ ].*$//' -e 's/    /X/' -e 's/[^X]//' | wc -c
+    printf '%s' "$1" | grep -o '    ' | wc -l
 }
 
 # parse config file and call proper function to handle a command
@@ -408,8 +408,6 @@ install () {
     OPTIONS=''
     while IFS='' read -r line; do
         # Replace tabs with four spaces
-        # FIXME maybe custom this spaces?
-        line=$(printf '%s' "$line" | sed "s/\t/    /")
         # Remove comments from lines
         line=$(printf '%s' "$line" | sed 's/#.*$//' | sed 's/^ *$//')
         if [ -z "$line" ]; then
@@ -429,10 +427,10 @@ install () {
                 COMMAND='debug_cmd'
                 OPTIONS=${line#*:}
             else
-                COMMAND='error'
+                COMMAND=''
                 output error "'${line%%:*}' command is not one of valid commands"
             fi
-        elif [ "$(get_level "$line")" -gt "0" ] && [ "$COMMAND" != "error" ]; then
+        elif [ "$(get_level "$line")" -gt "0" ] && [ -n "$COMMAND" ]; then
             # Trim whitespaces
             FST_ARG=$( printf '%s' "${line%%:*}" | sed -e 's/^ *//' -e 's/ *$//')
             SND_ARG=$( printf '%s' "${line#*:}"  | sed -e 's/^ *//' -e 's/ *$//')
