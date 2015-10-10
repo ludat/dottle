@@ -14,9 +14,10 @@
 # folder where this script lives
 
 get_git:
-    dotfiles: git@gitlab.com:ludat/dotfiles.git
-    vimrc: git@github.com:ludat/vimrc.git
-    zshrc: git@github.com:ludat/zshrc.git
+    dotfiles: https://gitlab.com/ludat/dotfiles.git
+    vimrc: https://github.com/ludat/vimrc.git
+    zshrc: https://github.com/ludat/zshrc.git
+    xmonad: https://github.com/ludat/xmonad-config.git
 
 link: create force! ign_broken! backup relative!
     ~/.vim: vimrc/vim/
@@ -32,6 +33,7 @@ link: create force! ign_broken! backup relative!
     ~/.Xresources: dotfiles/xorg/Xresources
     ~/.xinitrc: dotfiles/xorg/xinitrc
     ~/.zprofile: dotfiles/xorg/zprofile
+    ~/.xmonad: xmonad/
 
 shell: interactive!
     Doomed to fail: false
