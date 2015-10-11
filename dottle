@@ -399,7 +399,7 @@ debug_cmd () {
 
 # get config file line indentation level
 get_level () {
-    printf '%s' "$1" | grep -o '    ' | wc -l
+    printf '%s' "$1" | grep -o '^\s*' | grep -o " \{4\}" | wc -l
 }
 
 # parse config file and call proper function to handle a command
