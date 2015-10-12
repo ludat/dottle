@@ -25,6 +25,9 @@ output () {
         warn)
             printf "${BLUE}[warning]${RESET} %b\n" "$message"
             ;;
+        info)
+            printf "${BLUE}[info]${RESET} %b\n" "$message"
+            ;;
         error)
             if [ ! -z "$message" ] ; then
                 printf "${RED}[error]${RESET} %b\n" "$message" 1>&2
@@ -314,7 +317,7 @@ link () {
 
     if [ -L "$DEST" ]; then
         if printf '%s' "$(rreadlink "$DEST")" | grep "^$BASEDIR" > /dev/null; then
-            output debug "File '${DEST}' exists and it points to my BASEDIR. Replacing it"
+            output info "File '${DEST}' exists and it points to my BASEDIR. Replacing it"
             rm "$DEST"
             ln -s "$SOURCE" "$DEST" && output ok "${DEST} -> ${SOURCE}" || output error "${DEST} -> ${SOURCE}"
         else
