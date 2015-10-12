@@ -269,14 +269,29 @@ link () {
 
     DEST="$(expand_vars "${1}")"
     output debug "DEST: '$DEST'"
+    SOURCE="$(expand_vars "${BASEDIR}/${2}")"
     # if relative flag set to false expand with BASEDIR else let it raw
     if [ "$(get_flag "$FLAGS" 'relative')" = 'true' ]; then
-        SOURCE="$(expand_vars "${2}")"
-    elif [ "$(get_flag "$FLAGS" 'relative')" = 'false' ]; then
-        SOURCE="$(expand_vars "${BASEDIR}/${2}")"
-    else
-        output internal_error "relative not in '$FLAGS'"
-        return 1
+        SOURCE_T="$(printf "$SOURCE" | sed -e 's:^/::')"
+        DEST_T="$(printf "$DEST" | sed -e 's:^/::')"
+
+        SOURCE_BASE="$(printf "$SOURCE_T" | grep -o "^[^/]*")"
+        DEST_BASE="$(printf "$DEST_T" | grep -o "^[^/]*")"
+
+        while [ "$DEST_BASE" = "$SOURCE_BASE" ]; do
+            SOURCE_T="$(printf "$SOURCE_T" | sed -e 's:^[^/]*/::')"
+            DEST_T="$(printf "$DEST_T" | sed -e 's:^[^/]*/::')"
+            # output info "SOURCE_T = $SOURCE_T"
+            # output info "DEST_T = $DEST_T"
+
+            SOURCE_BASE="$(printf "$SOURCE_T" | grep -o "^[^/]*")"
+            DEST_BASE="$(printf "$DEST_T" | grep -o "^[^/]*")"
+        done
+        if [ "$(basename "$DEST_T")" = "." ]; then
+            SOURCE="$(dirname "$DEST_T" | sed -e 's:[^/]*:..:g')/$SOURCE_T"
+        else
+            SOURCE="$SOURCE_T"
+        fi
     fi
 
     output debug "SOURCE: '$SOURCE'"
