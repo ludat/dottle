@@ -295,7 +295,7 @@ link () {
             SOURCE_BASE="$(printf "$SOURCE_T" | grep -o "^[^/]*")"
             DEST_BASE="$(printf "$DEST_T" | grep -o "^[^/]*")"
         done
-        if [ "$(basename "$DEST_T")" = "." ]; then
+        if [ ! "$(dirname "$DEST_T")" = "." ]; then
             SOURCE="$(dirname "$DEST_T" | sed -e 's:[^/]*:..:g')/$SOURCE_T"
         else
             SOURCE="$SOURCE_T"
