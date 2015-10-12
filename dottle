@@ -262,8 +262,8 @@ link () {
     #       default: backup
     FLAGS=$(default_flag "$FLAGS" "backup" "")
     #   relative: if set target of links will be relative and won't be altered in any way
-    #       default: relative!
-    FLAGS=$(default_flag "$FLAGS" "relative" "!")
+    #       default: relative
+    FLAGS=$(default_flag "$FLAGS" "relative" "")
 
     output debug "Flags for link: '$FLAGS'"
 
