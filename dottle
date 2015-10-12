@@ -443,7 +443,7 @@ install () {
 # check if config file contains tabulators
 check () {
     if grep $'\t' "$CONFIG_FILE"; then
-        output error "The config file contains tabs. They will be replaced with 4 spaces"
+        output error "The config file ('${CONFIG_FILE}') contains tabs."
         return 1
     fi
 }
