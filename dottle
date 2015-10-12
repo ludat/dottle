@@ -1,8 +1,5 @@
 #!/bin/sh
 
-BASEDIR="$(cd "$(dirname "$0")" && pwd)"
-cd "${BASEDIR}"
-
 # color variables
 ESC="\033["
 RESET=$ESC"0m"
@@ -462,7 +459,10 @@ case "$1" in
         fi
         ;;
     install)
-        CONFIG_FILE="${2:-install.conf.yml}"
+        CONFIG_FILE_FULL_PATH="${2:-install.conf.yml}"
+        BASEDIR="$(cd "$(dirname "$CONFIG_FILE_FULL_PATH")" && pwd)"
+        CONFIG_FILE="$(basename "${CONFIG_FILE_FULL_PATH}")"
+        cd "$BASEDIR"
         if check; then
             install
         fi
