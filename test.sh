@@ -30,12 +30,12 @@ check_results () {
     cd "$1"
     RESULT=
     for ACTUAL_FILE in $(find . -maxdepth 1 -mindepth 1 -name "*.expected" -type f) ; do
-        if ! diff "$ACTUAL_FILE" "${ACTUAL_FILE%.expected}.actual"; then
+        if ! diff --unified "$ACTUAL_FILE" "${ACTUAL_FILE%.expected}.actual"; then
             output error "$ACTUAL_FILE is not correct"
             RESULT=F
         fi
     done
-    if ! diff --no-dereference --recursive fakehome.expected fakehome.actual; then
+    if ! diff --unified --no-dereference --recursive fakehome.expected fakehome.actual; then
         RESULT=F
     fi
     if [ "$RESULT" = "F" ]; then
