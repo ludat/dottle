@@ -1,6 +1,8 @@
 # dottle
 
-![Pull requests stats](http://www.issuestats.com/github/ludat/dottle/badge/pr?style=flat) ![Issues stats](http://www.issuestats.com/github/ludat/dottle/badge/issue?style=flat)
+[![Build Status](https://travis-ci.org/ludat/dottle.svg)](https://travis-ci.org/ludat/dottle)
+![Pull requests stats](http://www.issuestats.com/github/ludat/dottle/badge/pr?style=flat)
+![Issues stats](http://www.issuestats.com/github/ludat/dottle/badge/issue?style=flat)
 
 Manage your dotfiles anywhere with a super POSIX sh script.
 
