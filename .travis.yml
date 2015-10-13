@@ -1,0 +1,8 @@
+language: sh
+
+os:
+  - linux
+  - osx
+
+script:
+  - ./test.sh tests

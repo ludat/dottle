@@ -30,12 +30,12 @@ check_results () {
     cd "$1"
     RESULT=
     for ACTUAL_FILE in $(find . -maxdepth 1 -mindepth 1 -name "*.expected" -type f) ; do
-        if ! colordiff "$ACTUAL_FILE" "${ACTUAL_FILE%.expected}.actual"; then
+        if ! diff --unified "$ACTUAL_FILE" "${ACTUAL_FILE%.expected}.actual"; then
             output error "$ACTUAL_FILE is not correct"
             RESULT=F
         fi
     done
-    if ! colordiff --no-dereference --recursive fakehome.expected fakehome.actual; then
+    if ! diff --unified --recursive fakehome.expected fakehome.actual; then
         RESULT=F
     fi
     if [ "$RESULT" = "F" ]; then
@@ -53,6 +53,7 @@ cleanup () {
 }
 
 TESTS_DIR="${1:-tests}"
+RESULT=
 for CMD_FILE in $(find "$TESTS_DIR" -type f -name "cmd.sh"); do
     TEST_DIR="$(dirname "$CMD_FILE")"
     output debug "running $TEST_DIR "
@@ -62,5 +63,11 @@ for CMD_FILE in $(find "$TESTS_DIR" -type f -name "cmd.sh"); do
         output ok "'$TEST_DIR' passed"
     else
         output error "'$TEST_DIR' failed"
+        RESULT="F"
     fi
 done
+if [ "$RESULT" = "F" ]; then
+    exit 1
+else
+    exit 0
+fi
