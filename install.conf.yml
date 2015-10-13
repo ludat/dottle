@@ -19,7 +19,7 @@ get_git:
     zshrc: https://github.com/ludat/zshrc.git
     xmonad: https://github.com/ludat/xmonad-config.git
 
-link: create force! ign_broken! backup relative!
+link: create force! ign_broken! backup relative
     ~/.vim: vimrc/vim/
     ~/.vimrc: vimrc/vimrc
     ~/.zsh: zshrc/zsh/
