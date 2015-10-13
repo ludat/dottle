@@ -35,7 +35,7 @@ check_results () {
             RESULT=F
         fi
     done
-    if ! diff --unified --no-dereference --recursive fakehome.expected fakehome.actual; then
+    if ! diff --unified --recursive fakehome.expected fakehome.actual; then
         RESULT=F
     fi
     if [ "$RESULT" = "F" ]; then
