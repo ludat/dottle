@@ -1,4 +1,6 @@
 language: sh
 
 script:
+    - diff --help
+    - diff --version
     - ./test.sh tests
