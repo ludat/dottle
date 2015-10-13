@@ -30,9 +30,9 @@ output () {
             ;;
         error)
             if [ ! -z "$message" ] ; then
-                printf "${RED}[error]${RESET} %b\n" "$message" 1>&2
+                printf "${RED}[error]${RESET} %b\n" "$message"
             else
-                printf "${RED}[error]${RESET}" 1>&2
+                printf "${RED}[error]${RESET}"
             fi
             ;;
         debug)
