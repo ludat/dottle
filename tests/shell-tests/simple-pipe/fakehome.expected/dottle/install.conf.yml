@@ -1,0 +1,2 @@
+shell: stdout=~/my_file
+    Piping to file: printf "hi\n"
