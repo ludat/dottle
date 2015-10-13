@@ -1,6 +1,8 @@
 language: sh
 
+os:
+  - linux
+  - osx
+
 script:
-    - diff --help
-    - diff --version
-    - ./test.sh tests
+  - ./test.sh tests
