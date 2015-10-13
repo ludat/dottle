@@ -9,7 +9,7 @@ run_test () {
 
     rm -rf fakehome.actual
     if [ -d "fakehome" ]; then
-        cp -r fakehome fakehome.actual
+        cp -R fakehome fakehome.actual
     else
         mkdir fakehome.actual
     fi
