@@ -139,7 +139,7 @@ default_flag () {
     fi
 }
 
-get_git () {
+dottle_get_git () {
     # Get git repo into a directory
     # Possible configuration flags:
     #   branch: branch name of the repo
@@ -246,7 +246,7 @@ get_git () {
     fi
 }
 
-link () {
+dottle_link () {
     # Creates link from the first arg to second arg
     # Possible configuration flags:
     #   create: if final directory doesn't exist create them recursively
@@ -346,7 +346,7 @@ link () {
     fi
 }
 
-shell () {
+dottle_shell () {
     # execute an external command
     # Possible configuration flags:
     #   interactive: if set all stds will be redirected to this shell
@@ -395,7 +395,7 @@ shell () {
     ( eval $CMD ) && output ok "$OK" || output error "$OK"
 }
 
-debug_cmd () {
+dottle_debug_cmd () {
     FLAGS=$(default_flag "$FLAGS" "true" "")
     FLAGS=$(default_flag "$FLAGS" "false" "!")
     FLAGS=$(default_flag "$FLAGS" "first" "=first")
@@ -414,7 +414,7 @@ get_level () {
 }
 
 # parse config file and call proper function to handle a command
-install () {
+dottle_install () {
     COMMAND=''
     OPTIONS=''
     while IFS='' read -r line; do
@@ -425,34 +425,24 @@ install () {
             continue
         fi
         if [ "$(get_level "$line")" -eq "0" ]; then
-            if [ "${line%%:*}" = 'link' ]; then
-                COMMAND='link'
-                OPTIONS="${line#*:}"
-            elif [ "${line%%:*}" = 'shell' ]; then
-                COMMAND='shell'
-                OPTIONS=${line#*:}
-            elif [ "${line%%:*}" = 'get_git' ]; then
-                COMMAND='get_git'
-                OPTIONS=${line#*:}
-            elif [ "${line%%:*}" = 'debug_cmd' ]; then
-                COMMAND='debug_cmd'
-                OPTIONS=${line#*:}
-            else
-                COMMAND=''
-                output error "'${line%%:*}' command is not one of valid commands"
-            fi
+            COMMAND="dottle_${line%%:*}"
+            OPTIONS="${line#*:}"
         elif [ "$(get_level "$line")" -gt "0" ] && [ -n "$COMMAND" ]; then
             # Trim whitespaces
             FST_ARG=$( printf '%s' "${line%%:*}" | sed -e 's/^ *//' -e 's/ *$//')
             SND_ARG=$( printf '%s' "${line#*:}"  | sed -e 's/^ *//' -e 's/ *$//')
-            output debug "executing FLAGS='${OPTIONS}' '$COMMAND' '$FST_ARG' '$SND_ARG'"
-            FLAGS="${OPTIONS}" $COMMAND "$FST_ARG" "$SND_ARG"
+            if type "$COMMAND" > /dev/null ; then
+                output debug "executing FLAGS='${OPTIONS}' '$COMMAND' '$FST_ARG' '$SND_ARG'"
+                FLAGS="${OPTIONS}" $COMMAND "$FST_ARG" "$SND_ARG"
+            else
+                output error "command '$COMMAND' not found"
+            fi
         fi
     done < "$CONFIG_FILE"
 }
 
 # check if config file contains tabulators
-check () {
+dottle_check () {
     if grep $'\t' "$CONFIG_FILE"; then
         output error "The config file ('${CONFIG_FILE}') contains tabs."
         return 1
@@ -462,11 +452,11 @@ check () {
 # main
 case "$1" in
     --help)
-        show_help
+        dottle_show_help
         ;;
     check)
         CONFIG_FILE="${2:-install.conf.yml}"
-        if check; then
+        if dottle_check; then
             output ok "The file doesn't contain any errors"
         else
             output error "The file has some serious errors"
@@ -477,8 +467,8 @@ case "$1" in
         BASEDIR="$(cd "$(dirname "$CONFIG_FILE_FULL_PATH")" && pwd)"
         CONFIG_FILE="$(basename "${CONFIG_FILE_FULL_PATH}")"
         cd "$BASEDIR"
-        if check; then
-            install
+        if dottle_check; then
+            dottle_install
         fi
         ;;
     remove)
