@@ -30,12 +30,13 @@ check_results () {
     cd "$1"
     RESULT=
     for ACTUAL_FILE in $(find . -maxdepth 1 -mindepth 1 -name "*.expected" -type f) ; do
-        if ! diff --unified "$ACTUAL_FILE" "${ACTUAL_FILE%.expected}.actual"; then
-            output error "$ACTUAL_FILE is not correct"
+        if ! diff --unified "$ACTUAL_FILE" "${ACTUAL_FILE%.expected}.actual" > "${ACTUAL_FILE%.expected}.diff"; then
+            output error "$ACTUAL_FILE is not correct" | sed 's/^/    /'
             RESULT=F
         fi
     done
-    if ! diff --unified --recursive fakehome.expected fakehome.actual; then
+    if ! diff --unified --recursive fakehome.expected fakehome.actual > fakehome.diff; then
+        output error "fakehome is not correct" | sed 's/^/    /'
         RESULT=F
     fi
     if [ "$RESULT" = "F" ]; then
@@ -48,7 +49,7 @@ check_results () {
 
 cleanup () {
     if [ -d "$1" ];then
-        (cd "$1" && rm -rf *.actual)
+        (cd "$1" && rm -rf *.actual *.diff)
     fi
 }
 
@@ -56,6 +57,8 @@ TESTS_DIR="${1:-tests}"
 RESULT=
 for CMD_FILE in $(find "$TESTS_DIR" -type f -name "cmd.sh"); do
     TEST_DIR="$(dirname "$CMD_FILE")"
+    printf -- '=======================================================\n'
+    output running "'$TEST_DIR' passed\n"
     output debug "running $TEST_DIR "
     cleanup "$TEST_DIR"
     run_test "$TEST_DIR"
