@@ -466,10 +466,10 @@ case "$1" in
         CONFIG_FILE_FULL_PATH="${2:-install.conf.yml}"
         BASEDIR="$(cd "$(dirname "$CONFIG_FILE_FULL_PATH")" && pwd)"
         CONFIG_FILE="$(basename "${CONFIG_FILE_FULL_PATH}")"
-        cd "$BASEDIR"
+        (cd "$BASEDIR"
         if dottle_check; then
             dottle_install
-        fi
+        fi)
         ;;
     remove)
         output error "not implemented yet"
