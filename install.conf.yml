@@ -19,6 +19,7 @@ get_git:
     zshrc: https://github.com/ludat/zshrc.git
     xmonad: https://github.com/ludat/xmonad-config.git
     emacs.d: https://github.com/ludat/emacs.d.git
+    spacemacs: https://github.com/syl20bnr/spacemacs.git
 
 link: create force! ign_broken! backup relative
     ~/.vim: vimrc/vim/
@@ -35,7 +36,9 @@ link: create force! ign_broken! backup relative
     ~/.xinitrc: dotfiles/xorg/xinitrc
     ~/.zprofile: dotfiles/xorg/zprofile
     ~/.xmonad: xmonad/
-    ~/.emacs.d: emacs.d/
+    # ~/.emacs.d: emacs.d/
+    ~/.emacs.d: spacemacs/
+    ~/.spacemacs: emacs.d/spacemacs
 
 shell: interactive!
     Doomed to fail: false
