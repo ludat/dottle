@@ -39,9 +39,9 @@ check_results () {
         RESULT=F
     fi
     if [ "$RESULT" = "F" ]; then
-        exit 0
-    else
         exit 1
+    else
+        exit 0
     fi
     )
 }
@@ -59,7 +59,7 @@ for CMD_FILE in $(find "$TESTS_DIR" -type f -name "cmd.sh"); do
     output debug "running $TEST_DIR "
     cleanup "$TEST_DIR"
     run_test "$TEST_DIR"
-    if ! check_results "$TEST_DIR"; then
+    if check_results "$TEST_DIR"; then
         output ok "'$TEST_DIR' passed"
     else
         output error "'$TEST_DIR' failed"
