@@ -395,16 +395,16 @@ dottle_shell () {
     ( eval $CMD ) && output ok "$OK" || output error "$OK"
 }
 
-dottle_debug_cmd () {
+dottle_debug () {
     FLAGS=$(default_flag "$FLAGS" "true" "")
     FLAGS=$(default_flag "$FLAGS" "false" "!")
     FLAGS=$(default_flag "$FLAGS" "first" "=first")
     FLAGS=$(default_flag "$FLAGS" "second" "=second")
     output ok "debug command"
     output ok "Flags: '$FLAGS'"
-    ARG1="$(expand_vars ${1})"
+    ARG1="$(expand_vars "${1}")"
     output ok "Arg1:  '$ARG1'"
-    ARG2="$(expand_vars ${2})"
+    ARG2="$(expand_vars "${2}")"
     output ok "Arg2:  '$ARG2'"
 }
 
