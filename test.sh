@@ -58,7 +58,7 @@ RESULT=
 for CMD_FILE in $(find "$TESTS_DIR" -type f -name "cmd.sh"); do
     TEST_DIR="$(dirname "$CMD_FILE")"
     printf -- '=======================================================\n'
-    output running "'$TEST_DIR' passed\n"
+    output running "'$TEST_DIR'\n"
     output debug "running $TEST_DIR "
     cleanup "$TEST_DIR"
     run_test "$TEST_DIR"
