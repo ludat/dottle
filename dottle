@@ -431,7 +431,7 @@ dottle_install () {
             # Trim whitespaces
             FST_ARG=$( printf '%s' "${line%%:*}" | sed -e 's/^ *//' -e 's/ *$//')
             SND_ARG=$( printf '%s' "${line#*:}"  | sed -e 's/^ *//' -e 's/ *$//')
-            if type "$COMMAND" > /dev/null ; then
+            if type "$COMMAND" > /dev/null 2>&1; then
                 output debug "executing FLAGS='${OPTIONS}' '$COMMAND' '$FST_ARG' '$SND_ARG'"
                 FLAGS="${OPTIONS}" $COMMAND "$FST_ARG" "$SND_ARG"
             else
