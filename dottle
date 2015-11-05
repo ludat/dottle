@@ -433,7 +433,7 @@ dottle_install () {
             SND_ARG=$( printf '%s' "${line#*:}"  | sed -e 's/^ *//' -e 's/ *$//')
             if type "$COMMAND" > /dev/null 2>&1; then
                 output debug "executing FLAGS='${OPTIONS}' '$COMMAND' '$FST_ARG' '$SND_ARG'"
-                FLAGS="${OPTIONS}" $COMMAND "$FST_ARG" "$SND_ARG"
+                FLAGS="${OPTIONS}" "$COMMAND" "$FST_ARG" "$SND_ARG"
             else
                 output error "command '$COMMAND' not found"
             fi
