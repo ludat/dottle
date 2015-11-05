@@ -1,0 +1,4 @@
+[0;32;01m[ok][0m debug command
+[0;32;01m[ok][0m Flags: ' true=true false! first=first second=second'
+[0;32;01m[ok][0m Arg1:  'weird stuff'
+[0;32;01m[ok][0m Arg2:  '$(printf hi) = hi'

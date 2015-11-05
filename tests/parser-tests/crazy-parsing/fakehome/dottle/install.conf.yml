@@ -1,0 +1,2 @@
+debug: true=true
+       weird stuff: \$(printf hi) = $(printf hi)
