@@ -51,12 +51,12 @@ check_results () {
 
 cleanup () {
     if [ -d "$1" ];then
-        (cd "$1" && rm -rf *.actual *.diff)
+        (cd "$1" && rm -rf ./*.actual ./*.diff)
     fi
 }
 
 TESTS_DIR="${1:-tests}"
-RESULT=
+RESULT=""
 output debug "running tests for '$TESTS_DIR'"
 for CMD_FILE in $(find "$TESTS_DIR" -type f -name "cmd.sh"); do
     TEST_DIR="$(dirname "$CMD_FILE")"
