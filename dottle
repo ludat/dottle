@@ -69,7 +69,7 @@ EOF
 escape () {
     output debug "EXPAND: '$1'"
     printf '%s' "$1" | sed \
-                        -e 's:^~/:'$HOME'/:' \
+                        -e 's:^~/:'"$HOME"'/:' \
                         -e 's/\\\([^\$]\)/\\\\&/g' \
                         -e 's/"/\\"/g' \
                         -e 's/\\\$/\\\$/g'
@@ -82,7 +82,10 @@ expand_vars () {
 
 # execute the function in a *subshell* to localize variables and the effect of `cd`.
 rreadlink() {
-    target=$1 fname= targetDir=
+    target=$1
+    fname=''
+    targetDir=''
+
     while true; do # Resolve potential symlinks until the ultimate target is found.
         [ -L "$target" ] || [ -e "$target" ] || return 1
         cd "$(dirname -- "$target")" # Change to target dir; necessary for correct resolution of target path.
@@ -126,16 +129,16 @@ get_flag () {
     printf '%s' " ${1} " | grep " ${2} " > /dev/null && printf '%s' "true" && return 0
     printf '%s' " ${1} " | grep " ${2}! " > /dev/null && printf '%s' "false" && return 0
     if printf '%s' " ${1} " | grep " ${2}=" > /dev/null; then
-        printf '%s' " ${1} " | sed 's/.* '${2}'=\([^ ]*\) .*/\1/' && return 0
+        printf '%s' " ${1} " | sed 's/.* '"${2}"'=\([^ ]*\) .*/\1/' && return 0
     fi
     return 1
 }
 
 default_flag () {
     if ! get_flag "$1" "$2"> /dev/null; then
-        printf "${1} ${2}${3}"
+        printf "%s %s%s" "${1}" "${2}" "${3}"
     else
-        printf "${1}"
+        printf "%s" "${1}"
     fi
 }
 
@@ -280,20 +283,20 @@ dottle_link () {
 
     # if relative flag set to false expand with BASEDIR else let it raw
     if [ "$(get_flag "$FLAGS" 'relative')" = 'true' ]; then
-        SOURCE_T="$(printf "$SOURCE" | sed -e 's:^/::')"
-        DEST_T="$(printf "$DEST" | sed -e 's:^/::')"
+        SOURCE_T="$(printf '%s' "$SOURCE" | sed -e 's:^/::')"
+        DEST_T="$(printf '%s' "$DEST" | sed -e 's:^/::')"
 
-        SOURCE_BASE="$(printf "$SOURCE_T" | grep -o "^[^/]*")"
-        DEST_BASE="$(printf "$DEST_T" | grep -o "^[^/]*")"
+        SOURCE_BASE="$(printf '%s' "$SOURCE_T" | grep -o "^[^/]*")"
+        DEST_BASE="$(printf '%s' "$DEST_T" | grep -o "^[^/]*")"
 
         while [ "$DEST_BASE" = "$SOURCE_BASE" ]; do
-            SOURCE_T="$(printf "$SOURCE_T" | sed -e 's:^[^/]*/::')"
-            DEST_T="$(printf "$DEST_T" | sed -e 's:^[^/]*/::')"
+            SOURCE_T="$(printf '%s' "$SOURCE_T" | sed -e 's:^[^/]*/::')"
+            DEST_T="$(printf '%s' "$DEST_T" | sed -e 's:^[^/]*/::')"
             # output info "SOURCE_T = $SOURCE_T"
             # output info "DEST_T = $DEST_T"
 
-            SOURCE_BASE="$(printf "$SOURCE_T" | grep -o "^[^/]*")"
-            DEST_BASE="$(printf "$DEST_T" | grep -o "^[^/]*")"
+            SOURCE_BASE="$(printf '%s' "$SOURCE_T" | grep -o "^[^/]*")"
+            DEST_BASE="$(printf '%s' "$DEST_T" | grep -o "^[^/]*")"
         done
         if [ ! "$(dirname "$DEST_T")" = "." ]; then
             SOURCE="$(dirname "$DEST_T" | sed -e 's:[^/]*:..:g')/$SOURCE_T"
@@ -310,8 +313,13 @@ dottle_link () {
         [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup "$DEST"
         rm -rf "$DEST"
         mkdir -p "$(dirname "$DEST")"
-        ln -s "$SOURCE" "$DEST" && output ok "${DEST} -> ${SOURCE}" || output error "${DEST} -> ${SOURCE}"
-        return 0
+        if ln -s "$SOURCE" "$DEST"; then
+           output ok "${DEST} -> ${SOURCE}"
+           return 0
+        else
+            output error "${DEST} -> ${SOURCE}"
+            return 1
+        fi
     fi
 
     # if DEST dir doesn't exists and create flag is set, create it
@@ -392,7 +400,11 @@ dottle_shell () {
     output debug "COMMAND: $CMD"
 
     output running "$RUN"
-    ( eval $CMD ) && output ok "$OK" || output error "$OK"
+    if ( eval $CMD ); then
+        output ok "$OK"
+    else
+        output error "$OK"
+    fi
 }
 
 dottle_debug () {
@@ -410,7 +422,7 @@ dottle_debug () {
 
 # get config file line indentation level
 get_level () {
-    printf '%s' "$1" | grep -o '^\s*' | grep -o " \{4\}" | wc -l
+    printf '%s' "$1" | grep -o '^\s*' | grep -c -o " \{4\}"
 }
 
 # parse config file and call proper function to handle a command
