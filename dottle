@@ -142,6 +142,7 @@ default_flag () {
     fi
 }
 
+dottle_get_git_exists () { return 0; }
 dottle_get_git () {
     # Get git repo into a directory
     # Possible configuration flags:
@@ -249,6 +250,7 @@ dottle_get_git () {
     fi
 }
 
+dottle_link_exists () { return 0; }
 dottle_link () {
     # Creates link from the first arg to second arg
     # Possible configuration flags:
@@ -354,6 +356,7 @@ dottle_link () {
     fi
 }
 
+dottle_shell_exists () { return 0; }
 dottle_shell () {
     # execute an external command
     # Possible configuration flags:
@@ -407,6 +410,7 @@ dottle_shell () {
     fi
 }
 
+dottle_debug_exists () { return 0; }
 dottle_debug () {
     FLAGS=$(default_flag "$FLAGS" "true" "")
     FLAGS=$(default_flag "$FLAGS" "false" "!")
@@ -443,7 +447,7 @@ dottle_install () {
             # Trim whitespaces
             FST_ARG=$( printf '%s' "${line%%:*}" | sed -e 's/^ *//' -e 's/ *$//')
             SND_ARG=$( printf '%s' "${line#*:}"  | sed -e 's/^ *//' -e 's/ *$//')
-            if type "$COMMAND" > /dev/null 2>&1; then
+            if "${COMMAND}_exists" > /dev/null 2>&1; then
                 output debug "executing FLAGS='${OPTIONS}' '$COMMAND' '$FST_ARG' '$SND_ARG'"
                 FLAGS="${OPTIONS}" "$COMMAND" "$FST_ARG" "$SND_ARG"
             else
