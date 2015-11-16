@@ -1,4 +1,6 @@
-. ./dottle
+. ./dottle > /dev/null
+
+export DOTTLE_PATH="$(rreadlink "dottle")"
 
 run_test () {
     if [ -z "$1" ]; then
@@ -20,7 +22,7 @@ run_test () {
         HOME="$FAKEHOME" "$TEST_BASEDIR/cmd.sh" \
             > "$TEST_BASEDIR/stdout.actual" \
             2> "$TEST_BASEDIR/stderr.actual"
-        printf "$?\n" > "$TEST_BASEDIR/exit.actual"
+        printf "%d\n" "$?" > "$TEST_BASEDIR/exit.actual"
         )
     )
 }
@@ -31,12 +33,12 @@ check_results () {
     RESULT=
     for ACTUAL_FILE in $(find . -maxdepth 1 -mindepth 1 -name "*.expected" -type f) ; do
         if ! diff --unified "$ACTUAL_FILE" "${ACTUAL_FILE%.expected}.actual" > "${ACTUAL_FILE%.expected}.diff"; then
-            output error "$ACTUAL_FILE is not correct" | sed 's/^/    /'
+            output debug "$ACTUAL_FILE is not correct" | sed 's/^/    /'
             RESULT=F
         fi
     done
     if ! diff --unified --recursive fakehome.expected fakehome.actual > fakehome.diff; then
-        output error "fakehome is not correct" | sed 's/^/    /'
+        output debug "fakehome is not correct" | sed 's/^/    /'
         RESULT=F
     fi
     if [ "$RESULT" = "F" ]; then
@@ -55,22 +57,27 @@ cleanup () {
 
 TESTS_DIR="${1:-tests}"
 RESULT=
+output debug "running tests for '$TESTS_DIR'"
 for CMD_FILE in $(find "$TESTS_DIR" -type f -name "cmd.sh"); do
     TEST_DIR="$(dirname "$CMD_FILE")"
-    printf -- '=======================================================\n'
-    output running "'$TEST_DIR'\n"
     output debug "running $TEST_DIR "
     cleanup "$TEST_DIR"
     run_test "$TEST_DIR"
     if check_results "$TEST_DIR"; then
-        output ok "'$TEST_DIR' passed"
+        output debug "'$TEST_DIR' passed"
+        printf "."
     else
-        output error "'$TEST_DIR' failed"
-        RESULT="F"
+        output debug "'$TEST_DIR' failed"
+        printf "F"
+        RESULT="$RESULT'$TEST_DIR' failed\n"
     fi
 done
-if [ "$RESULT" = "F" ]; then
-    exit 1
-else
+printf "\n"
+if [ -z "$RESULT" ]; then
+    output ok "All tests passed"
     exit 0
+else
+    output error "Some tests failed"
+    printf "%b" "$RESULT"
+    exit 1
 fi
