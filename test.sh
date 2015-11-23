@@ -74,10 +74,10 @@ for CMD_FILE in $(find "$TESTS_DIR" -type f -name "cmd.sh"); do
 done
 printf "\n"
 if [ -z "$RESULT" ]; then
-    output ok "All tests passed"
+    output ok "All tests passed\n"
     exit 0
 else
-    output error "Some tests failed"
+    output error "Some tests failed\n"
     printf "%b" "$RESULT"
     exit 1
 fi
