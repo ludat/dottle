@@ -213,14 +213,14 @@ dottle_get_git () {
 
         output running "pulling '$BRANCH' branch from '$REPO'\n"
         output debug "git 'pull' '$REMOTE' '$BRANCH'"
-        if ! git pull "$REMOTE" "$BRANCH"; then
+        if ! git pull "$REMOTE" "$BRANCH" > /dev/null 2>&1; then
             output error "Couldn't pull '$BRANCH' branch from '$REMOTE'\n"
             return 1
         fi
 
         if [ "$(get_flag "$FLAGS" 'recursive')" = 'true' ]; then
             output debug "git submodule update --init --recursive"
-            if ! git submodule update --init --recursive; then
+            if ! git submodule update --init --recursive > /dev/null 2>&1; then
                 output error "Couldn't update submodules\n"
                 return 1
             fi
@@ -232,7 +232,7 @@ dottle_get_git () {
         mkdir -p "$DEST"
         if command -v git > /dev/null; then
             output debug "git clone --config 'http.sslVerify=$VERIFY_SSL' '$RECURSIVE' --branch '$BRANCH' '$REPO' '$DEST'"
-            if ! git clone --config "http.sslVerify=$VERIFY_SSL" "$RECURSIVE" --branch "$BRANCH" "$REPO" "$DEST"; then
+            if ! git clone --config "http.sslVerify=$VERIFY_SSL" "$RECURSIVE" --branch "$BRANCH" "$REPO" "$DEST" > /dev/null 2>&1; then
                 output error "git clone command failed\n"
                 return 1
             fi
