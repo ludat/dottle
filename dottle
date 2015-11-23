@@ -16,24 +16,16 @@ output () {
     message=${2}
     case $level in
         ok)
-            if [ ! -z "$message" ] ; then
-                printf "${GREEN}[ok]${RESET} %b\n" "$message"
-            else
-                printf "${GREEN}[ok]${RESET}"
-            fi
+            printf "${GREEN}[ok]${RESET} %b" "$message"
             ;;
         warn)
-            printf "${BLUE}[warning]${RESET} %b\n" "$message"
+            printf "${BLUE}[warning]${RESET} %b" "$message"
             ;;
         info)
-            printf "${BLUE}[info]${RESET} %b\n" "$message"
+            printf "${BLUE}[info]${RESET} %b" "$message"
             ;;
         error)
-            if [ ! -z "$message" ] ; then
-                printf "${RED}[error]${RESET} %b\n" "$message"
-            else
-                printf "${RED}[error]${RESET}"
-            fi
+            printf "${RED}[error]${RESET} %b" "$message"
             ;;
         debug)
             if [ -n "$DEBUG" ]; then
@@ -195,7 +187,7 @@ dottle_get_git () {
 
     # if git is not installed fail
     if ! command -v git > /dev/null && [ "$(get_flag "$FLAGS" 'tar_magic')" = 'false' ]; then
-        output error "git is not installed and tar_magic flag is not set"
+        output error "git is not installed and tar_magic flag is not set\n"
         return 1
     fi
 
@@ -204,36 +196,36 @@ dottle_get_git () {
             (cd "$DEST"; [ "$(git config --get "remote.${REMOTE}.url")" = "${REPO}" ]); then
         (
         if ! cd "$DEST"; then
-            output error "Couldn't \`cd\` into '$DEST'"
+            output error "Couldn't \`cd\` into '$DEST'\n"
             return 1
         fi
 
         if ! git config http.sslVerify "$VERIFY_SSL"; then
-            output error "Couldn't set config"
+            output error "Couldn't set config\n"
             return 1
         fi
 
         output debug "git 'checkout' '$BRANCH'"
         if ! git checkout "$BRANCH" > /dev/null 2>&1; then
-            output error "Couldn't checkout '$BRANCH'"
+            output error "Couldn't checkout '$BRANCH'\n"
             return 1
         fi
 
         output running "pulling '$BRANCH' branch from '$REPO'\n"
         output debug "git 'pull' '$REMOTE' '$BRANCH'"
         if ! git pull "$REMOTE" "$BRANCH"; then
-            output error "Couldn't pull '$BRANCH' branch from '$REMOTE'"
+            output error "Couldn't pull '$BRANCH' branch from '$REMOTE'\n"
             return 1
         fi
 
         if [ "$(get_flag "$FLAGS" 'recursive')" = 'true' ]; then
             output debug "git submodule update --init --recursive"
             if ! git submodule update --init --recursive; then
-                output error "Couldn't update submodules"
+                output error "Couldn't update submodules\n"
                 return 1
             fi
         fi
-        ) && output ok "Pulled successfully"
+        ) && output ok "Pulled successfully\n"
     else
         [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup "$DEST"
         rm -rf "$DEST"
@@ -241,11 +233,11 @@ dottle_get_git () {
         if command -v git > /dev/null; then
             output debug "git clone --config 'http.sslVerify=$VERIFY_SSL' '$RECURSIVE' --branch '$BRANCH' '$REPO' '$DEST'"
             if ! git clone --config "http.sslVerify=$VERIFY_SSL" "$RECURSIVE" --branch "$BRANCH" "$REPO" "$DEST"; then
-                output error "git clone command failed"
+                output error "git clone command failed\n"
                 return 1
             fi
         else
-            output error "tar_magic is not implemented yet"
+            output error "tar_magic is not implemented yet\n"
         fi
     fi
 }
@@ -279,7 +271,7 @@ dottle_link () {
     # if link will be broken and ign_broken flag is set exit
     # if [ "$(get_flag "$FLAGS" 'ign_broken')" = 'false' ] && [ ! -e "$(cd "$(dirname "$DEST")" && pwd && rreadlink "$SOURCE")" ]; then
     if [ "$(get_flag "$FLAGS" 'ign_broken')" = 'false' ] && [ ! -e "$SOURCE" ]; then
-        output error "'${SOURCE}' doesn't exists. Quiting because ign_broken flag is not set"
+        output error "'${SOURCE}' doesn't exists. Quiting because ign_broken flag is not set\n"
         return 1
     fi
 
@@ -316,10 +308,10 @@ dottle_link () {
         rm -rf "$DEST"
         mkdir -p "$(dirname "$DEST")"
         if ln -s "$SOURCE" "$DEST"; then
-           output ok "${DEST} -> ${SOURCE}"
+           output ok "${DEST} -> ${SOURCE}\n"
            return 0
         else
-            output error "${DEST} -> ${SOURCE}"
+            output error "${DEST} -> ${SOURCE}\n"
             return 1
         fi
     fi
@@ -329,7 +321,7 @@ dottle_link () {
         if [ "$(get_flag "$FLAGS" 'create')" = 'true' ]; then
             mkdir -p "$(dirname "$DEST")"
         elif [ "$(get_flag "$FLAGS" 'create')" = 'false' ]; then
-            output warn "'$(dirname "${DEST}")' doesn't exists. Quiting because create flag is not set"
+            output warn "'$(dirname "${DEST}")' doesn't exists. Quiting because create flag is not set\n"
             return 1
         else
             output internal_error "create not in '$FLAGS'"
@@ -338,10 +330,10 @@ dottle_link () {
 
     if [ -L "$DEST" ]; then
         if printf '%s' "$(rreadlink "$DEST")" | grep "^$BASEDIR" > /dev/null; then
-            output info "File '${DEST}' exists and it points to my BASEDIR. Replacing it"
+            output info "File '${DEST}' exists and it points to my BASEDIR. Replacing it\n"
             rm "$DEST"
         else
-            output error "'${DEST}' is a link but it's not mine. Quiting"
+            output error "'${DEST}' is a link but it's not mine. Quiting\n"
             return 1
         fi
     elif [ -e "$DEST" ]; then
@@ -350,9 +342,9 @@ dottle_link () {
     fi
     # Actually make the link
     if ln -s "$SOURCE" "$DEST"; then
-        output ok "${1} -> ${SOURCE}"
+        output ok "${1} -> ${SOURCE}\n"
     else
-        output error "${1} -> ${SOURCE}"
+        output error "${1} -> ${SOURCE}\n"
     fi
 }
 
@@ -404,9 +396,9 @@ dottle_shell () {
 
     output running "$RUN"
     if ( eval $CMD ); then
-        output ok "$OK"
+        output ok "$OK\n"
     else
-        output error "$OK"
+        output error "$OK\n"
     fi
 }
 
@@ -416,12 +408,12 @@ dottle_debug () {
     FLAGS=$(default_flag "$FLAGS" "false" "!")
     FLAGS=$(default_flag "$FLAGS" "first" "=first")
     FLAGS=$(default_flag "$FLAGS" "second" "=second")
-    output ok "debug command"
-    output ok "Flags: '$FLAGS'"
+    output ok "debug command\n"
+    output ok "Flags: '$FLAGS'\n"
     ARG1="$(expand_vars "${1}")"
-    output ok "Arg1:  '$ARG1'"
+    output ok "Arg1:  '$ARG1'\n"
     ARG2="$(expand_vars "${2}")"
-    output ok "Arg2:  '$ARG2'"
+    output ok "Arg2:  '$ARG2'\n"
 }
 
 # get config file line indentation level
@@ -451,7 +443,7 @@ dottle_install () {
                 output debug "executing FLAGS='${OPTIONS}' '$COMMAND' '$FST_ARG' '$SND_ARG'"
                 FLAGS="${OPTIONS}" "$COMMAND" "$FST_ARG" "$SND_ARG"
             else
-                output error "command '$COMMAND' not found"
+                output error "command '$COMMAND' not found\n"
             fi
         fi
     done < "$CONFIG_FILE"
@@ -473,9 +465,9 @@ case "$1" in
     check)
         CONFIG_FILE="${2:-install.conf.yml}"
         if dottle_check; then
-            output ok "The file doesn't contain any errors"
+            output ok "The file doesn't contain any errors\n"
         else
-            output error "The file has some serious errors"
+            output error "The file has some serious errors\n"
         fi
         ;;
     install)
@@ -488,10 +480,10 @@ case "$1" in
         fi)
         ;;
     remove)
-        output error "not implemented yet"
+        output error "not implemented yet\n"
         ;;
     clean)
-        output error "not implemented yet"
+        output error "not implemented yet\n"
         ;;
     *)
         printf "%s\n" "Try 'install' or '--help'"
