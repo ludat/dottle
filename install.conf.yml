@@ -13,32 +13,9 @@
 # link will create symlinks (for now with absolute paths) to the dotfiles
 # folder where this script lives
 
-get_git:
-    dotfiles: https://gitlab.com/ludat/dotfiles.git
-    vimrc: https://github.com/ludat/vimrc.git
-    zshrc: https://github.com/ludat/zshrc.git
-    xmonad: https://github.com/ludat/xmonad-config.git
-    emacs.d: https://github.com/ludat/emacs.d.git
-    spacemacs: https://github.com/syl20bnr/spacemacs.git
-
-link: create force! ign_broken! backup relative
-    ~/.vim: vimrc/vim/
-    ~/.vimrc: vimrc/vimrc
-    ~/.zsh: zshrc/zsh/
-    ~/.zshrc: zshrc/zshrc
-    ~/.tmux.conf: dotfiles/tmux/tmux.conf
-    ~/.tmux: dotfiles/tmux/tmux
-    ~/.gitconfig: dotfiles/gitconfig
-    ~/.bashrc: dotfiles/bashrc/bashrc
-    ~/.config/ranger: dotfiles/ranger/
-    ~/.config/easystroke: dotfiles/easystroke/
-    ~/.Xresources: dotfiles/xorg/Xresources
-    ~/.xinitrc: dotfiles/xorg/xinitrc
-    ~/.zprofile: dotfiles/xorg/zprofile
-    ~/.xmonad: xmonad/
-    # ~/.emacs.d: emacs.d/
-    ~/.emacs.d: spacemacs/
-    ~/.spacemacs: emacs.d/spacemacs
-
-shell: interactive!
-    Doomed to fail: false
+install:
+    Install dotfiles: dotfiles.conf.yml
+    Install vimrc: vimrc.conf.yml
+    Install nvimrc: nvimrc.conf.yml
+    Install xmonad: xmonad.conf.yml
+    Install zshrc: zshrc.conf.yml
