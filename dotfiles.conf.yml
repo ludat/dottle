@@ -4,10 +4,11 @@ get_git:
 link: create force! ign_broken! backup relative
     ~/.tmux.conf: dotfiles/tmux/tmux.conf
     ~/.tmux: dotfiles/tmux/tmux
-    ~/.gitconfig: dotfiles/gitconfig
+    ~/.config/git: dotfiles/git/
     ~/.bashrc: dotfiles/bashrc/bashrc
     ~/.config/ranger: dotfiles/ranger/
     ~/.config/easystroke: dotfiles/easystroke/
     ~/.Xresources: dotfiles/xorg/Xresources
     ~/.xinitrc: dotfiles/xorg/xinitrc
     ~/.zprofile: dotfiles/xorg/zprofile
+    ~/.config/htop/htoprc: dotfiles/htoprc
