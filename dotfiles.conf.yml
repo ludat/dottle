@@ -12,3 +12,4 @@ link: create force! ign_broken! backup relative
     ~/.xinitrc: dotfiles/xorg/xinitrc
     ~/.zprofile: dotfiles/xorg/zprofile
     ~/.config/htop/htoprc: dotfiles/htoprc
+    ~/.config/mpd: dotfiles/mpd/
