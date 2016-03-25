@@ -55,29 +55,27 @@ cleanup () {
     fi
 }
 
+[ -f "errors.log" ] && rm errors.log
 TESTS_DIR="${1:-tests}"
-RESULT=""
 output debug "running tests for '$TESTS_DIR'"
-for CMD_FILE in $(find "$TESTS_DIR" -type f -name "cmd.sh"); do
+find "$TESTS_DIR" -type f -name "cmd.sh" | while read -r CMD_FILE; do
     TEST_DIR="$(dirname "$CMD_FILE")"
-    output debug "running $TEST_DIR "
     cleanup "$TEST_DIR"
     run_test "$TEST_DIR"
     if check_results "$TEST_DIR"; then
-        output debug "'$TEST_DIR' passed"
         printf "."
     else
-        output debug "'$TEST_DIR' failed"
         printf "F"
-        RESULT="$RESULT'$TEST_DIR' failed\n"
+        printf "'%s' failed\n" "$TEST_DIR" >> errors.log
     fi
 done
+
 printf "\n"
-if [ -z "$RESULT" ]; then
+if [ -f "errors.log" ]; then
+    output error "Some tests failed\n"
+    cat errors.log
+    exit 1
+else
     output ok "All tests passed\n"
     exit 0
-else
-    output error "Some tests failed\n"
-    printf "%b" "$RESULT"
-    exit 1
 fi
