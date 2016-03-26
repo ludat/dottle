@@ -475,10 +475,7 @@ dottle_install () {
 # check if config file contains tabulators
 dottle_check_exists () { return 0; }
 dottle_check () {
-    if grep $'\t' "$2"; then
-        output error "The config file ('$2') contains tabs.\n"
-        return 1
-    fi
+    printf TODO
 }
 
 # main
