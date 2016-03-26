@@ -426,12 +426,17 @@ dottle_install () {
     # install a config file
     # No configuration flags for this yet
 
-    output debug "Flags for link: '$FLAGS'"
+    output debug "Flags for install: '$FLAGS'"
 
     if [ ! -f "$2" ]; then
         output error "Can't install '$2'. File doesn't exist\n"
         return 1
     fi
+
+    BASEDIR="$(cd "$(dirname "${2}")" && pwd)"
+    CONFIG_FILE="$(basename "${2}")"
+
+    cd "$BASEDIR" || { output error "Couldn't cd into config directory." && return 1; }
 
     if [ "$1" != '__ROOT__' ]; then
         OUTPUT_FILTER='s/^/    /'
@@ -462,7 +467,7 @@ dottle_install () {
                 output error "command '$COMMAND' not found\n"
             fi
         fi
-    done < "$2"
+    done < "$CONFIG_FILE"
     [ "$1" != '__ROOT__' ] && output ok "$1\n"
     return 0
 }
@@ -490,13 +495,10 @@ case "$1" in
         fi
         ;;
     install)
-        CONFIG_FILE_FULL_PATH="${2:-install.conf.yml}"
-        BASEDIR="$(cd "$(dirname "$CONFIG_FILE_FULL_PATH")" && pwd)"
-        CONFIG_FILE="$(basename "${CONFIG_FILE_FULL_PATH}")"
-        (cd "$BASEDIR"
-        if dottle_check "Checking root" "$CONFIG_FILE"; then
-            dottle_install "__ROOT__" "$CONFIG_FILE"
-        fi)
+        CONFIG_FILE="${2:-install.conf.yml}"
+        if (dottle_check "Checking root" "$CONFIG_FILE"); then
+            (dottle_install "__ROOT__" "$CONFIG_FILE")
+        fi
         ;;
     remove)
         output error "not implemented yet\n"
