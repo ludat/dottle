@@ -13,3 +13,5 @@ link: create force! ign_broken! backup relative
     ~/.zprofile: dotfiles/xorg/zprofile
     ~/.config/htop/htoprc: dotfiles/htoprc
     ~/.config/mpd: dotfiles/mpd/
+    ~/.config/beets: dotfiles/beets
+    ~/.makepkg.conf: dotfiles/makepkg.conf
