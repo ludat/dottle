@@ -475,7 +475,8 @@ dottle_install () {
 # check if config file contains tabulators
 dottle_check_exists () { return 0; }
 dottle_check () {
-    printf TODO
+    # TODO: this stupid check should do more things
+    return 0
 }
 
 # main
