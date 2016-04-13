@@ -6,5 +6,4 @@ os:
 
 script:
   - make
-  - mv build/result dottle
-  - ./test.sh tests
+  - DOTTLE_PATH=build/result ./test.sh tests
