@@ -6,4 +6,14 @@ os:
 
 script:
   - make
-  - DOTTLE_PATH=build/result ./test.sh tests
+  - mv -v build/result dottle
+  - ./test.sh tests
+
+deploy:
+  provider: releases
+  api_key:
+    secure: XaJ+J4N5j58WU+OlS834DkDQp/iVu1M+qDQZW4rP8r/D3vxS+QSanAWkMRSYgys1oNERLnzd4R+oqhO7KdVSbBvzp+oOP8cmQX6ryQinCDLUcmkCwGpQuBnOkFSZzl3BVd3e2Yi8aqUM7kOOBD3mI+t6ABq52Db3fQHtY+I1iKf0DpwCk3xKdP0UBzYardxd807k3733dtbXlj5kv/KdcNag2ppGwHFLx/84UXJS3afrahyccXoxpYY+KwwWTJWnhH9HyGZS8fIBTUsI/i+yIGOf57HD5GYrnmibNXpYhlC3aW/AJLy26jgy+/k5VehalZZ88DdLG1+TAAyTzX8bZwO344bzGuxX3ANnkzbAXXBjoZLOVLyMVWmqtGu6BPZhM2BNlf/a6HVABB4PvukQj1bMfcyrSbh6oNFbLrunvTurbtoWxDTZ1+xgsGOthQbnOkJgk5aqHLdWX87HOHqO+jlyPWD9LQQ+whgdahDk+WQXy1WIbW6MurylO/q6GeirMAYPngKTmApyqdVlfyhMXyogrQO4f75bDADRhOq19q4/8Ndm/eWG/Y8WaYKGL8oO7/Xp+G/HX7EY5OK/L85R8vtSHVTtpr8gaVH4JUx35OAEJP/vGQJ6Fn+tCeMjMsZf+GcCSmjQBPvOvc08rgwrN9VLOEWfuQxeWY2SoLhRQ+0=
+  skip_cleanup: true
+  file: dottle
+  on:
+    tags: true
