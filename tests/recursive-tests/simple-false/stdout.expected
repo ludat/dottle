@@ -1,0 +1,6 @@
+[0;33;01m[running][0m install first child
+    [0;33;01m[running][0m first child [0;31;01m[error][0m  
+    [0;33;01m[running][0m Install last child
+        [0;33;01m[running][0m install final child [0;32;01m[ok][0m  
+    [0;32;01m[ok][0m Install last child
+[0;32;01m[ok][0m install first child

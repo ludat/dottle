@@ -1,6 +1,7 @@
-. ./dottle > /dev/null
+. ./src/utils/output.sh
+. ./src/utils/readlink.sh
 
-export DOTTLE_PATH="$(rreadlink "dottle")"
+export DOTTLE_PATH="$(rreadlink "${DOTTLE_PATH:-dottle}")"
 
 run_test () {
     if [ -z "$1" ]; then

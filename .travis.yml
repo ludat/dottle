@@ -5,4 +5,5 @@ os:
   - osx
 
 script:
-  - ./test.sh tests
+  - make
+  - DOTTLE_PATH=build/result ./test.sh tests
