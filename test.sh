@@ -32,16 +32,12 @@ check_results () {
     (
     cd "$1"
     RESULT=
-    for ACTUAL_FILE in $(find . -maxdepth 1 -mindepth 1 -name "*.expected" -type f) ; do
-        if ! diff --unified "$ACTUAL_FILE" "${ACTUAL_FILE%.expected}.actual" > "${ACTUAL_FILE%.expected}.diff"; then
+    for ACTUAL_FILE in $(find . -maxdepth 1 -mindepth 1 -name "*.expected") ; do
+        if ! diff --recursive --unified "$ACTUAL_FILE" "${ACTUAL_FILE%.expected}.actual" > "${ACTUAL_FILE%.expected}.diff"; then
             output debug "$ACTUAL_FILE is not correct" | sed 's/^/    /'
             RESULT=F
         fi
     done
-    if ! diff --unified --recursive fakehome.expected fakehome.actual > fakehome.diff; then
-        output debug "fakehome is not correct" | sed 's/^/    /'
-        RESULT=F
-    fi
     if [ "$RESULT" = "F" ]; then
         exit 1
     else
@@ -51,8 +47,10 @@ check_results () {
 }
 
 cleanup () {
-    if [ -d "$1" ];then
+    if [ -d "$1" ]; then
         (cd "$1" && rm -rf ./*.actual ./*.diff)
+    else
+        output error "cleanup function was called with a non existent directory"
     fi
 }
 
