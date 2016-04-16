@@ -1,0 +1,25 @@
+#!/bin/sh
+
+ESC="\033["
+RESET=$ESC"0m"
+BLUE=$ESC"0;34;01m"
+
+if [ -z "$DOTTLE_PATH" ]; then
+    printf "${BLUE}[warning]${RESET} %b\n" 'You are using the "dynamically linked" dottle, so you need to have all the dependencies in place (./src directory).'
+    printf "${BLUE}[warning]${RESET} %b\n" 'You can use `make` to create a static script inside `build/result`'
+
+    DOTTLE_DIR_PATH="$(dirname "$PWD/$0")"
+else
+    DOTTLE_DIR_PATH="$(dirname "$DOTTLE_PATH")"
+fi
+
+for file in $(find $DOTTLE_DIR_PATH/src/utils/ -regex '.*/[a-zA-Z._\-]*.sh'); do
+    . ${file}
+done
+
+for file in $(find $DOTTLE_DIR_PATH/src/extensions/ -regex '.*/[a-zA-Z._\-]*.sh'); do
+    . ${file}
+done
+
+. $DOTTLE_DIR_PATH/src/help.sh
+. $DOTTLE_DIR_PATH/src/main.sh
