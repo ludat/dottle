@@ -7,7 +7,7 @@ os:
 script:
   - make
   - mv -v build/result.sh dottle
-  - ./test.sh tests
+  - make test
 
 deploy:
   provider: releases
