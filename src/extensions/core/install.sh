@@ -28,13 +28,55 @@ dottle_install () {
 
     COMMAND=''
     OPTIONS=''
+    IF_LEVEL=0
+    IF_STATE="true"
     while IFS='' read -r line; do
-        # Replace tabs with four spaces
-        # Remove comments from lines
+        # Remove all things behind a hash and trim white spaces
         line=$(printf '%s' "$line" | sed 's/#.*$//' | sed 's/^ *$//')
+
+        # If the line is empty, skip!
         if [ -z "$line" ]; then
             continue
         fi
+
+        case "$line" in
+            "if "*)
+                if [ "$IF_STATE" = false ]; then
+                    IF_LEVEL=$((IF_LEVEL + 1))
+                else
+                    IF_LEVEL=1
+                    if eval "$(printf "%s" "$line" | sed 's/if \(.*\)$/\1/g')"; then
+                        IF_STATE=true
+                    else
+                        IF_STATE=false
+                    fi
+                fi
+                continue
+                ;;
+            "else")
+                if [ "$IF_LEVEL" -eq 1 ]; then
+                    if [ "$IF_STATE" = false ]; then
+                        IF_STATE=true
+                    else
+                        IF_STATE=false
+                    fi
+                fi
+                continue
+                ;;
+            "endif")
+                if [ "$IF_LEVEL" -eq 1 ]; then
+                    IF_STATE=true
+                else
+                    IF_LEVEL=$((IF_LEVEL - 1))
+                fi
+                continue
+                ;;
+        esac
+
+        if [ "$IF_STATE" = false ]; then
+            continue
+        fi
+
         if [ "$(get_level "$line")" -eq "0" ]; then
             COMMAND="dottle_${line%%:*}"
             OPTIONS="${line#*:}"
