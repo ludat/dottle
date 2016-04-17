@@ -27,7 +27,7 @@ get_flag () {
 
     # if the key is followed by an equals then return everything until an space
     if printf '%s' " ${1} " | \
-            grep "^[^']*\(.*'.*'.*\)* ${2}=[^ ]*' [^']*\(.*'.*'.*\)*$" > /dev/null; then
+            grep "^[^']*\(.*'.*'.*\)* ${2}=[^ ]* [^']*\(.*'.*'.*\)*$" > /dev/null; then
 
         printf '%s' " ${1} " | \
             sed "s/^[^']*\(.*'.*'.*\)* ${2}=\([^ ]*\) [^']*\(.*'.*'.*\)*$/\2/"
