@@ -32,11 +32,11 @@ dottle_shell () {
     #       default: stderr=
     FLAGS=$(default_flag "$FLAGS" "stderr" "=")
 
-    STDIN="$(get_flag "$FLAGS" 'stdin')"
+    STDIN="$(expand_vars "$(get_flag "$FLAGS" 'stdin')")"
     output debug "STDIN: $STDIN"
-    STDOUT="$(get_flag "$FLAGS" 'stdout')"
+    STDOUT="$(expand_vars "$(get_flag "$FLAGS" 'stdout')")"
     output debug "STDOUT: $STDOUT"
-    STDERR="$(get_flag "$FLAGS" 'stderr')"
+    STDERR="$(expand_vars "$(get_flag "$FLAGS" 'stderr')")"
     output debug "STDERR: $STDERR"
     RUN="$1"
     OK=""
@@ -46,15 +46,15 @@ dottle_shell () {
     if [ "$(get_flag "$FLAGS" 'interactive')" = 'true' ]; then
         OK="     ${RUN}"
         RUN="${RUN}\n"
-        CMD="$CMD > ${STDOUT:-/dev/stdout}"
-        CMD="$CMD < ${STDIN:-/dev/tty}"
-        CMD="$CMD 2> ${STDERR:-/dev/stderr}"
+        CMD="$CMD >  \"${STDOUT:-/dev/stdout}\""
+        CMD="$CMD <  \"${STDIN:-/dev/tty}\""
+        CMD="$CMD 2> \"${STDERR:-/dev/stderr}\""
     elif [ "$(get_flag "$FLAGS" 'interactive')" = 'false' ]; then
         OK=" "
         RUN="${RUN} "
-        CMD="$CMD > ${STDOUT:-/dev/null}"
-        CMD="$CMD < ${STDIN:-/dev/null}"
-        CMD="$CMD 2> ${STDERR:-/dev/null}"
+        CMD="$CMD > \"${STDOUT:-/dev/null}\""
+        CMD="$CMD < \"${STDIN:-/dev/null}\""
+        CMD="$CMD 2> \"${STDERR:-/dev/null}\""
     else
         output internal_error "interactive not in '$FLAGS'"
         return 1
