@@ -78,7 +78,7 @@ dottle_install () {
         fi
 
         if [ "$(get_level "$line")" -eq "0" ]; then
-            COMMAND="dottle_${line%%:*}"
+            COMMAND=$(printf "%s" "dottle_${line%%:*}" | sed 's:[./_ \-]:_:g')
             OPTIONS="${line#*:}"
         elif [ "$(get_level "$line")" -gt "0" ] && [ -n "$COMMAND" ]; then
             # Trim whitespaces
