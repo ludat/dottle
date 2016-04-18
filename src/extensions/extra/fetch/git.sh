@@ -1,5 +1,5 @@
-dottle_fetch/git_exists () { return 0; }
-dottle_fetch/git () {
+dottle_fetch_git_exists () { return 0; }
+dottle_fetch_git () {
     # Get git repo into a directory
     # Possible configuration flags:
     #   branch: branch name of the repo
