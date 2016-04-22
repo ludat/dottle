@@ -1,0 +1,12 @@
+[0;33;01m[running][0m printf \"$THIS\\n
+"this
+[0;32;01m[ok][0m      printf \"$THIS\\n
+[0;33;01m[running][0m printf "$THIS\n"
+this
+[0;32;01m[ok][0m      printf "$THIS\n"
+[0;33;01m[running][0m printf "\$THIS\n"
+$THIS
+[0;32;01m[ok][0m      printf "\$THIS\n"
+[0;33;01m[running][0m printf '$THIS\n'
+$THIS
+[0;32;01m[ok][0m      printf '$THIS\n'

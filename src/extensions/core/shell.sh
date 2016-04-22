@@ -3,9 +3,8 @@ escape () {
     output debug "EXPAND: '$1'"
     printf '%s' "$1" | sed \
                            -e 's:^~/:'"$HOME"'/:' \
-                           -e 's/\\\([^\$]\)/\\\\&/g' \
-                           -e 's/"/\\"/g' \
-                           -e 's/\\\$/\\\$/g'
+                           -e 's/\\\([^\$]\)/\\&/g' \
+                           -e 's/"/\\"/g'
 }
 
 # expand env vars in a string
@@ -38,7 +37,7 @@ dottle_shell () {
     output debug "STDOUT: $STDOUT"
     STDERR="$(expand_vars "$(get_flag "$FLAGS" 'stderr')")"
     output debug "STDERR: $STDERR"
-    RUN="$1"
+    RUN="$( printf_escape "$1")"
     OK=""
     CMD="${2}"
 
@@ -59,10 +58,10 @@ dottle_shell () {
         output internal_error "interactive not in '$FLAGS'"
         return 1
     fi
-    output debug "COMMAND: $CMD"
+    output debug "COMMAND: $( printf_escape "$CMD")"
 
     output running "$RUN"
-    if ( eval $CMD ); then
+    if ( eval "$CMD" ); then
         output ok "$OK\n"
     else
         output error "$OK\n"

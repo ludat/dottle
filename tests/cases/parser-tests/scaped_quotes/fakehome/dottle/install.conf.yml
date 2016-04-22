@@ -1,0 +1,5 @@
+shell: interactive
+    printf \"$THIS\\n: printf \"$THIS\\n
+    printf "$THIS\n": printf "$THIS\n"
+    printf "\$THIS\n": printf "\$THIS\n"
+    printf '$THIS\n': printf '$THIS\n'
