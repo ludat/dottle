@@ -18,6 +18,14 @@ dottle_link () {
     #       default: relative
     FLAGS=$(default_flag "$FLAGS" "relative" "")
 
+    # if the force flag is set some flags will be overridden
+    if [ "$(get_flag "$FLAGS" 'force')" = 'true' ]; then
+        FLAGS="$(set_flag "$FLAGS" "ign_broken" "true")"
+        output debug "'ign_broken' flag was set to true\n"
+        FLAGS="$(set_flag "$FLAGS" "create" "true")"
+        output debug "'create' flag was set to true\n"
+    fi
+
     output debug "Flags for link: '$FLAGS'"
 
     DEST="$(expand_vars "${1}")"
@@ -25,7 +33,6 @@ dottle_link () {
     SOURCE="$(expand_vars "${BASEDIR}/${2}")"
 
     # if link will be broken and ign_broken flag is set exit
-    # if [ "$(get_flag "$FLAGS" 'ign_broken')" = 'false' ] && [ ! -e "$(cd "$(dirname "$DEST")" && pwd && rreadlink "$SOURCE")" ]; then
     if [ "$(get_flag "$FLAGS" 'ign_broken')" = 'false' ] && [ ! -e "$SOURCE" ]; then
         output error "'${SOURCE}' doesn't exists. Quiting because ign_broken flag is not set\n"
         return 1
@@ -57,21 +64,6 @@ dottle_link () {
 
     output debug "SOURCE: '$SOURCE'"
 
-    # check if force flag is set
-    if [ "$(get_flag "$FLAGS" 'force')" = 'true' ]; then
-        output debug "force flag is set to true. I will do my best to fulfil your wishes master"
-        [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup "$DEST"
-        rm -rf "$DEST"
-        mkdir -p "$(dirname "$DEST")"
-        if ln -s "$SOURCE" "$DEST"; then
-           output ok "${DEST} -> ${SOURCE}\n"
-           return 0
-        else
-            output error "${DEST} -> ${SOURCE}\n"
-            return 1
-        fi
-    fi
-
     # if DEST dir doesn't exists and create flag is set, create it
     if [ ! -d "$(dirname "$DEST")" ]; then
         if [ "$(get_flag "$FLAGS" 'create')" = 'true' ]; then
@@ -84,18 +76,20 @@ dottle_link () {
         fi
     fi
 
+    # if the dest path is a link and it points somewhere inside the basedir remove
     if [ -L "$DEST" ]; then
         if printf '%s' "$(rreadlink "$DEST")" | grep "^$BASEDIR" > /dev/null; then
             output info "File '${DEST}' exists and it points to my BASEDIR. Replacing it\n"
             rm "$DEST"
-        else
-            output error "'${DEST}' is a link but it's not mine. Quiting\n"
-            return 1
         fi
-    elif [ -e "$DEST" ]; then
+    fi
+
+    # If the file already exists remove it
+    if [ -e "$DEST" ]; then
         [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup "$DEST"
         rm -rf "$DEST"
     fi
+
     # Actually make the link
     if ln -s "$SOURCE" "$DEST"; then
         output ok "${1} -> ${SOURCE}\n"
