@@ -31,7 +31,7 @@ dottle_import () {
             ;;
         install)
             if dottle_action_check < "$CONFIG_FILE" | sed -e "$OUTPUT_FILTER"; then
-                if dottle_action_install < "$CONFIG_FILE" | sed -e "$OUTPUT_FILTER"; then
+                if dottle_action_exec < "$CONFIG_FILE" | sed -e "$OUTPUT_FILTER"; then
                     [ "$1" != '__ROOT__' ] && output ok "$1\n"
                 fi
             fi

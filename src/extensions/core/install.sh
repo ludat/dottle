@@ -3,7 +3,7 @@ get_level () {
     printf '%s' "$1" | grep -o '^\s*' | grep -c -o " \{4\}"
 }
 
-dottle_action_install () {
+dottle_action_exec () {
     COMMAND=''
     OPTIONS=''
     IF_LEVEL=0
