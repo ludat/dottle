@@ -1,5 +1,5 @@
 shell:
     first child: false
 
-install:
-    Install last child: grandchild.conf.yml
+import:
+    import last child: grandchild.conf.yml

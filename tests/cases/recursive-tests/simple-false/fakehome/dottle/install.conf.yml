@@ -1,2 +1,2 @@
-install:
-    install first child: child.conf.yml
+import:
+    import first child: child.conf.yml

@@ -1,2 +1,2 @@
 shell:
-    install final child: true
+    final child: true
