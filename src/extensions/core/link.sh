@@ -49,8 +49,6 @@ dottle_link () {
         while [ "$DEST_BASE" = "$SOURCE_BASE" ]; do
             SOURCE_T="$(printf '%s' "$SOURCE_T" | sed -e 's:^[^/]*/::')"
             DEST_T="$(printf '%s' "$DEST_T" | sed -e 's:^[^/]*/::')"
-            # output info "SOURCE_T = $SOURCE_T"
-            # output info "DEST_T = $DEST_T"
 
             SOURCE_BASE="$(printf '%s' "$SOURCE_T" | grep -o "^[^/]*")"
             DEST_BASE="$(printf '%s' "$DEST_T" | grep -o "^[^/]*")"
@@ -65,26 +63,22 @@ dottle_link () {
     output debug "SOURCE: '$SOURCE'"
 
     # if DEST dir doesn't exists and create flag is set, create it
-    if [ ! -d "$(dirname "$DEST")" ]; then
+    if ! [ -d "$(dirname "$DEST")" ]; then
         if [ "$(get_flag "$FLAGS" 'create')" = 'true' ]; then
             mkdir -p "$(dirname "$DEST")"
-        elif [ "$(get_flag "$FLAGS" 'create')" = 'false' ]; then
+        else
             output warn "'$(dirname "${DEST}")' doesn't exists. Quiting because create flag is not set\n"
             return 1
-        else
-            output internal_error "create not in '$FLAGS'"
         fi
     fi
 
     # if the dest path is a link and it points somewhere inside the basedir remove
-    if [ -L "$DEST" ]; then
-        if printf '%s' "$(rreadlink "$DEST")" | grep "^$BASEDIR" > /dev/null; then
-            output info "File '${DEST}' exists and it points to my BASEDIR. Replacing it\n"
-            rm "$DEST"
-        fi
+    if [ -L "$DEST" ] && printf '%s' "$(rreadlink "$DEST")" | grep "^$BASEDIR" > /dev/null; then
+        output info "File '${DEST}' exists and it points to my BASEDIR. Replacing it\n"
+        rm "$DEST"
     fi
 
-    # If the file already exists remove it
+    # If the file already exists (maybe make a backup and) remove it
     if [ -e "$DEST" ]; then
         [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup "$DEST"
         rm -rf "$DEST"
