@@ -31,6 +31,19 @@ dottle_shell () {
     #       default: stderr=
     FLAGS=$(default_flag "$FLAGS" "stderr" "=")
 
+    case "$ACTION" in
+        install|update)
+        ;;
+        uninstall)
+            output info "uninstall a command doesn't make sense"
+            return 1
+            ;;
+        *)
+            output error "Action '$ACTION' not supported for shell module"
+            return 1
+            ;;
+    esac
+
     STDIN="$(expand_vars "$(get_flag "$FLAGS" 'stdin')")"
     output debug "STDIN: $STDIN"
     STDOUT="$(expand_vars "$(get_flag "$FLAGS" 'stdout')")"
