@@ -38,12 +38,15 @@ dottle_import () {
             ;;
         update)
             output error "not implemented yet D:"
+            return 1
             ;;
         uninstall)
             output error "not implemented yet D:"
+            return 1
             ;;
         *)
             output error "Action '$ACTION' not found. Try --help"
+            return 1
     esac
     return 0
 }
