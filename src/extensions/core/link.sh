@@ -18,6 +18,19 @@ dottle_link () {
     #       default: relative
     FLAGS=$(default_flag "$FLAGS" "relative" "")
 
+    case "$ACTION" in
+        install|update)
+            ;;
+        uninstall)
+            output error "not implemented yet D:"
+            return 1
+            ;;
+        *)
+            output error "Action '$ACTION' not supported for link module"
+            return 1
+            ;;
+    esac
+
     # if the force flag is set some flags will be overridden
     if [ "$(get_flag "$FLAGS" 'force')" = 'true' ]; then
         FLAGS="$(set_flag "$FLAGS" "ign_broken" "true")"
