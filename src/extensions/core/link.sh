@@ -34,7 +34,11 @@ dottle_link () {
 
     DEST="$(expand_vars "${1}")"
     output debug "DEST: '$DEST'"
-    SOURCE="$(expand_vars "${BASEDIR}/${2}")"
+    if [ "$(get_flag "$FLAGS" 'relative')" = 'true' ]; then
+        SOURCE="$(expand_vars "${PWD}/${2}")"
+    else
+        SOURCE="$(expand_vars "${2}")"
+    fi
 
     # if link will be broken and ign_broken flag is set exit
     if [ "$(get_flag "$FLAGS" 'ign_broken')" = 'false' ] && [ ! -e "$SOURCE" ]; then

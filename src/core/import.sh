@@ -13,8 +13,8 @@ dottle_import () {
     fi
 
     if [ -e "$CONFIG_FILE" ]; then
-        BASEDIR="$(dirname -- "$(rreadlink "${CONFIG_FILE}")")"
-        CONFIG_FILE="$(basename -- "$(rreadlink "${CONFIG_FILE}")")"
+        BASEDIR="$(dirname -- "${CONFIG_FILE}")"
+        CONFIG_FILE="$(basename -- "${CONFIG_FILE}")"
     else
         output error "Couldn't import '$CONFIG_FILE'\n"
         return 1
