@@ -5,13 +5,20 @@ dottle_import () {
 
     output debug "Flags for import: '$FLAGS'"
 
-    if [ ! -f "$2" ]; then
-        output error "Can't import '$2'. File doesn't exist\n"
-        return 1
+
+    if [ -d "$2" ]; then
+        CONFIG_FILE="${2}/dottle.yml"
+    else
+        CONFIG_FILE="${2}"
     fi
 
-    BASEDIR="$(cd "$(dirname "${2}")" && pwd)"
-    CONFIG_FILE="$(basename "${2}")"
+    if [ -e "$CONFIG_FILE" ]; then
+        BASEDIR="$(dirname -- "$(rreadlink "${CONFIG_FILE}")")"
+        CONFIG_FILE="$(basename -- "$(rreadlink "${CONFIG_FILE}")")"
+    else
+        output error "Couldn't import '$CONFIG_FILE'\n"
+        return 1
+    fi
 
     cd "$BASEDIR" || { output error "Couldn't cd into config directory." && return 1; }
 
