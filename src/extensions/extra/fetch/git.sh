@@ -1,3 +1,13 @@
+dottle_git_is_already_installed () {
+    # if dest exists AND the remote is ok AND the branch is ok, there is nothing to do
+    (
+        cd "$DEST" &&
+            [ -d ".git" ] &&
+            [ "$(git config --get "remote.${REMOTE}.url")" = "${REPO}" ] &&
+            [ "$(git rev-parse --abbrev-ref HEAD)" = "${BRANCH}" ]
+    ) > /dev/null 2>&1
+}
+
 dottle_fetch_git_exists () { return 0; }
 dottle_fetch_git () {
     # Get git repo into a directory
@@ -17,6 +27,9 @@ dottle_fetch_git () {
     #   interactive: if set all stds will be redirected to this shell
     #       default: interactive!
     FLAGS=$(default_flag "$FLAGS" "interactive" "!")
+    #   create: if final directory doesn't exist create them recursively
+    #       default: create
+    FLAGS=$(default_flag "$FLAGS" "create" "")
 
     output debug "FLAGS: '${FLAGS}'"
     DEST="$(expand_vars "${1}")"
@@ -48,59 +61,81 @@ dottle_fetch_git () {
         return 1
     fi
 
-    if [ -d "${DEST}/.git" ]; then
+    case "$ACTION" in
+        install)
+            dottle_fetch_git_install
+        ;;
+        update)
+            dottle_fetch_git_update
+        ;;
+        uninstall)
+            output info "not implemented yet D:"
+            return 1
+            ;;
+        *)
+            output error "Action '$ACTION' not supported for fetch.git module"
+            return 1
+            ;;
+    esac
+}
 
-        output ok "$DEST is installed and is a git repo"
-    else
-        [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup "$DEST"
+dottle_fetch_git_install () {
+    if dottle_git_is_already_installed; then
+        output ok "'$REPO' already installed in '$DEST'\n"
+        return 0
+    fi
 
-        rm -rf "$DEST"
-
-        mkdir -p "$DEST"
-
-        output debug "Running git clone of '$REPO'"
-        if ! git clone --recursive --branch "$BRANCH" "$REPO" "$DEST" > "$STDOUT" 2> "$STDERR" < "$STDIN"; then
-            output error "git clone command failed\n"
+    # if DEST dir doesn't exists and create flag is set, create it
+    if ! [ -d "$(dirname "$DEST")" ]; then
+        if [ "$(get_flag "$FLAGS" 'create')" = 'true' ]; then
+            mkdir -p "$(dirname "$DEST")"
+        else
+            output error "'$(dirname "${DEST}")' doesn't exists. Quiting because create flag is not set\n"
             return 1
         fi
     fi
+
+    # If the file already exists (maybe make a backup and) remove it
+    if [ -e "$DEST" ]; then
+        [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup "$DEST"
+        rm -rf "$DEST"
+    fi
+
+    output debug "git clone --recursive --origin \"$REMOTE\" --branch \"$BRANCH\" \"$REPO\" \"$DEST\" > \"$STDOUT\" 2> \"$STDERR\" < \"$STDIN\""
+    if git clone --recursive \
+            --origin "$REMOTE" \
+            --branch "$BRANCH" \
+            "$REPO" "$DEST" > "$STDOUT" 2> "$STDERR" < "$STDIN"; then
+        output ok "Cloned '$REPO' in '$DEST'"
+    else
+        output error "Failed to clone '$REPO'"
+        return 1
+    fi
+
 }
 
+dottle_fetch_git_update () {
+    if ! dottle_git_is_already_installed; then
+        output ok "'$REPO' is not installed in '$DEST'. Try 'install' instead of update\n"
+        return 0
+    fi
 
+    cd "$DEST" || { return 1; }
 
-# this will be useful when the update command is in place
+    output running "pulling '$BRANCH' branch from '$REPO'\n"
+    if git pull "$REMOTE" "$BRANCH" > "$STDOUT" 2> "$STDERR" < "$STDIN"; then
+        output ok "Pulled successfully\n"
+    else
+        output error "Couldn't pull '$BRANCH' branch from '$REMOTE'\n"
+        return 1
+    fi
 
-# [ "$(get_flag "$FLAGS" 'update')" = 'true' ] && \
-# (cd "$DEST"; [ "$(git config --get "remote.${REMOTE}.url")" = "${REPO}" ])
-# (
-# if ! cd "$DEST"; then
-#     output error "Couldn't \`cd\` into '$DEST'\n"
-#     return 1
-# fi
-
-# if ! git config http.sslVerify "$VERIFY_SSL"; then
-#     output error "Couldn't set config\n"
-#     return 1
-# fi
-
-# output debug "git 'checkout' '$BRANCH'"
-# if ! git checkout "$BRANCH" > /dev/null 2>&1; then
-#     output error "Couldn't checkout '$BRANCH'\n"
-#     return 1
-# fi
-
-# output running "pulling '$BRANCH' branch from '$REPO'\n"
-# output debug "git 'pull' '$REMOTE' '$BRANCH'"
-# if ! git pull "$REMOTE" "$BRANCH" > /dev/null 2>&1; then
-#     output error "Couldn't pull '$BRANCH' branch from '$REMOTE'\n"
-#     return 1
-# fi
-
-# if [ "$(get_flag "$FLAGS" 'recursive')" = 'true' ]; then
-#     output debug "git submodule update --init --recursive"
-#     if ! git submodule update --init --recursive > /dev/null 2>&1; then
-#         output error "Couldn't update submodules\n"
-#         return 1
-#     fi
-# fi
-# ) && output ok "Pulled successfully\n"
+    output debug "git submodule update --init --recursive"
+    if git submodule update --init --recursive; then
+        output ok "Pulled submodules successfully"
+        return 0
+    else
+        output error "Couldn't update submodules\n"
+        return 1
+    fi
+}
