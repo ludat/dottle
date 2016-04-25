@@ -29,16 +29,12 @@ dottle_import () {
                 output error "The file has some serious errors\n"
             fi
             ;;
-        install)
+        install|update)
             if dottle_action_check < "$CONFIG_FILE" | sed -e "$OUTPUT_FILTER"; then
                 if dottle_action_exec < "$CONFIG_FILE" | sed -e "$OUTPUT_FILTER"; then
                     [ "$1" != '__ROOT__' ] && output ok "$1\n"
                 fi
             fi
-            ;;
-        update)
-            output error "not implemented yet D:"
-            return 1
             ;;
         uninstall)
             output error "not implemented yet D:"
