@@ -1,3 +1,7 @@
+dottle_link_is_already_installed () {
+    [ -L "$DEST" ]
+}
+
 dottle_link_exists () { return 0; }
 dottle_link () {
     # Creates link from the first arg to second arg
@@ -18,25 +22,12 @@ dottle_link () {
     #       default: relative
     FLAGS=$(default_flag "$FLAGS" "relative" "")
 
-    case "$ACTION" in
-        install|update)
-            ;;
-        uninstall)
-            output error "not implemented yet D:"
-            return 1
-            ;;
-        *)
-            output error "Action '$ACTION' not supported for link module"
-            return 1
-            ;;
-    esac
-
     # if the force flag is set some flags will be overridden
     if [ "$(get_flag "$FLAGS" 'force')" = 'true' ]; then
         FLAGS="$(set_flag "$FLAGS" "ign_broken" "true")"
-        output debug "'ign_broken' flag was set to true\n"
+        output debug "'ign_broken' flag was set to true"
         FLAGS="$(set_flag "$FLAGS" "create" "true")"
-        output debug "'create' flag was set to true\n"
+        output debug "'create' flag was set to true"
     fi
 
     output debug "Flags for link: '$FLAGS'"
@@ -51,7 +42,7 @@ dottle_link () {
         return 1
     fi
 
-    # if relative flag set to false expand with BASEDIR else let it raw
+    # if relative flag set to false expand with BASEDIR else leave it raw
     if [ "$(get_flag "$FLAGS" 'relative')" = 'true' ]; then
         SOURCE_T="$(printf '%s' "$SOURCE" | sed -e 's:^/::')"
         DEST_T="$(printf '%s' "$DEST" | sed -e 's:^/::')"
@@ -74,24 +65,44 @@ dottle_link () {
     fi
 
     output debug "SOURCE: '$SOURCE'"
+    PRETTY_DEST="$(printf "%s" "$DEST" | sed "s:^$HOME:~:")"
+    PRETTY_SOURCE="$(printf "%s" "$SOURCE" | sed "s:^$HOME:~:")"
+
+    case "$ACTION" in
+        install)
+            dottle_link_install
+            ;;
+        update)
+            dottle_link_update
+            ;;
+        uninstall)
+            output info "not implemented yet D:"
+            return 1
+            ;;
+        *)
+            output error "Action '$ACTION' not supported for link module"
+            return 1
+            ;;
+    esac
+}
+
+dottle_link_install () {
+    if dottle_link_is_already_installed; then
+        output ok "link ($PRETTY_SOURCE) already exists\n"
+        return 0
+    fi
 
     # if DEST dir doesn't exists and create flag is set, create it
     if ! [ -d "$(dirname "$DEST")" ]; then
         if [ "$(get_flag "$FLAGS" 'create')" = 'true' ]; then
             mkdir -p "$(dirname "$DEST")"
         else
-            output warn "'$(dirname "${DEST}")' doesn't exists. Quiting because create flag is not set\n"
+            output error "'$(dirname "${PRETTY_DEST}")' doesn't exists. Quiting because create flag is not set\n"
             return 1
         fi
     fi
 
-    # if the dest path is a link and it points somewhere inside the basedir remove
-    if [ -L "$DEST" ] && printf '%s' "$(rreadlink "$DEST")" | grep "^$BASEDIR" > /dev/null; then
-        output info "File '${DEST}' exists and it points to my BASEDIR. Replacing it\n"
-        rm "$DEST"
-    fi
-
-    # If the file already exists (maybe make a backup and) remove it
+    # if the file already exists, maybe make a backup and remove it
     if [ -e "$DEST" ]; then
         [ "$(get_flag "$FLAGS" 'backup')" = 'true' ] && backup "$DEST"
         rm -rf "$DEST"
@@ -99,8 +110,25 @@ dottle_link () {
 
     # Actually make the link
     if ln -s "$SOURCE" "$DEST"; then
-        output ok "${1} -> ${SOURCE}\n"
+        output ok "${PRETTY_DEST} -> ${PRETTY_SOURCE}\n"
     else
-        output error "${1} -> ${SOURCE}\n"
+        output error "${PRETTY_DEST} -> ${PRETTY_SOURCE}\n"
+    fi
+}
+
+dottle_link_update () {
+    if ! dottle_link_is_already_installed; then
+        output error "link ($PRETTY_DEST) is not installed. Try 'dottle install'\n"
+        return 0
+    fi
+
+    # Remove the old link
+    rm "$DEST"
+
+    # Actually make the link
+    if ln -s "$SOURCE" "$DEST"; then
+        output ok "${PRETTY_DEST} -> ${PRETTY_SOURCE}\n"
+    else
+        output error "${PRETTY_DEST} -> ${PRETTY_SOURCE}\n"
     fi
 }
