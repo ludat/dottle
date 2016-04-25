@@ -132,7 +132,7 @@ dottle_fetch_git_update () {
 
     output debug "git submodule update --init --recursive"
     if git submodule update --init --recursive; then
-        output ok "Pulled submodules successfully"
+        output ok "Pulled submodules successfully\n"
         return 0
     else
         output error "Couldn't update submodules\n"
