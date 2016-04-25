@@ -1,4 +1,4 @@
-get_git:
+fetch.git:
     dotfiles: https://gitlab.com/ludat/dotfiles.git
 
 link: create force! ign_broken! backup relative

@@ -1,4 +1,4 @@
-get_git:
+fetch.git:
     zshrc: https://github.com/ludat/zshrc.git
 
 link: create force! ign_broken! backup relative

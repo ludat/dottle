@@ -13,9 +13,9 @@
 # link will create symlinks (for now with absolute paths) to the dotfiles
 # folder where this script lives
 
-install:
-    Install dotfiles: dotfiles.conf.yml
-    Install vimrc: vimrc.conf.yml
-    Install nvimrc: nvimrc.conf.yml
-    Install xmonad: xmonad.conf.yml
-    Install zshrc: zshrc.conf.yml
+import:
+    Import dotfiles: dotfiles.conf.yml
+    Import vimrc: vimrc.conf.yml
+    Import nvimrc: nvimrc.conf.yml
+    Import xmonad: xmonad.conf.yml
+    Import zshrc: zshrc.conf.yml

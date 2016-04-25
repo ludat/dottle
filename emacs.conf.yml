@@ -1,4 +1,4 @@
-get_git:
+fetch.git:
     emacs.d: https://github.com/ludat/emacs.d.git
     spacemacs: https://github.com/syl20bnr/spacemacs.git
 

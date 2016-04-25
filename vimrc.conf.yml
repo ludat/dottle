@@ -1,4 +1,4 @@
-get_git:
+fetch.git:
     vimrc: https://github.com/ludat/vimrc.git
 
 link: create force! ign_broken! backup relative

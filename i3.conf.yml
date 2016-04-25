@@ -1,4 +1,4 @@
-get_git:
+fetch.git:
     i3: https://gitlab.com/ludat/i3-config.git
 
 link: create force! ign_broken! backup relative
