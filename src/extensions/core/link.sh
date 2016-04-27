@@ -92,7 +92,7 @@ dottle_link () {
 
 dottle_link_install () {
     if dottle_link_is_already_installed; then
-        output ok "link ($PRETTY_SOURCE) already exists\n"
+        output ok "link ($PRETTY_DEST) already exists\n"
         return 0
     fi
 
