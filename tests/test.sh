@@ -1,10 +1,9 @@
 #!/bin/sh
 
 . ./src/utils/output.sh
-. ./src/utils/readlink.sh
 
-export DOTTLE_PATH="$(rreadlink "${DOTTLE_PATH:-dottle}")"
-export DEFAULTS_PATH="$(rreadlink "${DEFAULTS_PATH:-tests/defaults}")"
+export DOTTLE_PATH="$(realpath "${DOTTLE_PATH:-dottle}")"
+export DEFAULTS_PATH="$(realpath "${DEFAULTS_PATH:-tests/defaults}")"
 export TESTS_DIR="${1:-tests/cases}"
 
 run_test () {
