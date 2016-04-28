@@ -1,0 +1,18 @@
+if false
+shell:
+    should not execute: echo should NOT execute
+elif false
+shell:
+    should not execute: echo should NOT run
+else
+shell:
+    must execute: echo this should run
+endif
+
+if false
+shell:
+    should not execute: echo should NOT execute
+elif true
+shell:
+    should not execute: echo should run
+endif
