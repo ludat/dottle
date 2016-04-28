@@ -1,21 +1,20 @@
 # dottle config file
-# lines starting with a hash are (hopefully) ignored as empty lines
 
-
-# A command starts in the highest indentations and can be if, link or shell
-# every command can take argments that are either flags like
-# link: create
-# or to disable the flag
-# link: !create
-# also can take keyword arguments
-# link: create=true which is the same as !create
-#
-# link will create symlinks (for now with absolute paths) to the dotfiles
-# folder where this script lives
+fetch.git:
+    i3: https://gitlab.com/ludat/i3-config.git
+    dotfiles: https://gitlab.com/ludat/dotfiles.git
+    vimrc: https://github.com/ludat/vimrc.git
+    nvimrc: https://github.com/ludat/nvimrc.git
+    xmonad: https://github.com/ludat/xmonad-config.git
+    zshrc: https://github.com/ludat/zshrc.git
+    emacs.d: https://github.com/ludat/emacs.d.git
 
 import:
-    Import dotfiles: dotfiles.conf.yml
-    Import vimrc: vimrc.conf.yml
-    Import nvimrc: nvimrc.conf.yml
-    Import xmonad: xmonad.conf.yml
-    Import zshrc: zshrc.conf.yml
+    Import i3: i3/
+    Import dotfiles: dotfiles/
+    Import vimrc: vimrc/
+    Import nvimrc: nvimrc/
+    Import xmonad: xmonad/
+    Import zshrc: zshrc/
+    Import emacs.d: emacs.d/
+

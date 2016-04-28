@@ -1,7 +1,0 @@
-fetch.git:
-    emacs.d: https://github.com/ludat/emacs.d.git
-    spacemacs: https://github.com/syl20bnr/spacemacs.git
-
-link: create force! ign_broken! backup relative
-    ~/.emacs.d: spacemacs/
-    ~/.spacemacs: emacs.d/spacemacs

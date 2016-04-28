@@ -1,6 +1,0 @@
-fetch.git:
-    zshrc: https://github.com/ludat/zshrc.git
-
-link: create force! ign_broken! backup relative
-    ~/.zsh: zshrc/zsh/
-    ~/.zshrc: zshrc/zshrc

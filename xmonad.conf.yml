@@ -1,5 +1,0 @@
-fetch.git:
-    xmonad: https://github.com/ludat/xmonad-config.git
-
-link: create force! ign_broken! backup relative
-    ~/.xmonad: xmonad/

@@ -1,6 +1,0 @@
-fetch.git:
-    i3: https://gitlab.com/ludat/i3-config.git
-
-link: create force! ign_broken! backup relative
-    ~/.config/i3/config: i3/i3.conf
-    ~/.config/i3status/config: i3/i3status.conf

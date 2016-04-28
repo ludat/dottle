@@ -1,5 +1,0 @@
-fetch.git:
-    nvimrc: https://github.com/ludat/nvimrc.git
-
-link: create force! ign_broken! backup relative
-    ~/.config/nvim: nvimrc/
