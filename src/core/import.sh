@@ -7,7 +7,7 @@ dottle_import () {
 
 
     if [ -d "$2" ]; then
-        CONFIG_FILE="${2}/dottle.yml"
+        CONFIG_FILE="${2}/install.conf.yml"
     else
         CONFIG_FILE="${2}"
     fi
