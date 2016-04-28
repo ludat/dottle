@@ -35,7 +35,7 @@ dottle_action_exec () {
                 if [ "$IF_LEVEL" -eq 1 ]; then
                     if [ "$IF_STATE" = false ]; then
                         IF_LEVEL=1
-                        if (eval "$(printf "%s" "$line" | sed 's/if \(.*\)$/\1/g')"); then
+                        if (eval "$(printf "%s" "$line" | sed 's/elif \(.*\)$/\1/g')"); then
                             IF_STATE=true
                         else
                             IF_STATE=false
