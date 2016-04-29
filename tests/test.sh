@@ -5,14 +5,14 @@
 
 export DOTTLE_PATH="$(rreadlink "${DOTTLE_PATH:-dottle}")"
 export DEFAULTS_PATH="$(rreadlink "${DEFAULTS_PATH:-tests/defaults}")"
-export TESTS_DIR="${1:-tests/cases}"
+export TESTS_PATH="${1:-tests/cases}"
 
 run_test () {
     if [ -z "$1" ]; then
         return 1
     fi
     ( cd "$1"
-    TEST_BASEDIR="$(pwd)"
+    TEST_BASEPATH="$(pwd)"
 
     rm -rf fakehome.actual
     if [ -d "fakehome" ]; then
@@ -23,11 +23,11 @@ run_test () {
 
         (
         cd fakehome.actual
-        FAKEHOME="$TEST_BASEDIR/fakehome.actual"
-        HOME="$FAKEHOME" "$TEST_BASEDIR/cmd.sh" \
-            > "$TEST_BASEDIR/stdout.actual" \
-            2> "$TEST_BASEDIR/stderr.actual"
-        printf "%d\n" "$?" > "$TEST_BASEDIR/exit.actual"
+        FAKEHOME="$TEST_BASEPATH/fakehome.actual"
+        HOME="$FAKEHOME" "$TEST_BASEPATH/cmd.sh" \
+            > "$TEST_BASEPATH/stdout.actual" \
+            2> "$TEST_BASEPATH/stderr.actual"
+        printf "%d\n" "$?" > "$TEST_BASEPATH/exit.actual"
         )
     )
 }
@@ -81,16 +81,16 @@ cleanup () {
 }
 
 [ -f "errors.log" ] && rm errors.log
-output debug "running tests for '$TESTS_DIR'"
-find "$TESTS_DIR" -type f -name "cmd.sh" | while read -r CMD_FILE; do
-    TEST_DIR="$(dirname "$CMD_FILE")"
-    cleanup "$TEST_DIR"
-    run_test "$TEST_DIR"
-    if check_results "$TEST_DIR"; then
+output debug "running tests for '$TESTS_PATH'"
+find "$TESTS_PATH" -type f -name "cmd.sh" | while read -r CMD_FILE; do
+    TEST_PATH="$(dirname "$CMD_FILE")"
+    cleanup "$TEST_PATH"
+    run_test "$TEST_PATH"
+    if check_results "$TEST_PATH"; then
         printf "."
     else
         printf "F"
-        printf "'%s' failed\n" "$TEST_DIR" >> errors.log
+        printf "'%s' failed\n" "$TEST_PATH" >> errors.log
     fi
 done
 
