@@ -1,2 +1,0 @@
-install:
-    install first child: child.conf.yml

@@ -1,0 +1,5 @@
+shell:
+    first child: false
+
+import:
+    import last child: grandchild.conf.yml

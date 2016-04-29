@@ -1,0 +1,7 @@
+if false
+shell:
+    should not execute: echo should NOT execute
+else
+shell:
+    must execute: echo this should run
+endif

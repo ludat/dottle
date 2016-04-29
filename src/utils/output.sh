@@ -42,3 +42,7 @@ output () {
             ;;
     esac
 }
+
+printf_escape () {
+    printf "%s" "$1" | sed -e 's:\\:\\\\:g' -e 's:%:%%:g'
+}

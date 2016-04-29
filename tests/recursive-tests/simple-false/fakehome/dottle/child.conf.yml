@@ -1,5 +1,0 @@
-shell:
-    first child: false
-
-install:
-    Install last child: grandchild.conf.yml

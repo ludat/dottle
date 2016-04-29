@@ -1,0 +1,9 @@
+if false
+shell:
+    top level command: echo should not execute
+if true
+shell:
+    nested command: echo should not execute
+endif
+
+endif

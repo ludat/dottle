@@ -3,9 +3,8 @@ escape () {
     output debug "EXPAND: '$1'"
     printf '%s' "$1" | sed \
                            -e 's:^~/:'"$HOME"'/:' \
-                           -e 's/\\\([^\$]\)/\\\\&/g' \
-                           -e 's/"/\\"/g' \
-                           -e 's/\\\$/\\\$/g'
+                           -e 's/\\\([^\$]\)/\\&/g' \
+                           -e 's/"/\\"/g'
 }
 
 # expand env vars in a string
@@ -32,13 +31,26 @@ dottle_shell () {
     #       default: stderr=
     FLAGS=$(default_flag "$FLAGS" "stderr" "=")
 
-    STDIN="$(get_flag "$FLAGS" 'stdin')"
+    case "$ACTION" in
+        install|update)
+        ;;
+        uninstall)
+            output info "uninstall a command doesn't make sense"
+            return 1
+            ;;
+        *)
+            output error "Action '$ACTION' not supported for shell module"
+            return 1
+            ;;
+    esac
+
+    STDIN="$(expand_vars "$(get_flag "$FLAGS" 'stdin')")"
     output debug "STDIN: $STDIN"
-    STDOUT="$(get_flag "$FLAGS" 'stdout')"
+    STDOUT="$(expand_vars "$(get_flag "$FLAGS" 'stdout')")"
     output debug "STDOUT: $STDOUT"
-    STDERR="$(get_flag "$FLAGS" 'stderr')"
+    STDERR="$(expand_vars "$(get_flag "$FLAGS" 'stderr')")"
     output debug "STDERR: $STDERR"
-    RUN="$1"
+    RUN="$( printf_escape "$1")"
     OK=""
     CMD="${2}"
 
@@ -46,23 +58,23 @@ dottle_shell () {
     if [ "$(get_flag "$FLAGS" 'interactive')" = 'true' ]; then
         OK="     ${RUN}"
         RUN="${RUN}\n"
-        CMD="$CMD > ${STDOUT:-/dev/stdout}"
-        CMD="$CMD < ${STDIN:-/dev/tty}"
-        CMD="$CMD 2> ${STDERR:-/dev/stderr}"
+        CMD="$CMD >  \"${STDOUT:-/dev/stdout}\""
+        CMD="$CMD <  \"${STDIN:-/dev/tty}\""
+        CMD="$CMD 2> \"${STDERR:-/dev/stderr}\""
     elif [ "$(get_flag "$FLAGS" 'interactive')" = 'false' ]; then
         OK=" "
         RUN="${RUN} "
-        CMD="$CMD > ${STDOUT:-/dev/null}"
-        CMD="$CMD < ${STDIN:-/dev/null}"
-        CMD="$CMD 2> ${STDERR:-/dev/null}"
+        CMD="$CMD > \"${STDOUT:-/dev/null}\""
+        CMD="$CMD < \"${STDIN:-/dev/null}\""
+        CMD="$CMD 2> \"${STDERR:-/dev/null}\""
     else
         output internal_error "interactive not in '$FLAGS'"
         return 1
     fi
-    output debug "COMMAND: $CMD"
+    output debug "COMMAND: $( printf_escape "$CMD")"
 
     output running "$RUN"
-    if ( eval $CMD ); then
+    if ( eval "$CMD" ); then
         output ok "$OK\n"
     else
         output error "$OK\n"

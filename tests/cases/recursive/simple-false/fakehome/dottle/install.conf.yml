@@ -1,0 +1,2 @@
+import:
+    import first child: child.conf.yml

@@ -1,0 +1,26 @@
+shell:
+
+if false
+    1 should NOT execute:
+else
+    2 should execute:
+if true
+    3 should execute:
+else
+    4 should NOT execute:
+endif
+    5 should execute:
+endif
+
+if true
+    6 should execute:
+else
+    7 should NOT execute:
+if true
+    8 should NOT execute:
+else
+    9 should NOT execute:
+endif
+    10 should NOT execute:
+endif
+    11 should execute:

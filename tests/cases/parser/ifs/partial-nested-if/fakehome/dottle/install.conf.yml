@@ -1,0 +1,9 @@
+if true
+shell: output=/dev/stdout
+    top level command: echo should execute
+if false
+shell: output=/dev/stdout
+    nested command: echo should not execute
+endif
+
+endif

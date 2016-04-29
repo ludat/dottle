@@ -1,0 +1,30 @@
+shell:
+if true
+    1 should execute:
+elif true
+    2 should NOT execute:
+elif true
+    2 should NOT execute:
+else
+    3 should NOT execute:
+endif
+
+if false
+    4 should NOT execute:
+elif true
+    5 should execute:
+elif false
+    6 should NOT execute:
+else
+    7 shoud NOT execute:
+endif
+
+if false
+    8 should NOT execute:
+elif false
+    9 should NOT execute:
+elif false
+    10 should NOT execute:
+else
+    11 should execute:
+endif

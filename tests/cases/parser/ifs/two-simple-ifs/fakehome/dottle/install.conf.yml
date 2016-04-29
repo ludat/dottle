@@ -1,0 +1,8 @@
+shell:
+if true
+    should execute: echo should execute
+endif
+
+if false
+    should NOT execute: echo should not execute
+endif

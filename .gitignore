@@ -1,0 +1,6 @@
+# Ignore the build result
+build/result.sh
+
+# Ignore results of running the tests
+/tests/cases/**/*.actual
+/tests/cases/**/*.diff

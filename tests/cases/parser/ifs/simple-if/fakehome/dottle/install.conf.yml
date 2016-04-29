@@ -1,0 +1,4 @@
+if false
+shell:
+    My command: echo hi
+endif

@@ -1,6 +1,0 @@
-get_git:
-    vimrc: https://github.com/ludat/vimrc.git
-
-link: create force! ign_broken! backup relative
-    ~/.vim: vimrc/vim/
-    ~/.vimrc: vimrc/vimrc
