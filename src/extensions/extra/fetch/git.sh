@@ -69,11 +69,11 @@ dottle_fetch_git () {
             dottle_fetch_git_update
         ;;
         uninstall)
-            output info "not implemented yet D:"
+            output error "not implemented yet D:\n"
             return 1
             ;;
         *)
-            output error "Action '$ACTION' not supported for fetch.git module"
+            output error "Action '$ACTION' not supported for fetch.git module\n"
             return 1
             ;;
     esac
@@ -106,9 +106,9 @@ dottle_fetch_git_install () {
             --origin "$REMOTE" \
             --branch "$BRANCH" \
             "$REPO" "$DEST" > "$STDOUT" 2> "$STDERR" < "$STDIN"; then
-        output ok "Cloned '$REPO' in '$DEST'"
+        output ok "Cloned '$REPO' in '$DEST'\n"
     else
-        output error "Failed to clone '$REPO'"
+        output error "Failed to clone '$REPO'\n"
         return 1
     fi
 
