@@ -26,7 +26,7 @@ dottle_import () {
         return 1
     fi
 
-    cd "$BASEDIR" || { output error "Couldn't cd into config directory." && return 1; }
+    cd "$BASEDIR" || { output error "Couldn't cd into config directory.\n" && return 1; }
 
     if [ "$1" != '__ROOT__' ]; then
         OUTPUT_FILTER='s/^/    /'
@@ -50,11 +50,11 @@ dottle_import () {
             fi
             ;;
         uninstall)
-            output error "not implemented yet D:"
+            output error "not implemented yet D:\n"
             return 1
             ;;
         *)
-            output error "Action '$ACTION' not found. Try --help"
+            output error "Action '$ACTION' not found. Try --help\n"
             return 1
     esac
     return 0

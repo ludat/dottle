@@ -3,11 +3,11 @@ dottle_show_help () {
 Usage: ./dottle COMMAND [FILE]
 
 COMMANDS:
-- `install`: should be called upon the first invocation of dottle.
+- \`install\`: should be called upon the first invocation of dottle.
     It will install things, create links, run shell commands,
     download things like git repos. It checks if it was called
     before and if it was it won't have any effect
-- `update`: should be called after install was called at least one.
+- \`update\`: should be called after install was called at least one.
     It will update existing things, update links to new paths,
     pull git repos, run shell commands, etc. It checks if install
     was called at least one, otherwise it will refuse to do
@@ -22,20 +22,24 @@ The format of the file is a pseudo yaml. You can find out more
 about it here (https://github.com/ludat/dottle).
 Here are some examples:
 
-```
+\`\`\`
 # check if apt is installed and update packages
 # interactively because sudo
 if which apt
 shell: interactive
     update packages: sudo apt update
 endif
-```
+\`\`\`
 
-```
+\`\`\`
 # install vim config using a symlink
 link:
     ~/.vimrc: vimrc
 endif
-```
+\`\`\`
 EOF
+}
+
+dottle_show_version () {
+    printf "dottle v%s\n" "0.2.1"
 }

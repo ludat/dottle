@@ -3,6 +3,9 @@ case "$1" in
     --help)
         dottle_show_help
         ;;
+    --version)
+        dottle_show_version
+        ;;
     selfupgrade)
         output error "Not implemented yet D:"
         ;;
