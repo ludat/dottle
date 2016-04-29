@@ -1,0 +1,16 @@
+# vim: ft=sh
+
+# Maintainer: Lucas David Traverso <lucas6246@gmail.com>
+pkgname=dottle
+pkgver=0.0.0
+pkgrel=1
+pkgdesc="POSIX script to manage dotfiles"
+arch=('any')
+url="https://github.com/ludat/dottle/"
+license=('MIT')
+source=("https://github.com/ludat/dottle/releases/download/v${pkgver}/dottle")
+md5sums=('aeb5c96f7d26a0ec867bc2447cb2b2e7')
+
+package() {
+    install -D -t "$pkgdir/usr/bin" "$srcdir/dottle"
+}
