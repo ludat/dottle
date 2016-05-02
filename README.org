@@ -58,7 +58,6 @@ If the action is install this will create a link in =~/.vimrc= pointing to
 ** link
 Creates a symlink in =ARG1= pointing to =$PWD/ARG2=
 
-- command: link
 - =ARG1=: Symlink file path which should be an absolute path (~ get expanded)
 - =ARG2=: Path which will be appended by the dotfiles directory, should be
   relative to the directory of dottle.
@@ -75,13 +74,29 @@ Creates a symlink in =ARG1= pointing to =$PWD/ARG2=
 ** shell
 Executes ARG2
 
-- command: shell
 - =ARG1=: Verbose description of command for humans
 - =ARG2=: command that will be executed
 - =OPTIONS=:
   - =interactive=: (default false) if false all output and input will be
     silenced. If true it should work but eval handles stdin and stdout weirdly
     (not to be trusted)
+** fetch.git
+Downloads repo from url ARG2 and places it in $PWD/ARG1
+
+- =ARG1=: Directory where git should download to
+- =ARG2=: Url for git to process
+- =OPTIONS=:
+  - =interactive=: (default false) if false all output and input will be
+    silenced. If true it should work but eval handles stdin and stdout weirdly
+    (not to be trusted)
+  - =branch=: (default "master") branch name of the repo
+  - =remote=: (default "origin") remote name of the repo
+  - =backup=: (default false) if the file already exists back it up otherwise
+    just remove it
+  - =force=: (default false) try to get repo no matter what
+  - =interactive=: (default false) if set all stds will be redirected to this shell
+  - =create=: (default true) if final directory doesn't exist create them
+    recursively
 
 * Warnings
 Since this is implemented in pure POSIX shell script there are a lot of hacks in
