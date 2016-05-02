@@ -35,7 +35,6 @@ endif
 # install vim config using a symlink
 link:
     ~/.vimrc: vimrc
-endif
 \`\`\`
 EOF
 }
